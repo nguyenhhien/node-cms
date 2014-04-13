@@ -1,3 +1,6 @@
+UploadsFolder 		= "./public/uploads/";
+PORT				= "8888";
+
 Config =
 {
     MySQL:
@@ -9,5 +12,11 @@ Config =
         maxConcurrentQueries:  100,
         poolSize:   3,
         idleTime: 30
+    },
+    Redis:
+    {
+        host:					"localhost",
+        port:					6379,
+        pass:					null
     }
 }
