@@ -1,0 +1,149 @@
+//global style
+body
+{
+  background: rgba(238,238,238,.98);
+}
+
+a
+{
+  text-decoration: none;
+  &:hover
+  {
+    text-decoration: none;
+  }
+}
+
+
+//login page style
+.login-block-wrapper
+{
+  margin-top: 220px;
+  color: #848484;
+  font-weight: 400;
+
+  .title-wrapper
+  {
+    padding-left: 15px;
+    margin-bottom: 27px;
+    font-family: sans-serif;
+    font-weight: 300;
+
+    .title-header
+    {
+      font-size: 35px;
+      margin-bottom: 20px;
+    }
+  }
+
+  .main-section
+  {
+    .login-option-wrapper
+    {
+      .social-login-wrapper
+      {
+        margin-top: 13px;
+
+        .facebook-login,
+        .twitter-login
+        {
+          display: inline-block;
+          border-radius: 2px;
+          color: #FFF;
+          cursor: pointer;
+          font-size: 11px;
+          font-weight: 500;
+          width: 100%;
+          height: 72px;
+          margin-bottom: 14px;
+
+          .facebook-icon,
+          .twitter-icon
+          {
+            display: inline-block;
+            width: 85px;
+            height: 70px;
+            background-position: -47px;
+            background-repeat: no-repeat;
+            -webkit-transform: scale(0.7, 0.7);
+            float: left;
+          }
+
+          .text
+          {
+            color: white;
+            line-height: 70px;
+            font-size: 13px;
+          }
+        }
+      }
+
+      .facebook-login
+      {
+        background-color: #3B5997;
+        margin-right: 12px;
+
+        .facebook-icon
+        {
+          background-image: url("images/facebook-icon.png");
+        }
+      }
+
+      .twitter-login
+      {
+        background-color: #1BB5E7;
+
+        .twitter-icon
+        {
+          background-image: url("images/twitter-icon.png");
+        }
+      }
+    }
+
+    .email-login-wrapper
+    {
+      border-left: 1px dotted #e3e3e3;
+      margin-top: 10px;
+
+      .control
+      {
+        margin-bottom: 20px;
+
+        .title-label
+        {
+          font-size: 10px;
+          margin-bottom: 4px;
+        }
+
+        input
+        {
+          background-color: #FFF;
+          box-shadow: none;
+          font-size: 14px;
+          line-height: 22px;
+          padding: 10px;
+          width: 100%;
+          color: #7f7f7f;
+          border-radius: 2px;
+        }
+
+        .submit-btn-wrapper
+        {
+          .forgot-password-label
+          {
+            a
+            {
+              font-size: 11px;
+            }
+          }
+
+          .btn.submit
+          {
+            position: absolute;
+            right: 15px;
+          }
+        }
+      }
+    }
+
+  }
+}

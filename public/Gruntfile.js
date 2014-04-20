@@ -430,7 +430,7 @@ module.exports = function ( grunt ) {
         files: [ 
           'src/assets/**/*'
         ],
-        tasks: [ 'copy:build_assets' ]
+        tasks: [ 'copy:build_app_assets' ]
       },
 
       /**
@@ -456,7 +456,7 @@ module.exports = function ( grunt ) {
        * When the CSS files change, we need to compile and minify them.
        */
       less: {
-        files: [ 'src/**/*.less' ],
+        files: ['src/**/*.less','src/app/**/*.less'],
         tasks: [ 'less:build' ]
       },
 
@@ -558,7 +558,7 @@ module.exports = function ( grunt ) {
       return file.replace( dirRE, '' );
     });
 
-    grunt.file.copy('src/index.html', this.data.dir + '/index.html', { 
+    grunt.file.copy('src/index.html', this.data.dir + '/index.html', {
       process: function ( contents, path ) {
         return grunt.template.process( contents, {
           data: {
@@ -569,6 +569,19 @@ module.exports = function ( grunt ) {
         });
       }
     });
+
+    grunt.file.copy('src/login.html', this.data.dir + '/login.html', {
+      process: function ( contents, path ) {
+          return grunt.template.process( contents, {
+              data: {
+                  scripts: jsFiles,
+                  styles: cssFiles,
+                  version: grunt.config( 'pkg.version' )
+              }
+          });
+      }
+});
+
   });
 
   /**

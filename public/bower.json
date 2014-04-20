@@ -24,13 +24,15 @@
     "less": "~1.7.*",
     "lesshat": "~2.0.*",
     "angular-placeholders": "*",
-    "css-toggle-switch": "~2.1.5"
+    "css-toggle-switch": "~2.1.5",
+    "auth0-angular": "~0.1.2"
   },
   "dependencies": {
     "angular": "~1.2.16",
     "css-toggle-switch": "~2.1.5"
   },
   "resolutions": {
-    "angular": ">=1.2.0"
+    "angular": ">= 1.0.2",
+    "angular-cookies": "~1.3.*"
   }
 }

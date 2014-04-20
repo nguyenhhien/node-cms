@@ -12,6 +12,17 @@ var asyncQ              = require("async-q");
 var log4js              = require('log4js');
 var session             = require('express-session')
 var RedisStore          = require('connect-redis')(session);
+var passport            = require('passport');
+var jwt                 = require('express-jwt');
+
+var SECRET    = 'wReI8rpRzLcBt7noEw7MKcR4WZhS3RL16Xyb7iH954XFLJgmiTd6u-Sqpz18wUZT';
+var AUDIENCE  = 'DyG9nCwIEofSy66QM3oo5xU6NFs3TmvT';
+
+//secret and client id for jwt tokens
+var authenticate = jwt({
+    secret: new Buffer(SECRET, 'base64'),
+    audience: AUDIENCE
+});
 
 var Database            = require("./server/database");
 
@@ -48,26 +59,26 @@ app.use(function(req, res, next)
     res.header('Access-Control-Allow-Credentials', true);
 
     next()
-});
-
-var redisStoreConfig = new RedisStore({
-    host: 	Config.Redis.host,
-    port:	Config.Redis.port,
-    db:		3,
-    pass:	Config.Redis.pass,
-    client:	Database.getRedisCli()
-});
+})
 
 app.use(require("cookie-parser")());
 app.use(require("express-session")({
     key: 'sid',
-    store: redisStoreConfig,
+    store:  new RedisStore({
+        host: 	Config.Redis.host,
+        port:	Config.Redis.port,
+        db:		3,
+        pass:	Config.Redis.pass,
+        client:	Database.getRedisCli()
+    }),
     maxAge: 3600000,
     secret: 'auth-secret'
 }));
 
-app.use("/", express.static(__dirname + "/public/build"));		// serve public files straight away
+app.use(passport.initialize());
+app.use(passport.session());
 
+app.use("/", express.static(__dirname + "/public/build"));		// serve public files straight away
 
 app.listen(PORT, function()
 {

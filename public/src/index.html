@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="ngBoilerplate" ng-controller="mainCtrl">
+<html ng-app="mainApp" ng-controller="mainCtrl">
   <head>
     <title ng-bind="pageTitle"></title>
 
@@ -26,6 +26,6 @@
     <script type="text/javascript" src="<%= file %>"></script><% }); %>
   </head>
   <body>
-
+    <div ui-view></div>
   </body>
 </html>
