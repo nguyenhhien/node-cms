@@ -1,13 +1,12 @@
 angular.module( 'mainApp', [
   'templates-app',
   'templates-common',
-  'mainApp.login',
   'ui.route',
   'ui.router'
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {
-  $urlRouterProvider.otherwise( '/loginPage' );
+  $urlRouterProvider.otherwise( '/' );
 })
 
 .run( function run () {

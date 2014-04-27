@@ -25,12 +25,12 @@
     "lesshat": "~2.0.*",
     "angular-placeholders": "*",
     "css-toggle-switch": "~2.1.5",
-    "auth0-angular": "~0.1.2"
+    "auth0-angular": "~0.1.2",
+    "q": "~2.0.0",
+    "cryptojslib": "~3.1.2",
+    "angular-facebook": "~0.2.2"
   },
-  "dependencies": {
-    "angular": "~1.2.16",
-    "css-toggle-switch": "~2.1.5"
-  },
+  "dependencies": {},
   "resolutions": {
     "angular": ">= 1.0.2",
     "angular-cookies": "~1.3.*"

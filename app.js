@@ -1,9 +1,11 @@
 require("./server/config.js");
+require("./server/constant.js");
 
-var model               = require("./server/models");
+var models              = require("./server/models");
 var express 			= require("express");
 var path                = require("path");
 var fs					= require("fs");
+var http				= require("http");
 var fse					= require("fs-extra");
 var async				= require("async");
 var util				= require("util");
@@ -14,6 +16,9 @@ var session             = require('express-session')
 var RedisStore          = require('connect-redis')(session);
 var passport            = require('passport');
 var jwt                 = require('express-jwt');
+var routes              = require("./server/routes");
+var expressValidator    = require('express-validator');
+var utils               = require("./server/helpers/Utils.js");
 
 var SECRET    = 'wReI8rpRzLcBt7noEw7MKcR4WZhS3RL16Xyb7iH954XFLJgmiTd6u-Sqpz18wUZT';
 var AUDIENCE  = 'DyG9nCwIEofSy66QM3oo5xU6NFs3TmvT';
@@ -43,6 +48,8 @@ log4js.configure({
 logger = log4js.getLogger("main");
 logger.setLevel("INFO");
 
+Database.syncSchema();
+
 var app	= express();
 
 app.enabled('trust proxy');
@@ -50,16 +57,23 @@ app.enable("jsonp callback");
 
 app.use(require("body-parser")({ uploadDir: UploadsFolder}));
 
-//set necessary header -- for CORS
-app.use(function(req, res, next)
-{
-    res.header('Access-Control-Allow-Origin', req.get('origin'));
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    res.header('Access-Control-Allow-Credentials', true);
+//using param validator
+app.use(expressValidator({
+    errorFormatter: function(param, msg, value) {
+        var namespace = param.split('.')
+            , root    = namespace.shift()
+            , formParam = root;
 
-    next()
-})
+        while(namespace.length) {
+            formParam += '[' + namespace.shift() + ']';
+        }
+        return {
+            param : formParam,
+            msg   : msg,
+            value : value
+        };
+    }
+}));
 
 app.use(require("cookie-parser")());
 app.use(require("express-session")({
@@ -75,9 +89,22 @@ app.use(require("express-session")({
     secret: 'auth-secret'
 }));
 
-app.use(passport.initialize());
-app.use(passport.session());
+//extend response header
+require("./server/helpers/ResponseHelper.js")(http);
 
+//set necessary header -- for CORS
+app.use(function(req, res, next)
+{
+    res.header('Access-Control-Allow-Origin', req.get('origin'));
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Credentials', true);
+
+    next()
+})
+
+//setup route
+routes(app);
 app.use("/", express.static(__dirname + "/public/build"));		// serve public files straight away
 
 app.listen(PORT, function()

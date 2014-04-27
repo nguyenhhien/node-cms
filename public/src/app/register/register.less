@@ -17,6 +17,26 @@
       {
         margin-bottom: 20px;
       }
+
+      .required
+      {
+        .title-label
+        {
+          &:before
+          {
+            content: "*";
+            color: red;
+          }
+        }
+      }
+
+      .title-label
+      {
+        .error
+        {
+          color: @brand-danger;
+        }
+      }
     }
   }
 }

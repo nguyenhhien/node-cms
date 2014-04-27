@@ -4,7 +4,7 @@
             <div class="title-header">Register</div>
             <div class="register-instruction">
                 <p>Getting in is easy. Use one of your social networks or start fresh with an email address.</p>
-                <p>Already have an account? <a href="#/login">Sign In.</a></p>
+                <p>Already have an account? <a href="#!/login">Sign In.</a></p>
             </div>
         </div>
     </div>
@@ -12,12 +12,12 @@
     <div class="main-section row">
         <div class="login-option-wrapper col-md-6 col-md-offset-3">
             <div class="social-login-wrapper col-md-6">
-                <div class="facebook-login">
+                <div class="facebook-login" ng-click="registerWithFacebook()">
                     <i class="facebook-icon"></i>
                     <span class="text">Register with facebook</span>
                 </div>
 
-                <div class="twitter-login">
+                <div class="twitter-login" ng-click="registerWithTwitter()">
                     <i class="twitter-icon"></i>
                     <span class="text">Register with twitter</span>
                 </div>
@@ -25,47 +25,58 @@
 
             <div class="email-login-wrapper col-md-6">
                 <span class="email-register-text">Register with Email</span>
-                <form name="loginForm" ng-submit="login()">
+                <form name="registerForm" ng-submit="register()">
 
-                    <div class="control">
+                    <div class="control required">
                         <div class="title-label">
                             FULLNAME
                         </div>
                         <div>
-                            <input type="text" name="username" ng-model="userInput.fullname" required>
+                            <input type="text" name="username" ng-model="userInput.name" required>
                         </div>
                     </div>
 
-                    <div class="control">
+                    <div class="control required">
                         <div class="title-label">
                             EMAIL
+                            <span ng-show="registerForm.email.$error.email" class="error">
+                                (Invalid Email)
+                            </span>
                         </div>
                         <div>
-                            <input type="text" name="username" ng-model="userInput.email" required>
+                            <input type="email" name="email" ng-model="userInput.email" required>
                         </div>
                     </div>
 
-                    <div class="control">
+                    <div class="control required">
                         <div class="title-label">
                             PASSWORD
+                            <span ng-show="registerForm.password.$error.minlength" class="error">
+                                (Password must have at least 6 characters)
+                            </span>
                         </div>
                         <div>
-                            <input type="password" name="password" ng-model="userInput.password" required>
+                            <input type="password" name="password"  ng-minlength="6" ng-model="userInput.password" required>
                         </div>
                     </div>
 
-                    <div class="control">
+                    <div class="control required">
                         <div class="title-label">
-                           RETYPE PASSWORD
+                            RETYPE PASSWORD
+                            <span ng-show="registerForm.retypedPassword.$error.passwordMatch" class="error">
+                                (Password doesn't match)
+                            </span>
                         </div>
                         <div>
-                            <input type="password" name="password" ng-model="userInput.retypedPassword" required>
+                            <input type="password" name="retypedPassword"
+                                   ng-change="registerForm.retypedPassword.$setValidity('passwordMatch',registerForm.password.$viewValue==registerForm.retypedPassword.$viewValue)"
+                                   ng-model="userInput.retypedPassword" required>
                         </div>
                     </div>
 
                     <div class="term-and-condition">
                         <span>
-                            <input type="checkbox"/>
+                            <input type="checkbox" ng-model="userInput.acceptTerms"/>
                         </span>
                         <span>
                             I acknowledge that I have read and accept the Terms of Use Agreement
@@ -74,7 +85,8 @@
 
                     <div class="control" p2l-disable-selection>
                         <div class="submit-btn-wrapper">
-                            <button type="submit" class="btn submit btn-primary">Register</button>
+                            <button type="submit" class="btn submit btn-primary"
+                                    ng-disabled="!userInput.acceptTerms || !registerForm.$valid">Register</button>
                         </div>
                     </div>
                 </form>

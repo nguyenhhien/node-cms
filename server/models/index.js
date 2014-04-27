@@ -19,7 +19,8 @@ var sequelize = new Sequelize(
 // load models
 var models = [
     'Account',
-    'AccountActivation'
+    'AccountActivation',
+    'PasswordRecovery'
 ];
 models.forEach(function(model) {
     module.exports[model] = sequelize.import(__dirname + '/' + model);
@@ -27,7 +28,8 @@ models.forEach(function(model) {
 
 // describe relationships
 (function(m) {
-    m.AccountActivation.belongsTo(m.Account, {foreignKeyConstraint: true});
+    m.AccountActivation.belongsTo(m.Account, {foreignKey: 'accountId', foreignKeyConstraint: true});
+    m.PasswordRecovery.belongsTo(m.Account, {foreignKey: 'accountId', foreignKeyConstraint: true});
 })(module.exports);
 
 // export connection

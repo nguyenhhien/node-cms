@@ -1,15 +1,51 @@
 //global style
-body
-{
-  background: rgba(238,238,238,.98);
-}
-
+//TODO: put it in a separated file
 a
 {
   text-decoration: none;
   &:hover
   {
     text-decoration: none;
+  }
+}
+
+.notification-popup-wrapper
+{
+  position: fixed;
+  z-index: 9999;
+  background: @brand-success;
+  color: #fff;
+  top: 0;
+  padding: 11px 4px 13px 10px;
+  opacity: 0.9;
+  border: 1px solid #ddedf9;
+  border-top: 0;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+
+  &.error
+  {
+    background: @brand-danger;
+  }
+
+  .ticks
+  {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    list-style: none;
+
+    .close
+    {
+      cursor: pointer;
+      width: 10px;
+      height: 10px;
+      background: url(images/tropo_close.png) no-repeat;
+      margin-top: -3px;
+    }
   }
 }
 
@@ -25,7 +61,6 @@ a
   {
     padding-left: 15px;
     margin-bottom: 27px;
-    font-family: sans-serif;
     font-weight: 300;
 
     .title-header
@@ -81,27 +116,39 @@ a
       {
         background-color: #3B5997;
         margin-right: 12px;
+        text-transform: uppercase;
 
         .facebook-icon
         {
           background-image: url("images/facebook-icon.png");
+        }
+
+        &:hover
+        {
+          background-color: lighten(#3B5997, 13.5%);
         }
       }
 
       .twitter-login
       {
         background-color: #1BB5E7;
+        text-transform: uppercase;
 
         .twitter-icon
         {
           background-image: url("images/twitter-icon.png");
+        }
+
+        &:hover
+        {
+          background-color: lighten(#1BB5E7, 13.5%);
         }
       }
     }
 
     .email-login-wrapper
     {
-      border-left: 1px dotted #e3e3e3;
+      border-left: 1px dotted #616A6F;
       margin-top: 10px;
 
       .control
@@ -140,6 +187,7 @@ a
           {
             position: absolute;
             right: 15px;
+            text-transform: uppercase;
           }
         }
       }

@@ -4,7 +4,9 @@ module.exports = function(sequelize, DataTypes) {
         name: DataTypes.STRING,
         password: DataTypes.STRING,
         lastLogin: DataTypes.DATE,
-        address: DataTypes.STRING
+        address: DataTypes.STRING,
+        status:  DataTypes.INTEGER,
+        fbId: DataTypes.INTEGER
     },
     {
         freezeTableName: true

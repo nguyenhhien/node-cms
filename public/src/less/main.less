@@ -27,9 +27,71 @@
  * Typography
  */
 
+@font-face{
+  font-family:'ProximaNovaThin';
+  src:url("../assets/fonts/ProximaNova-Thin-webfont.eot?iefix=")
+  format("eot"),url("../assets/fonts/ProximaNova-Thin-webfont.woff")
+  format("woff"),url("../assets/fonts/ProximaNova-Thin-webfont.ttf")
+  format("truetype"),url("../assets/fonts/ProximaNova-Thin-webfont.svg#webfontOmb6oXeh")
+  format("svg");font-weight:normal;
+  font-style:normal
+}
+
+@font-face{
+  font-family:'ProximaNovaRegular';
+  src:url("../assets/fonts/ProximaNova-Reg-webfont.eot?iefix=") format("eot"),
+  url("../assets/fonts/ProximaNova-Reg-webfont.woff") format("woff"),
+  url("../assets/fonts/ProximaNova-Reg-webfont.ttf") format("truetype"),
+  url("../assets/fonts/ProximaNova-Reg-webfont.svg#webfontZam02nTh") format("svg");
+  font-weight:normal;font-style:normal
+}
+
+@font-face{
+  font-family:'ProximaNovaSemibold';
+  src:url("../assets/fonts/ProximaNova-Sbold-webfont.eot");
+  src:url("../assets/fonts/ProximaNova-Sbold-webfont.eot?iefix") format("eot"),
+  url("../assets/fonts/ProximaNova-Sbold-webfont.woff") format("woff"),
+  url("../assets/fonts/ProximaNova-Sbold-webfont.ttf") format("truetype"),
+  url("../assets/fonts/ProximaNova-Sbold-webfont.svg#webfont0AWgWg75") format("svg");
+  font-weight:normal;font-style:normal
+}
+
+@font-face{
+  font-family:'ProximaNovaBold';
+  src:url("../assets/fonts/ProximaNova-Bold-webfont.eot?iefix=") format("eot"),
+  url("../assets/fonts/ProximaNova-Bold-webfont.woff") format("woff"),
+  url("../assets/fonts/ProximaNova-Bold-webfont.ttf") format("truetype"),
+  url("../assets/fonts/ProximaNova-Bold-webfont.svg#webfontZ6etP9ZY") format("svg");
+  font-weight:normal;font-style:normal
+}
+
+@font-face{
+  font-family:'Quattrocento';
+  src:url("../assets/fonts/Quattrocento-Regular-webfont.eot");
+  src:url("../assets/fonts/Quattrocento-Regular-webfont.eot?#iefix") format("embedded-opentype"),
+  url("../assets/fonts/Quattrocento-Regular-webfont.woff") format("woff"),
+  url("../assets/fonts/Quattrocento-Regular-webfont.ttf") format("truetype"),
+  url("../assets/fonts/Quattrocento-Regular-webfont.svg#QuattrocentoRomanRegular") format("svg");
+  font-weight:normal;font-style:normal}
+
+@font-face{
+  font-family:'KlavikaMedium';
+  src:url("../assets/fonts/KlavikaWebBasicMedium.eot?iefix=") format("eot"),
+  url("../assets/fonts/KlavikaWebBasicMedium.woff") format("woff");
+  font-weight:normal;font-style:normal
+}
+
+@font-face{
+  font-family:'KlavikaRegular';
+  src:url("../assets/fonts/KlavikaWebBasicRegular.eot?iefix=") format("eot"),
+  url("../assets/fonts/KlavikaWebBasicRegular.woff") format("woff");
+  font-weight:normal;font-style:normal
+}
+
 body
 {
-  font-family: "Open Sans", proxima-nova,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-family: "ProximaNovaRegular", "Open Sans", "Helvetica Neue",Helvetica,Arial,sans-serif;
+  background: #333D42 url("../assets/images/noise.png");
   font-size: 14px;
   line-height: 1.428571429;
   color: #333;
@@ -47,4 +109,6 @@ body
 @import '../app/login/login.less';
 @import '../app/register/register.less';
 @import '../app/forgotPassword/forgotPassword.less';
+@import '../app/activateAccount/activateAccount.less';
+@import '../app/resetPassword/resetPassword.less';
 

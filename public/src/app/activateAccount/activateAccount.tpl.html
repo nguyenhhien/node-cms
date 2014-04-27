@@ -1,0 +1,33 @@
+<div class="login-block-wrapper account-activation-wrapper container-fluid">
+    <div class="main-section row">
+        <div class="message-wrapper col-md-6 col-md-offset-3">
+            <div ng-show="!activationKey">
+                <div class="icon-wrapper success"></div>
+
+                <div class="text-wrapper">
+                    <div class="title">SUCCESS</div>
+                    <div class="text">Registration Success! Please Check Your Email To Activate Your Account.</div>
+                </div>
+            </div>
+
+            <div ng-show="!!activationKey">
+                <span ng-show="!!activationSuccess">
+                    <div class="icon-wrapper success"></div>
+
+                    <div class="text-wrapper">
+                        <div class="title">SUCCESS</div>
+                        <div class="text">Activation Success! Click <a href="index.html">Here</a>To Go To Your Home Page.</div>
+                    </div>
+                </span>
+                <span ng-show="!activationSuccess">
+                    <div class="icon-wrapper error"></div>
+
+                    <div class="text-wrapper">
+                        <div class="title">ERROR</div>
+                        <div class="text">Activation Failed! Your activation key might be invalid or has already been expired.</div>
+                    </div>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

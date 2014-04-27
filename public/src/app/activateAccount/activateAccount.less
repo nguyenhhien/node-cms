@@ -1,0 +1,39 @@
+.account-activation-wrapper
+{
+  .message-wrapper
+  {
+    .icon-wrapper,
+    .text-wrapper
+    {
+      display: inline-block;
+      float: left;
+    }
+
+    .icon-wrapper
+    {
+      .size(128px, 128px);
+      background-size: 128px 128px;
+
+      &.success
+      {
+        background-image: url("images/success.png");
+      }
+      &.error
+      {
+        background-image: url("images/dialog_warning.png");
+      }
+    }
+
+    .text-wrapper
+    {
+      .title
+      {
+        font-size: 41px;
+      }
+      .text
+      {
+        font-size: 20px;
+      }
+    }
+  }
+}

@@ -29,7 +29,7 @@ module.exports = {
     atpl: [ 'src/app/**/*.tpl.html' ],
     ctpl: [ 'src/common/**/*.tpl.html' ],
 
-    html: [ 'src/index.html' ],
+    html: [ 'src/index.html', 'src/login.html'],
     less: 'src/less/main.less'
   },
 
@@ -62,12 +62,15 @@ module.exports = {
    */
   vendor_files: {
     js: [
+      'vendor/jquery/dist/jquery.js',
       'vendor/angular/angular.js',
       'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
       'vendor/angular-placeholders/dist/placeholders-0.0.1-SNAPSHOT.min.js',
       'vendor/angular-ui-router/release/angular-ui-router.js',
       'vendor/angular-ui-utils/ui-utils.js',
-      'vendor/angular-cookies/angular-cookies.js'
+      'vendor/angular-cookies/angular-cookies.js',
+      'vendor/cryptojslib/rollups/md5.js',
+      'vendor/angular-facebook/lib/angular-facebook.js'
     ],
     css: [
     ],

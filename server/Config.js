@@ -1,8 +1,13 @@
 UploadsFolder 		= "./public/uploads/";
+HOSTURL             = "http://auth.epouch.com:8888/"
 PORT				= "8888";
 
 Config =
 {
+    Global: {
+        appName: "ePouch",
+        needAccountActivation: 1
+    },
     MySQL:
     {
         dbName:					"auth",
