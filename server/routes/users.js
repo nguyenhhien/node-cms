@@ -14,9 +14,9 @@ function verifyUserPassword(email, password)
 {
     return Q(models.Account.find({where: {email: email, status: UserStatus.Active}}))
         .then(function(user){
-            if(!user) return Q.reject({
+            if(!user) return [null, Q.reject({
                 error: "User with email: " + email + " not found"
-            });
+            })];
             return [user, Q.nfcall(bcrypt.compare, password, user.password)];
         });
 }
@@ -49,6 +49,31 @@ function validateFacebookAccessToken(fbId, accessToken)
 
         else return deferred.reject({
             error: "FbId " + fbId + " and Token does not match"
+        });
+    })
+
+    return deferred.promise;
+}
+
+//validate the google accessToken
+function validateGoogleAccessToken(googleId, accessToken)
+{
+    if (!accessToken) return Q.reject({
+        error: "accessToken cannot be empty"
+    });
+
+    var deferred = Q.defer();
+
+    var url = "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + accessToken;
+    request({ url: url, json: true }, function(err, httpClient, user){
+        if(err) return deferred.reject({
+            error: "Facebook access token error: " + err
+        });
+
+        if(user.id == googleId) return deferred.resolve(true);
+
+        else return deferred.reject({
+            error: "GoogleId " + googleId + " and Token does not match"
         });
     })
 
@@ -106,7 +131,7 @@ router.post("/forgotPassword", function(req, res){
         .spread(function(passwordResetKey){
             return Email.sendTemplateEmail(EmailType.UserForgetPassword, req.param('email'), {
                 userName: req.param('name') || req.param('email'),
-                passwordRecoveryUrl: HOSTURL + "login.html#/resetPassword?passwordResetKey=" + passwordResetKey
+                passwordRecoveryUrl: HOSTURL + "login.html#!/resetPassword?passwordResetKey=" + passwordResetKey
             });
         })
         .then(function(){
@@ -217,7 +242,7 @@ router.post("/register", function(req, res){
                         .then(function(){
                             return Email.sendTemplateEmail(EmailType.AccountActivation, req.param('email'), {
                                 userName: req.param('name') || req.param('email'),
-                                activationUrl: HOSTURL + "login.html#/activateAccount?activationKey=" + activationKey
+                                activationUrl: HOSTURL + "login.html#!/activateAccount?activationKey=" + activationKey
                             });
                         });
             }
@@ -231,7 +256,7 @@ router.post("/register", function(req, res){
         .fail(function(err){
             res.error(err);
         })
-})
+});
 
 
 router.post("/activateAccount", function(req, res){
@@ -289,7 +314,7 @@ router.post("/facebookRegister", function(req, res){
                             .then(function(account){
                                 if(account) return Q.reject({
                                     error: "Email: " + req.param('email') + ' has been used to register. If you are owner of that account, ' +
-                                        'please login to your account page and choose the link facebook option'
+                                        'please login to your account page and click to link-to-facebook to link to your facebook account'
                                 })
                                 else return (models.Account.create({
                                     email: req.param('email'),
@@ -319,7 +344,59 @@ router.post("/facebookRegister", function(req, res){
         .fail(function(err){
             res.error(err);
         })
-})
+});
+
+router.post("/googleRegister", function(req, res){
+    req.assert('email').notEmpty().isEmail();
+    req.assert('name').notEmpty();
+    req.assert('googleId').notEmpty();
+    req.assert('accessToken').notEmpty();
+
+    var errors = req.validationErrors();
+    if (errors) return res.error(utils.formatValidationError(errors));
+
+    Q(models.Account.find({where: {googleId: req.param('googleId')}}))
+        .then(function(user){
+            if(!user)
+                return validateGoogleAccessToken(req.param('googleId'), req.param('accessToken'))
+                    .then(function(valid){
+                        //check if that email has been used
+                        return Q(models.Account.find({ where: {email: req.param('email')} }));
+                    })
+                    .then(function(account){
+                        if(account) return Q.reject({
+                            error: "Email: " + req.param('email') + ' has been used to register. If you are owner of that account, ' +
+                                'please login to your account page and click link-to-google to link to your google account'
+                        })
+                        else return (models.Account.create({
+                            email: req.param('email'),
+                            name: req.param('name'),
+                            googleId: req.param('googleId'),
+                            status: UserStatus.Active
+                        }));
+                    })
+
+            //otherwise log user in directly
+            else
+                return validateGoogleAccessToken(req.param('googleId'), req.param('accessToken'))
+                    .then(function(){
+                        return Q(user);
+                    });
+        })
+        .then(function(user){
+            req.session.user = user;
+
+            //update last logged in timestamp
+            Q(models.Account.update({
+                lastLogin: new Date()
+            }, {id: user.id}));
+
+            res.success(user);
+        })
+        .fail(function(err){
+            res.error(err);
+        })
+});
 
 router.post("/facebookLogin", function(req, res){
     req.assert('fbId').notEmpty();
@@ -348,7 +425,36 @@ router.post("/facebookLogin", function(req, res){
         .fail(function(err){
             res.error(err);
         })
-})
+});
+
+router.post("/googleLogin", function(req, res){
+    req.assert('googleId').notEmpty();
+    req.assert('accessToken').notEmpty();
+
+    var errors = req.validationErrors();
+    if (errors) return res.error(utils.formatValidationError(errors));
+
+    Q(models.Account.find({where: {googleId: req.param('googleId'), status: UserStatus.Active}}))
+        .then(function(user){
+            //if not exist such user
+            if(!user) return Q.reject({
+                code: 404,
+                error: "User with googleId " + req.param('googleId') + " not found"
+            })
+            else return [
+                user,
+                validateGoogleAccessToken(req.param('googleId'), req.param('accessToken')),
+                Q(user.updateAttributes({lastLogin: new Date()}))
+            ];
+        })
+        .spread(function(user){
+            req.session.user = user;
+            res.success(user);
+        })
+        .fail(function(err){
+            res.error(err);
+        })
+});
 
 module.exports = router;
 

@@ -79,7 +79,8 @@ a
         margin-top: 13px;
 
         .facebook-login,
-        .twitter-login
+        .twitter-login,
+        .google-login
         {
           display: inline-block;
           border-radius: 2px;
@@ -92,7 +93,8 @@ a
           margin-bottom: 14px;
 
           .facebook-icon,
-          .twitter-icon
+          .twitter-icon,
+          .google-login
           {
             display: inline-block;
             width: 85px;
@@ -126,6 +128,39 @@ a
         &:hover
         {
           background-color: lighten(#3B5997, 13.5%);
+        }
+      }
+
+      .google-login
+      {
+        background-color: #dd4b39;
+        margin-right: 12px;
+        text-transform: uppercase;
+
+        .google-icon-wrapper
+        {
+          font-size: 45px;
+          width: 85px;
+          height: 70px;
+          display: inline-block;
+          float: left;
+
+          i.fa
+          {
+            margin-left: 25px;
+            margin-top: 14px;
+          }
+        }
+
+        .text
+        {
+          display: inline-block;
+          float: left;
+        }
+
+        &:hover
+        {
+          background-color: lighten(#dd4b39, 13.5%);
         }
       }
 

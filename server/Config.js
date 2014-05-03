@@ -23,5 +23,10 @@ Config =
         host:					"localhost",
         port:					6379,
         pass:					null
+    },
+    Oath:
+    {
+        twitterConsumerKey: "P1XmEmbi1fxKQGpqQFcbz7tVz",
+        twitterConsumerSecret: "shNtpt2FbkOyAajbiLitJ3T0yo8HxZJz1Na4JeilAaqX6aUn8L"
     }
 }
