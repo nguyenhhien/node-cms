@@ -1,0 +1,61 @@
+label
+{
+  .control-label
+  {
+    font-size: 13px;
+    font-weight: normal;
+    color: #666;
+
+    & > span.label-tooltip
+    {
+      text-decoration: none;
+      font-size: 13px;
+      color: #3586AE;
+      background-color: lighten(#D8EDF7,5%);
+      border: none;
+      border-bottom: solid 1px #D8EDF7;
+      padding: 0 5px;
+      border-radius: 3px;
+    }
+  }
+
+  &.required:before
+  {
+    content: '*';
+    color: red;
+    font-size: 14px;
+    position: relative;
+    line-height: 12px;
+  }
+}
+
+.tooltip
+{
+  font-size: 12px;
+  font-family: @font-family-serif;
+}
+
+select.input-tiny,
+input[type="text"].input-tiny,
+input[type="password"].input-tiny
+{
+  width: 80px;
+  float: left;
+}
+
+textarea
+{
+  resize: none;
+}
+
+textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus,
+input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus,
+input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus,
+input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus,
+.uneditable-input:focus
+{
+  background-color: #FEFBE2;
+  .box-shadow(none);
+}
+
+

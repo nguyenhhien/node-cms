@@ -1,22 +1,18 @@
 angular.module( 'mainApp', [
   'templates-app',
   'templates-common',
-  'ui.route',
-  'ui.router'
+  'ui.router',
+  'mainApp.userAccount'
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {
-  $urlRouterProvider.otherwise( '/' );
+   $urlRouterProvider.otherwise( '/' );
 })
 
 .run( function run () {
 })
 
 .controller( 'mainCtrl', function AppCtrl ( $scope, $location ) {
-  $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
-    if ( angular.isDefined( toState.data.pageTitle ) ) {
-      $scope.pageTitle = toState.data.pageTitle + ' | auth' ;
-    }
-  });
+
 });
 

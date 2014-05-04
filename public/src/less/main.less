@@ -97,6 +97,144 @@ body
   color: #333;
 }
 
+.main-navbar
+{
+  .navbar-header
+  {
+    .navbar-brand
+    {
+      .logo
+      {
+        background: url("../assets/images/snowflake.png");
+        width: 33px;
+        height: 33px;
+        display: inline-block;
+        float: left;
+        position: absolute;
+        top: 5px;
+        left: 0;
+        background-size: 33px 33px;
+        margin-left: 11px;
+      }
+
+      .text
+      {
+        margin-left: 48px;
+        margin-top: -2px;
+        font-size: 15px;
+        color: white;
+        display: inline-block;
+        float: left;
+      }
+    }
+  }
+
+  .navbar-collapse
+  {
+    .navbar-nav
+    {
+      & > li
+      {
+        border-right: 1px solid #37393d;
+        font-size: 11px;
+
+        &:first-child
+        {
+          border-left: 1px solid #37393d;
+        }
+
+        & > a
+        {
+          color: white;
+          text-transform: uppercase;
+        }
+
+        a
+        {
+          i.fa
+          {
+            margin-right: 5px;
+          }
+        }
+
+        &.active,
+        &:hover,
+        {
+          background-color: rgba(255,255,255,0.15);
+          & > a
+          {
+            background-color: inherit;
+          }
+        }
+
+        &.with-icon
+        {
+          & > a
+          {
+            padding: 9px 15px;
+
+            i
+            {
+              font-size: 30px;
+            }
+          }
+        }
+
+        &.no-uppercase
+        {
+          & > a
+          {
+            text-transform: capitalize;
+          }
+        }
+      }
+
+      &.navbar-right
+      {
+        .account-wrapper
+        {
+          .account-text
+          {
+            text-transform: capitalize;
+            padding-top: 9px;
+            padding-bottom: 9px;
+
+            .avatar_wrapper
+            {
+              .img-thumbnail
+              {
+                border: none;
+                border-radius: 32px;
+                padding: 0px;
+              }
+            }
+          }
+
+          .dropdown-menu
+          {
+            .avatar-wrapper
+            {
+              height: 80px;
+              width: 80px;
+              overflow: hidden;
+              margin: 10px auto !important;
+              border-radius: 80px;
+              display: block !important;
+
+              .img-thumbnail
+              {
+                max-width: 100%;
+                height: auto;
+                padding: 0;
+                border: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
 /**
  * Now that all app-wide styles have been applied, we can load the styles for
@@ -111,4 +249,10 @@ body
 @import '../app/forgotPassword/forgotPassword.less';
 @import '../app/activateAccount/activateAccount.less';
 @import '../app/resetPassword/resetPassword.less';
+
+//Common less
+@import "./partials/_commons.less";
+@import './partials/_forms.less';
+@import './partials/_content.less';
+
 
