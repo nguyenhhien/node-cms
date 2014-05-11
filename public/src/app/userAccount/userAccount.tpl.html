@@ -1,35 +1,35 @@
 <div class="content bootstrap">
-<form id="employee_form" class="defaultForm AdminEmployees form-horizontal"
+<form id="user_form" class="userAccountForm form-horizontal"
       action=""
       method="post" enctype="multipart/form-data" novalidate="novalidate">
-<input type="hidden" name="id_employee" id="id_employee" value="1">
-<input type="hidden" name="submitAddemployee" value="1">
+<input type="hidden" name="id_user" id="id_user">
 
-<div class="panel" id="fieldset_0">
+<div class="panel">
 <div class="panel-heading">
-    <i class="icon-user"></i>
-    Employees
+    <i class="fa fa-user"></i>
+    Account Information
 </div>
 <div class="form-group">
-    <label for="firstname" class="control-label col-lg-3 required">
-        First Name
+    <label for="fullname" class="control-label col-lg-3 required">
+        FullName
     </label>
     <div class="col-lg-9 ">
-        <input type="text" name="firstname" id="firstname" value="Mister" class="fixed-width-xl" required="required">
+        <input type="text" name="fullname" id="fullname" class="fixed-width-xxl" required="required">
     </div>
 </div>
+
 <div class="form-group">
-    <label for="lastname" class="control-label col-lg-3 required">
-        Last Name
+    <label class="control-label col-lg-3">
+        Avatar
     </label>
-    <div class="col-lg-9 ">
-        <input type="text" name="lastname" id="lastname" value="PrestaShop" class="fixed-width-xl" required="required">
-    </div>
-</div>
-<div class="form-group">
-    <div class="col-lg-9 col-lg-offset-3">
-        <div id="employee-thumbnail"><a href="http://www.prestashop.com/forums/index.php?app=core&amp;module=usercp" target="_blank" style="background-image:url(http://profile.prestashop.com/demo%40prestashop.com.jpg)"></a></div>
-        <div class="alert alert-info">Your avatar in PrestaShop 1.6.x is your profile picture on <a href="http://www.prestashop.com/forums/index.php?app=core&amp;module=usercp" class="alert-link" target="_blank">PrestaShop.com</a>. To change your avatar, log in to PrestaShop.com with your email demo@prestashop.com and follow the on-screen instructions.</div>
+
+    <div class="col-lg-9">
+        <div id="user-thumbnail">
+            <img class="imgm img-thumbnail" alt="" src="http://lorempixel.com/96/96/people/9" width="96" height="96">
+        </div>
+        <div class="alert alert-info">Your avatar should be 96x96. Alternative you can use your facebook and google profile avatar.
+            You can resize the avatar using our tool.
+        </div>
     </div>
 </div>
 <div class="form-group">
@@ -134,84 +134,40 @@
 </div>
 <div class="form-group">
     <label class="control-label col-lg-3 ">
-         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="" data-original-title="PrestaShop can provide you with guidance on a regular basis by sending you tips on how to optimize the management of your store which will help you grow your business. If you do not wish to receive these tips, please uncheck this box.">
-         Connect to PrestaShop
-         </span>
+         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">Email Subscribe</span>
     </label>
     <div class="col-lg-9 ">
-            <span class="switch prestashop-switch fixed-width-lg">
-            <input type="radio" value="1" checked="checked">
-            <label>
-                Yes
-            </label>
-            <input type="radio" value="0">
-            <label>
-                No
-            </label>
-            <a class="slide-button btn"></a>
+            <span class="switch switch-toggle custom-switch fixed-width-lg">
+                <input type="radio" value="1" checked="checked">
+                <label>
+                    Yes
+                </label>
+                <input type="radio" value="0">
+                <label>
+                    No
+                </label>
+                <a class="slide-button btn"></a>
             </span>
-    </div>
-</div>
-<div class="form-group">
-    <label for="default_tab" class="control-label col-lg-3 ">
-         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">
-         Default page
-         </span>
-    </label>
-    <div class="col-lg-9 ">
-        <select id="default_tab" name="default_tab" class="chosen fixed-width-xxl" style="display: none;">
-            <option value="99">Supply orders</option>
-            <option value="100">Configuration</option>
-        </select>
-        <div class="chosen-container chosen-container-single" style="width: 250px;" title="" id="default_tab_chosen">
-            <a class="chosen-single" tabindex="-1">
-                <span>Dashboard</span>
-                <div><b></b></div>
-            </a>
-            <div class="chosen-drop">
-                <div class="chosen-search"><input type="text" autocomplete="off"></div>
-                <ul class="chosen-results"></ul>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <label for="id_lang" class="control-label col-lg-3 ">
-        Language
-    </label>
-    <div class="col-lg-9 ">
-        <select name="id_lang" class=" fixed-width-xl" id="id_lang">
-            <option value="1" selected="selected">English (English)</option>
-            <option value="2">Español (Spanish)</option>
-        </select>
     </div>
 </div>
 
 <div class="form-group">
     <label class="control-label col-lg-3 ">
-        Admin menu orientation
+         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">
+         Country
+         </span>
     </label>
     <div class="col-lg-9 ">
-        <div class="radio ">
-            <label>
-                <input type="radio"value="0">
-                Top
-            </label>
-        </div>
-        <div class="radio ">
-            <label>
-                <input type="radio" value="1" checked="checked">
-                Left
-            </label>
-        </div>
+
     </div>
 </div>
+
 <div class="panel-footer">
     <button type="submit" class="btn btn-default pull-right">
-        <i class="process-icon-save"></i> Save
+        <i class="fa fa-floppy-o"></i> Save
     </button>
     <a class="btn btn-default" onclick="window.history.back()">
-        <i class="process-icon-cancel"></i> Cancel
+        <i class="fa fa-times"></i> Cancel
     </a>
 </div>
 </div>

@@ -1,4 +1,4 @@
-angular.module( 'mainApp.userAccount', ['ui.router'])
+var app = angular.module( 'mainApp.userAccount', ['ui.router','facebook', 'googleplus', 'classy'])
 .config(function config( $stateProvider ) {
     $stateProvider
         .state('userAccount', {
@@ -7,6 +7,14 @@ angular.module( 'mainApp.userAccount', ['ui.router'])
             controller: 'UserAccountController',
             resolve: {}
         });
-})
-.controller( 'UserAccountController', function UserAccountController( $scope ) {
 });
+
+app.classy.controller({
+    name: "UserAccountController",
+    inject: ['$rootScope', '$scope'],
+    init: function()
+    {
+
+    }
+});
+

@@ -19,6 +19,7 @@ var jwt                 = require('express-jwt');
 var routes              = require("./server/routes");
 var expressValidator    = require('express-validator');
 var utils               = require("./server/helpers/Utils.js");
+var restful             = require('./server/helpers/SequelizeRestfulRouter.js');
 
 var SECRET    = 'wReI8rpRzLcBt7noEw7MKcR4WZhS3RL16Xyb7iH954XFLJgmiTd6u-Sqpz18wUZT';
 var AUDIENCE  = 'DyG9nCwIEofSy66QM3oo5xU6NFs3TmvT';
@@ -31,6 +32,7 @@ var authenticate = jwt({
 
 var Database            = require("./server/database");
 
+//set logger information
 log4js.configure({
     "appenders": [
         {
@@ -48,6 +50,7 @@ log4js.configure({
 logger = log4js.getLogger("main");
 logger.setLevel("INFO");
 
+//sync schema model definition
 Database.syncSchema();
 
 var app	= express();
@@ -55,6 +58,7 @@ var app	= express();
 app.enabled('trust proxy');
 app.enable("jsonp callback");
 
+//TODO: remove; use 3 different middleware instead - express 3.0
 app.use(require("body-parser")({ uploadDir: UploadsFolder}));
 
 //using param validator
@@ -95,10 +99,10 @@ require("./server/helpers/ResponseHelper.js")(http);
 //set necessary header -- for CORS
 app.use(function(req, res, next)
 {
-    res.header('Access-Control-Allow-Origin', req.get('origin'));
+    res.header('Access-Control-Allow-Origin', req.get('origin')); //allow CORS
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
-    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Credentials', true); //allow CORS
 
     next()
 })
@@ -106,6 +110,22 @@ app.use(function(req, res, next)
 //setup route
 routes(app);
 app.use("/", express.static(__dirname + "/public/build"));		// serve public files straight away
+
+//setup sequelize restful API endpoint
+app.use(restful(models.sequelize, {
+    endpoint: '/restful/api',
+    allowed: [
+        {
+            tableName: "Account",
+            //attributes cannot be update
+            restrictedWriteAttributes: ["email"],
+            //attribute will not be returned
+            restrictedReadAttributes: ["password"],
+            //list of restful method allowed
+            allowedMethods: ["GET", "PUT"]
+        }
+    ]
+}));
 
 app.listen(PORT, function()
 {

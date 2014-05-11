@@ -27,12 +27,21 @@ module.exports = (function() {
 
     }
 
+    Database.prototype.close = function(callback)
+    {
+        //disconnect sequelize's connections
+        sequelize.connectorManager.disconnect();
+        //and redis connection
+        redisCli.end();
+        callback && callback();
+    }
+
     Database.prototype.getRedisCli = function()
     {
         return redisCli;
     }
 
-    Database.prototype.syncSchema = function()
+    Database.prototype.syncSchema = function(callback)
     {
         logger.info("Start Ensure Schema");
 
@@ -106,9 +115,11 @@ module.exports = (function() {
             })
             .fail(function(err){
                 logger.error("error occur: ", err);
+                callback && callback(err);
             })
-            .done(function(err){
+            .done(function(data){
                 logger.info("Ensure schema was run successfully");
+                callback && callback();
             });
     }
 

@@ -1,4 +1,4 @@
-.content.bootstrap
+.content
 {
   padding: 0px 10px 0;
   margin-left: 5px;
@@ -63,10 +63,11 @@
     padding: 0 0 0 5px;
     margin: -20px -16px 15px -16px;
   }
-
-  //by default using bootstrap styles
-  input[type="text"],input[type="search"],input[type="password"], textarea, select
-  {
-    .form-control;
-  }
 }
+
+input[type="text"],input[type="search"],input[type="password"], textarea, select
+{
+  &:extend(.form-control all);
+}
+
+
