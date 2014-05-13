@@ -25,12 +25,15 @@ app.provider('Account', function(){
                 get: function()    { return data; },
                 set: function(val) { data = val;  }
             });
+
+            this.validates({
+                currentPassword: { length: { min: 6, max: 20 }},
+                newPassword: { length: { min: 6, max: 20 },  confirmation: true}
+            });
         }
 
         Account.inherits(ActiveResource.Base);
         Account.api.set('/api/restful');
-
-        //Account.api.showURL = '/api/restful/Account';
 
         return Account;
     }];
@@ -43,9 +46,12 @@ app.classy.controller({
     {
         var that = this;
 
-        that.Account.all()
+        that.Account.find(11)
             .then(function(response) {
-                that.$scope.account = response;
+                if(!!response && !response.error)
+                {
+                    that.$scope.account = response;
+                }
             });
     }
 });

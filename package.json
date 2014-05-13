@@ -5,6 +5,7 @@
   "main": "app.js",
   "directories": {},
   "dependencies": {
+    "activesupport": "^0.1.1",
     "async": "~0.6.2",
     "async-q": "~0.2.1",
     "bcrypt": "^0.7.8",

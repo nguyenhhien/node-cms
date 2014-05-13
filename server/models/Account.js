@@ -10,6 +10,7 @@ module.exports = function(sequelize, DataTypes) {
         country: DataTypes.STRING,
         postalCode: DataTypes.STRING,
         status:  DataTypes.INTEGER,
+        emailSubscribe: { type: DataTypes.BOOLEAN, defaultValue: true},
         fbId: DataTypes.STRING,
         googleId: DataTypes.STRING
     },

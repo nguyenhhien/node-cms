@@ -1,7 +1,8 @@
 var _                       = require('lodash-node');
 var Q                       = require('q');
+var ActiveSuport            = require('activesupport/active-support-node.js');
 
-exports['Test Transform From Array To Object'] = function(test)
+exports['Test Lodash Transform From Array To Object'] = function(test)
 {
     var arr = [
         {
@@ -40,5 +41,18 @@ exports['Test Q resolve synchnous'] = function(test)
             test.ok(false, err);
             test.done();
         })
-
 }
+exports['Test Lodash Find'] = function(test)
+{
+    var arr = ["key1", "key2"];
+    var found = _.find(arr, function(elem){return elem == 'key1'});
+    test.equal(found, 'key1');
+    test.done();
+}
+
+exports['Test Active Support'] = function(test)
+{
+    test.equal('team_projects'.classify(), 'TeamProject');
+    test.done();
+}
+

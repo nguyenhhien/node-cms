@@ -76,7 +76,7 @@ module.exports = {
       'vendor/angular-google-plus/dist/angular-google-plus.js',
       'vendor/lodash/dist/lodash.js',
       'vendor/async/lib/async.js',
-      'vendor/active-support/lib/active-support.js',
+      'vendor-custom/active-support/active-support.js',
       'vendor/ngActiveResource/dist/ng-active-resource.js'
     ],
     css: [

@@ -21,6 +21,7 @@ var expressValidator    = require('express-validator');
 var utils               = require("./server/helpers/Utils.js");
 var restful             = require('./server/helpers/SequelizeRestfulRouter.js');
 var gzippo              = require('gzippo');
+var ActiveSuport        = require('activesupport/active-support-node.js');
 
 var SECRET    = 'wReI8rpRzLcBt7noEw7MKcR4WZhS3RL16Xyb7iH954XFLJgmiTd6u-Sqpz18wUZT';
 var AUDIENCE  = 'DyG9nCwIEofSy66QM3oo5xU6NFs3TmvT';
@@ -121,7 +122,7 @@ app.use(restful(models.sequelize, {
         {
             tableName: "Account",
             //attributes cannot be update
-            restrictedWriteAttributes: ["email"],
+            restrictedWriteAttributes: ["email", "password"],
             //attribute will not be returned
             restrictedReadAttributes: ["password"],
             //list of restful method allowed

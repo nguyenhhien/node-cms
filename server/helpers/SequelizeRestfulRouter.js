@@ -104,6 +104,11 @@ Router.prototype.splitPath = function(path){
     return rest_params
 }
 
+//search for matching modelname from raw input (lowercase, non-plural)
+Router.prototype.findModelName = function(rawName)
+{
+    return _.find(this.allowedModelNames, function(elem){return elem.classify() == rawName.classify();});
+}
 
 Router.prototype.handleRequest = function(req, res) {
     var match = this.splitPath(req.path)
@@ -112,7 +117,7 @@ Router.prototype.handleRequest = function(req, res) {
     switch(match.length) {
         // requested path: /api/dao_factory
         case 1:
-            var modelName = match[0]
+            var modelName = this.findModelName(match[0])
 
             //check permission first; then execute the method
             that.checkPermission(req, modelName)
@@ -157,7 +162,7 @@ Router.prototype.handleRequest = function(req, res) {
         // requested path: /api/dao_factory/1
         case 2:
 
-            var modelName = match[0]
+            var modelName = this.findModelName(match[0])
             var identifier = match[1]
 
             that.checkPermission(req, modelName, identifier)
