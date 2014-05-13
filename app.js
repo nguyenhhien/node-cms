@@ -20,6 +20,7 @@ var routes              = require("./server/routes");
 var expressValidator    = require('express-validator');
 var utils               = require("./server/helpers/Utils.js");
 var restful             = require('./server/helpers/SequelizeRestfulRouter.js');
+var gzippo              = require('gzippo');
 
 var SECRET    = 'wReI8rpRzLcBt7noEw7MKcR4WZhS3RL16Xyb7iH954XFLJgmiTd6u-Sqpz18wUZT';
 var AUDIENCE  = 'DyG9nCwIEofSy66QM3oo5xU6NFs3TmvT';
@@ -109,11 +110,13 @@ app.use(function(req, res, next)
 
 //setup route
 routes(app);
-app.use("/", express.static(__dirname + "/public/build"));		// serve public files straight away
+
+//app.use("/", express.static(__dirname + "/public/build"));		// serve public files straight away
+app.use(gzippo.staticGzip(__dirname + '/public/build'));
 
 //setup sequelize restful API endpoint
 app.use(restful(models.sequelize, {
-    endpoint: '/restful/api',
+    endpoint: '/api/restful',
     allowed: [
         {
             tableName: "Account",

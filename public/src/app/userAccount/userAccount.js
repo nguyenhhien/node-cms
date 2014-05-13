@@ -1,4 +1,4 @@
-var app = angular.module( 'mainApp.userAccount', ['ui.router','facebook', 'googleplus', 'classy'])
+var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'ActiveResource'])
 .config(function config( $stateProvider ) {
     $stateProvider
         .state('userAccount', {
@@ -9,12 +9,44 @@ var app = angular.module( 'mainApp.userAccount', ['ui.router','facebook', 'googl
         });
 });
 
+app.provider('Account', function(){
+    this.$get = ['ActiveResource', function(ActiveResource) {
+        function Account(data)
+        {
+            //if server response data; copy it into this object
+            if(!data.error)
+            {
+                //copy attribute from response to this object
+                angular.extend(this, data);
+            }
+
+            //original data from server
+            Object.defineProperty(this, 'data', {
+                get: function()    { return data; },
+                set: function(val) { data = val;  }
+            });
+        }
+
+        Account.inherits(ActiveResource.Base);
+        Account.api.set('/api/restful');
+
+        //Account.api.showURL = '/api/restful/Account';
+
+        return Account;
+    }];
+});
+
 app.classy.controller({
     name: "UserAccountController",
-    inject: ['$rootScope', '$scope'],
+    inject: ['$rootScope', '$scope', 'Account'],
     init: function()
     {
+        var that = this;
 
+        that.Account.all()
+            .then(function(response) {
+                that.$scope.account = response;
+            });
     }
 });
 

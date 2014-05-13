@@ -2,5 +2,6 @@
 node_modules/
 logs.log
 public/build
+public/bin
 public/node_modules
 public/vendor

@@ -60,7 +60,7 @@ Router.prototype.checkPermission = function(req, modelName, id, associatedModelN
     }
 
     //get userID from session
-    var userId = req.session.user;
+    var userId = req.session.user.id;
 
     switch(modelName)
     {
@@ -73,12 +73,15 @@ Router.prototype.checkPermission = function(req, modelName, id, associatedModelN
             {
                 return Q.reject(forbiddenMsg);
             }
-            else return Q.resolve();
+            else
+            {
+                return Q.resolve();
+            }
 
             break;
 
         default:
-            return Q.resolve();
+            return Q.reject('Invalid Route');
             break;
     }
 }
@@ -159,7 +162,7 @@ Router.prototype.handleRequest = function(req, res) {
 
             that.checkPermission(req, modelName, identifier)
                 .then(function(){
-                    (function(){
+                    return (function(){
                         switch(req.method) {
                             case "GET":
                                 return Q(that.daoFactories[modelName].find({ where: {id: identifier}, attributes: that.allowedReadAttributes[modelName]}));
@@ -184,6 +187,7 @@ Router.prototype.handleRequest = function(req, res) {
                     res.error(err);
                 });
 
+            break
 
         default:
             res.error('Route does not match known patterns.')

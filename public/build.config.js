@@ -73,7 +73,11 @@ module.exports = {
       'vendor/angular-cookies/angular-cookies.js',
       'vendor/cryptojslib/rollups/md5.js',
       'vendor/angular-facebook/lib/angular-facebook.js',
-      'vendor/angular-google-plus/dist/angular-google-plus.js'
+      'vendor/angular-google-plus/dist/angular-google-plus.js',
+      'vendor/lodash/dist/lodash.js',
+      'vendor/async/lib/async.js',
+      'vendor/active-support/lib/active-support.js',
+      'vendor/ngActiveResource/dist/ng-active-resource.js'
     ],
     css: [
     ],
