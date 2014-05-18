@@ -1,4 +1,4 @@
-var loginApp = angular.module('loginApp', ["utils", "auth", "ui.router", "templates-app",
+var loginApp = angular.module('loginApp', ["utils", "ui.router", "templates-app",
     "templates-common", "commonDirectives", 'facebook', 'googleplus', 'classy']);
 
 var AUTH_EVENTS = {
@@ -69,7 +69,7 @@ loginApp.run(["$rootScope", "$state", "AUTH_EVENTS", "$q", "$window",
 
 loginApp.classy.controller({
     name: "LoginController",
-    inject: ['$rootScope', '$scope', 'authCookies', '$q', '$http', 'Facebook', 'GooglePlus'],
+    inject: ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus'],
     init: function()
     {
         this.$.userInput = {};
@@ -178,7 +178,7 @@ loginApp.classy.controller({
 
 loginApp.classy.controller({
     name: "RegisterController",
-    inject: ['$rootScope', '$scope', 'authCookies', '$q', '$location', '$window', '$http', 'Facebook', 'GooglePlus'],
+    inject: ['$rootScope', '$scope', '$q', '$location', '$window', '$http', 'Facebook', 'GooglePlus'],
     init: function()
     {
         this.$.userInput = {};
@@ -315,7 +315,7 @@ loginApp.classy.controller({
 
 loginApp.classy.controller({
     name: "ActivateAccountController",
-    inject: ['$rootScope', '$scope', 'authCookies', '$q', '$location', '$http'],
+    inject: ['$rootScope', '$scope', '$q', '$location', '$http'],
     init: function()
     {
         var that = this;
@@ -345,7 +345,7 @@ loginApp.classy.controller({
 
 loginApp.classy.controller({
     name: "ForgotPasswordController",
-    inject: ['$rootScope', '$scope', 'authCookies', '$q', '$location', '$http'],
+    inject: ['$rootScope', '$scope', '$q', '$location', '$http'],
     init: function()
     {
         var that = this;
@@ -376,7 +376,7 @@ loginApp.classy.controller({
 
 loginApp.classy.controller({
     name: "ResetPasswordController",
-    inject: ['$rootScope', '$scope', 'authCookies', '$q', '$location', '$http'],
+    inject: ['$rootScope', '$scope', '$q', '$location', '$http'],
     init: function()
     {
         var that = this;

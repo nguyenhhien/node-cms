@@ -77,7 +77,9 @@ module.exports = {
       'vendor/lodash/dist/lodash.js',
       'vendor/async/lib/async.js',
       'vendor-custom/active-support/active-support.js',
-      'vendor/ngActiveResource/dist/ng-active-resource.js'
+      'vendor/ngActiveResource/dist/ng-active-resource.js',
+      'vendor/chosen/chosen.jquery.js',
+      'vendor/angular-chosen-localytics/chosen.js'
     ],
     css: [
     ],

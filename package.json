@@ -50,6 +50,7 @@
     "sequelize": "~1.7.0",
     "sequelize-restful": "^0.1.0",
     "serve-static": "^1.0.4",
+    "socket.io": "^0.9.16",
     "url": "~0.7.9"
   },
   "author": "stanley",

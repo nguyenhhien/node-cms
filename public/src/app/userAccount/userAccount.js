@@ -1,4 +1,4 @@
-var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'ActiveResource'])
+var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'ActiveResource', 'utils', 'localytics.directives'])
 .config(function config( $stateProvider ) {
     $stateProvider
         .state('userAccount', {
@@ -41,16 +41,77 @@ app.provider('Account', function(){
 
 app.classy.controller({
     name: "UserAccountController",
-    inject: ['$rootScope', '$scope', 'Account'],
+    inject: ['$rootScope', '$scope', '$http', 'Account', 'utils'],
     init: function()
     {
         var that = this;
 
-        that.Account.find(11)
+        //load current user info
+        that.Account.find(that.$rootScope.user.id)
             .then(function(response) {
-                if(!!response && !response.error)
+                if(!response.error)
                 {
                     that.$scope.account = response;
+                }
+                else
+                {
+                    that.utils.$safeApply(that.$rootScope, function(){
+                        that.$rootScope.globalObj.notification = {
+                            error: "ERROR: " + response.error
+                        };
+                    });
+                }
+            });
+
+        //get list of all countries
+        that.$http.get("/api/countries")
+            .then(function(response){
+                that.$.countries = response.data;
+            });
+    },
+    generatePassword: function()
+    {
+        var that = this;
+
+        var newPass = that.utils.generateRandomString(6);
+
+        that.$scope.account.generatedPassword = that.$scope.account.newPassword = that.$scope.account.newPasswordConfirmation = newPass;
+
+        //verify that user has enter password
+        if(!that.$.account.currentPassword || that.$.account.currentPassword.length < 0)
+        {
+            that.utils.$safeApply(that.$, function(){
+                that.$.currentPasswordRequired = "Must enter current password";
+            });
+        }
+
+        this.$.account.validate('currentPassword');
+    },
+    changeNewPassword: function()
+    {
+        var that = this;
+
+        that.$http.post("/api/users/changePassword", {
+            email: that.$.account.email,
+            password: CryptoJS.MD5(that.$.account.currentPassword).toString(),
+            newPassword: CryptoJS.MD5(that.$.account.newPassword).toString()
+        })
+            .then(function(response){
+                var data = response.data;
+                if(!data.error){
+                    that.utils.$safeApply(that.$rootScope, function(){
+                        that.$rootScope.globalObj.notification = {
+                            successMessage: "SUCCESS: Password has been updated successfully"
+                        };
+                    });
+                }
+                else
+                {
+                    that.utils.$safeApply(that.$rootScope, function(){
+                        that.$rootScope.globalObj.notification = {
+                            error: "ERROR: " + data.error
+                        };
+                    });
                 }
             });
     }

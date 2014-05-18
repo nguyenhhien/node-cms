@@ -17,7 +17,7 @@ function verifyUserPassword(email, password)
             if(!user) return [null, Q.reject({
                 error: "User with email: " + email + " not found"
             })];
-            return [user, Q.nfcall(bcrypt.compare, password, user.password)];
+            return [user, Q.nfcall(bcrypt.compare, password, user.password || "")];
         });
 }
 
@@ -87,13 +87,13 @@ router.post("/changePassword", function(req, res){
     var errors = req.validationErrors();
     if (errors) return res.error(utils.formatValidationError(errors));
 
-    verifyUserPassword()
+    verifyUserPassword(req.param('email'), req.param('password'))
         .spread(function(account, same){
             if(!same) return Q.reject({
                 error: "Incorrect old password"
             });
 
-            return [account, saltAndHash(req.param('password'))];
+            return [account, saltAndHash(req.param('newPassword'))];
         })
         .spread(function(account, newHash){
             return Q(account.updateAttributes({password: newHash}));
@@ -195,6 +195,7 @@ router.post("/signin", function(req, res){
             return [user, Q(user.updateAttributes({lastLogin: new Date()}))];
         })
         .spread(function(user){
+            req.session.user = user;
             return res.success(user);
         })
         .fail(function(err){
@@ -455,6 +456,106 @@ router.post("/googleLogin", function(req, res){
             res.error(err);
         })
 });
+
+//get logged in information + other information for this user
+router.post("/userInfo", function(req, res){
+    if(!req.session.user) return res.error({
+        code: 404,
+        error: "user session not found"
+    })
+
+    Q(models.Account.find({where: {id: req.session.user.id, status: UserStatus.Active}}))
+        .then(function(user){
+            if(!user) return res.error({
+                code: 404,
+                error: "User with id = " + req.session.user.id + " not found"
+            })
+            else res.success(user);
+        })
+        .fail(function(err){
+            return res.error(err);
+        })
+})
+
+router.post("/linkFacebook", function(req, res){
+    if(!req.session.user) return res.error({
+        code: 404,
+        error: "user session not found"
+    })
+
+    Q(models.Account.find({where: {fbId: req.param.fbId}}))
+        .then(function(user){
+            if(user)
+            {
+                return Q.reject("The facebook account has been linked to an account with email " + user.email +
+                    " .If you want to link your facebook with this account, please disconnect facebook from account " + user.email + " first");
+            }
+
+            return Q(models.Account.update({fbId: fbId}, {id: req.session.user.id}));
+        })
+        .then(function(){
+            res.success();
+        })
+        .fail(function(err){
+            res.error(err)
+        })
+})
+
+router.post("/linkGoogle", function(req, res){
+    if(!req.session.user) return res.error({
+        code: 404,
+        error: "user session not found"
+    })
+
+    Q(models.Account.find({where: {googleId: req.param.googleId}}))
+        .then(function(user){
+            if(user)
+            {
+                return Q.reject("The google account has been linked to an account with email " + user.email +
+                    " .If you want to link your google account with this account, please disconnect google from account " + user.email + " first");
+            }
+
+            return Q(models.Account.update({googleId: req.param.googleId}, {id: req.session.user.id}));
+        })
+        .then(function(){
+            res.success();
+        })
+        .fail(function(err){
+            res.error(err)
+        })
+})
+
+
+router.post("/disconnectFacebook", function(req, res){
+    if(!req.session.user) return res.error({
+        code: 404,
+        error: "user session not found"
+    })
+
+    Q(models.Account.update({fbId: ""}, {id: req.session.user.id}))
+        .then(function(){
+            res.success();
+        })
+        .fail(function(err){
+            res.error(err)
+        })
+})
+
+
+router.post("/disconnectGoogle", function(req, res){
+    if(!req.session.user) return res.error({
+        code: 404,
+        error: "user session not found"
+    })
+
+    Q(models.Account.update({googleId: ""}, {id: req.session.user.id}))
+        .then(function(){
+            res.success();
+        })
+        .fail(function(err){
+            res.error(err)
+        })
+})
 
 module.exports = router;
 

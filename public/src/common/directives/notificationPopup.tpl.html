@@ -1,4 +1,7 @@
-<div class="notification-popup-wrapper" ng-class="{'error': notificationPopup.error}" ng-show="!!notificationPopup">
+<div class="notification-popup-wrapper"
+     ng-class="{'bg-success': !!notificationPopup.successMessage, 'error': !!notificationPopup.error}"
+     ng-show="!!notificationPopup">
     <span ng-bind='notificationPopup.error'></span>
+    <span ng-bind="notificationPopup.successMessage"></span>
     <button class="ticks close">&times;</button>
 </div>

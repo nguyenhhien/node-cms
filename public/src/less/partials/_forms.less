@@ -77,6 +77,57 @@ input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, in
     border-radius: 3px;
     color: #333;
     text-align: center;
+
+    &.switch-light
+    {
+      margin-left: 0px;
+    }
+
+    input
+    {
+      ~ a
+      {
+        right: 0% !important; //UNCHECKED: on the right side
+        border: solid 1px @brand-danger;
+        background-color: lighten(@brand-danger,10%);
+        .box-shadow(@brand-danger 0 -1px 0 inset);
+      }
+
+      ~ span span
+      {
+        &:first-of-type
+        {
+          color: #ccc;
+        }
+        &:last-of-type
+        {
+          color: white;
+        }
+      }
+    }
+
+    input:checked
+    {
+      ~ a
+      {
+        right: 50% !important; //CHECKED: on the left side
+        border: solid 1px @brand-success;
+        background-color: lighten(@brand-success,10%);
+        .box-shadow(@brand-success 0 -1px 0 inset);
+      }
+      ~ span span
+      {
+        &:first-of-type
+        {
+          color: white
+        }
+        &:last-of-type
+        {
+          color: #ccc
+        }
+      }
+    }
+
     *
     {
       outline: 0!important;
@@ -102,51 +153,7 @@ input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, in
       cursor: pointer;
     }
 
-    input:checked
-    {
-      ~ a
-      {
-        border: solid 1px @brand-success;
-        background-color: lighten(@brand-success,10%);
-        .box-shadow(@brand-success 0 -1px 0 inset);
-      }
-      ~ span span
-      {
-        &:first-of-type
-        {
-          color: white
-        }
-        &:last-of-type
-        {
-          color: #ccc
-        }
-      }
-    }
 
-    input
-    {
-      &:last-of-type:checked
-      {
-        ~ a
-        {
-          border: solid 1px @brand-danger;
-          background-color: lighten(@brand-danger,10%);
-          .box-shadow(@brand-danger 0 -1px 0 inset);
-        }
-      }
-
-      ~ span span
-      {
-        &:first-of-type
-        {
-          color: #ccc;
-        }
-        &:last-of-type
-        {
-          color: white;
-        }
-      }
-    }
   }
 }
 

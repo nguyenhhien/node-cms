@@ -60,7 +60,7 @@ Router.prototype.checkPermission = function(req, modelName, id, associatedModelN
     }
 
     //get userID from session
-    var userId = req.session.user.id;
+    var userId = req.session.user && req.session.user.id;
 
     switch(modelName)
     {

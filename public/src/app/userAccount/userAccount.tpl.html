@@ -102,7 +102,6 @@
                                 {{account.$errors.newPassword[0]}}
                             </div>
 
-                            <!--<span id="passwd-output"></span>-->
                         </div>
                     </div>
                     <div class="form-group" ng-class="{'has-error': account.$errors.newPassword}">
@@ -127,8 +126,8 @@
                     </div>
                     <div class="form-group">
                         <div class="col-lg-10 col-lg-offset-2">
-                            <input type="text" class="generated-password form-control fixed-width-md pull-left">
-                            <button type="button" class="btn btn-default">
+                            <input type="text" ng-model="account.generatedPassword" class="generated-password form-control fixed-width-md pull-left">
+                            <button type="button" class="btn btn-default" ng-click="generatePassword()">
                                 <i class="fa fa-random"></i>
                                 Generate password
                             </button>
@@ -150,13 +149,14 @@
                                     ng-click="showChangePasswordForm = !showChangePasswordForm"
                                     class="btn btn-default">
                                 <i class="fa fa-times"></i>
-                                Cancel
+                                Close
                             </button>
 
                             <button type="button" class="btn btn-default pull-right"
-                                    ng-click="showChangePasswordForm = !showChangePasswordForm">
+                                    ng-click="changeNewPassword()"
+                                    ng-disabled="account.$invalid">
                                 <i class="fa fa-floppy-o"></i>
-                                Save
+                                Update
                             </button>
                         </div>
                     </div>
@@ -170,17 +170,49 @@
         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">Email Subscribe</span>
     </label>
     <div class="col-lg-9 ">
-        <span class="switch switch-toggle custom-switch fixed-width-lg">
-            <input type="radio" value="1" checked="checked">
-            <label>
-                Yes
-            </label>
-            <input type="radio" value="0">
-            <label>
-                No
-            </label>
-            <a class="slide-button btn"></a>
-        </span>
+        <label class="switch switch-light custom-switch fixed-width-lg" onclick="">
+            <input type="checkbox" ng-model="account.emailSubscribe" ng-checked="!!account.emailSubscribe">
+            <span>
+                <span>YES</span>
+                <span>NO</span>
+            </span>
+
+            <a></a>
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-lg-3 ">
+         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">
+            Address
+         </span>
+    </label>
+    <div class="col-lg-9 ">
+        <input type="text" class="fixed-width-xxl" placeholder="house no, unit number"  ng-model='account.address'>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-lg-3 ">
+         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">
+            Street
+         </span>
+    </label>
+    <div class="col-lg-9 ">
+        <input type="text" class="fixed-width-xxl" placeholder="street name"  ng-model='account.street'>
+    </div>
+</div>
+
+
+<div class="form-group">
+    <label class="control-label col-lg-3 ">
+         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">
+            City
+         </span>
+    </label>
+    <div class="col-lg-9 ">
+        <input type="text" class="fixed-width-xxl" placeholder="city/states" ng-model='account.city'>
     </div>
 </div>
 
@@ -191,9 +223,88 @@
          </span>
     </label>
     <div class="col-lg-9 ">
-
+        <select chosen data-placeholder="Select a country"
+                ng-model="account.country"
+                ng-options="c.name for c in countries"
+                class="fixed-width-xxl">
+        </select>
     </div>
 </div>
+
+<div class="form-group">
+    <label class="control-label col-lg-3 ">
+         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">
+            Postal Code
+         </span>
+    </label>
+    <div class="col-lg-9 ">
+        <input type="text" class="fixed-width-xxl" placeholder="postal code" ng-model='account.postalCode'>
+    </div>
+</div>
+
+<!--Link To Facebook Account-->
+<div class="form-group">
+    <label class="control-label col-lg-3 ">
+         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">
+            Facebook
+         </span>
+    </label>
+    <div class="col-lg-9 facebook-login">
+        <div ng-show="!!account.fbId">
+            <div class="top5 text-success">Your account is connected to your facebook account</div>
+
+            <button class="btn btn-primary top7 fixed-width-xl">
+                <i class="fa fa-facebook"></i>
+                Disconnect From Facebook
+            </button>
+        </div>
+
+        <div ng-show="!account.fbId">
+            <div class="top5 text-danger">Your account is not connected to facebook</div>
+
+            <button class="btn btn-primary top7 fixed-width-xl">
+                <i class="fa fa-facebook"></i>
+                Connect To Facebook
+            </button>
+        </div>
+    </div>
+</div>
+
+<!--Link To Google Plus Account-->
+<div class="form-group">
+    <label class="control-label col-lg-3 ">
+         <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">
+            Google
+         </span>
+    </label>
+    <div class="col-lg-9 google-login">
+        <div ng-show="!!account.googleId">
+            <div class="top5 text-success">Your account is connected to your google account</div>
+
+            <button class="btn btn-primary top7 fixed-width-xl">
+                <i class="fa fa-google-plus"></i>
+                Disconnect From Google
+            </button>
+        </div>
+
+        <div ng-show="!account.googleId">
+            <div class="top5 text-danger">Your account is not connected to your google account</div>
+
+            <button class="btn btn-primary top7 fixed-width-xl">
+                <i class="fa fa-google-plus"></i>
+                Connect To Google
+            </button>
+        </div>
+
+        <div class="alert alert-info top20">
+            By linking to your facebook/google account,
+            you can easily login to the system after logging in successfully to your facebook/google accounts. If you chose to disconnect from
+            facebook or google, you will not be able to use facebook/google login function. So make sure, you are able to use the normal
+            login procedure to continue using our system.
+        </div>
+    </div>
+</div>
+
 
 <div class="panel-footer">
     <button type="submit" class="btn btn-default pull-right">

@@ -16,15 +16,15 @@ app.directive('notificationPopup', ["$rootScope", function($rootScope)
 
             var timeoutHandler;
 
-            if(scope.autoClose)
-            {
-                scope.$watch("notificationPopup", function(popup){
-                    if(!popup) {
-                        return;
-                    }
+            scope.$watch("notificationPopup", function(popup){
+                if(!popup) {
+                    return;
+                }
 
-                    element.fadeIn(400);
+                element.fadeIn(400);
 
+                if(scope.autoClose)
+                {
                     if(timeoutHandler){
                         clearTimeout(timeoutHandler);
                     }
@@ -33,8 +33,9 @@ app.directive('notificationPopup', ["$rootScope", function($rootScope)
                         scope.notificationPopup = null;
                         element.fadeOut(400);
                     }, scope.autoClose * 1000);
-                });
-            }
+                }
+            });
+
         }
     };
 }]);
