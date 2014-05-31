@@ -120,7 +120,7 @@ app.use(restful(models.sequelize, {
     endpoint: '/api/restful',
     allowed: [
         {
-            tableName: "Account",
+            tableName: "User",
             //attributes cannot be update
             restrictedWriteAttributes: ["email", "password"],
             //attribute will not be returned

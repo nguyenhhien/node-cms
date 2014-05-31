@@ -12,7 +12,7 @@ var router = express.Router();
 //verify user and password against database
 function verifyUserPassword(email, password)
 {
-    return Q(models.Account.find({where: {email: email, status: UserStatus.Active}}))
+    return Q(models.User.find({where: {email: email, status: UserStatus.Active}}))
         .then(function(user){
             if(!user) return [null, Q.reject({
                 error: "User with email: " + email + " not found"
@@ -113,7 +113,7 @@ router.post("/forgotPassword", function(req, res){
     var errors = req.validationErrors();
     if (errors) return res.error(utils.formatValidationError(errors));
 
-    Q(models.Account.find({ where: {email: req.param('email')}}))
+    Q(models.User.find({ where: {email: req.param('email')}}))
         .then(function(account){
             if(!account) return Q.reject({
                 error: "Account with email: " + req.param('email') + " not found"
@@ -160,7 +160,7 @@ router.post("/resetPassword", function(req, res){
             return [recoveryRecord.accountId, saltAndHash(req.param('password'))];
         })
         .spread(function(accountId, newHash){
-            return Q(models.Account.update({
+            return Q(models.User.update({
                         password: newHash
                     }, {id: accountId}));
         })
@@ -212,7 +212,7 @@ router.post("/register", function(req, res){
     var errors = req.validationErrors();
     if (errors) return res.error(utils.formatValidationError(errors));
 
-    Q(models.Account.find({ where: {email: req.param('email')} }))
+    Q(models.User.find({ where: {email: req.param('email')} }))
         .then(function(account){
             if(account) return Q.reject({
                 error: "Email address is already in used"
@@ -224,7 +224,7 @@ router.post("/register", function(req, res){
             var accountStatus = UserStatus.Active;
             if(Config.Global.needAccountActivation) accountStatus = UserStatus.Inactive;
 
-            return Q(models.Account.create({
+            return Q(models.User.create({
                 email: req.param('email'),
                 name: req.param('name'),
                 password: hash,
@@ -235,7 +235,7 @@ router.post("/register", function(req, res){
             if(Config.Global.needAccountActivation)
             {
                 var activationKey = utils.randomString(32);
-                return Q(models.AccountActivation.create({
+                return Q(models.UserActivation.create({
                             accountId: newAccount.id,
                             activationKey: activationKey,
                             expiryDate: new Date().addDays(3)
@@ -266,7 +266,7 @@ router.post("/activateAccount", function(req, res){
     var errors = req.validationErrors();
     if (errors) return res.error(utils.formatValidationError(errors));
 
-    Q(models.AccountActivation.find({where: {
+    Q(models.UserActivation.find({where: {
         activationKey: req.param("activationKey"),
         expiryDate: {
             gte: new Date()
@@ -276,13 +276,13 @@ router.post("/activateAccount", function(req, res){
             if(!activationRecord) return Q.reject({
                 error: "ActivationKey doesn't not exist or has been expired"
             });
-            return Q(models.Account.update({
+            return Q(models.User.update({
                 status: UserStatus.Active
             }, {id: activationRecord.accountId}));
         })
         .then(function(){
             //delete the activation key
-            return Q(models.AccountActivation.destroy({
+            return Q(models.UserActivation.destroy({
                 activationKey: req.param("activationKey")
             }));
         })
@@ -303,21 +303,21 @@ router.post("/facebookRegister", function(req, res){
     var errors = req.validationErrors();
     if (errors) return res.error(utils.formatValidationError(errors));
 
-    Q(models.Account.find({where: {fbId: req.param('fbId')}}))
+    Q(models.User.find({where: {fbId: req.param('fbId')}}))
         .then(function(user){
             //if not exist such user, try to register him
             if(!user)
                 return validateFacebookAccessToken(req.param('fbId'), req.param('accessToken'))
                             .then(function(valid){
                                 //check if that email has been used
-                                return Q(models.Account.find({ where: {email: req.param('email')} }));
+                                return Q(models.User.find({ where: {email: req.param('email')} }));
                             })
                             .then(function(account){
                                 if(account) return Q.reject({
                                     error: "Email: " + req.param('email') + ' has been used to register. If you are owner of that account, ' +
                                         'please login to your account page and click to link-to-facebook to link to your facebook account'
                                 })
-                                else return (models.Account.create({
+                                else return (models.User.create({
                                     email: req.param('email'),
                                     name: req.param('name'),
                                     fbId: req.param('fbId'),
@@ -336,7 +336,7 @@ router.post("/facebookRegister", function(req, res){
             req.session.user = user;
 
             //update last logged in timestamp
-            Q(models.Account.update({
+            Q(models.User.update({
                 lastLogin: new Date()
             }, {id: user.id}));
 
@@ -356,20 +356,20 @@ router.post("/googleRegister", function(req, res){
     var errors = req.validationErrors();
     if (errors) return res.error(utils.formatValidationError(errors));
 
-    Q(models.Account.find({where: {googleId: req.param('googleId')}}))
+    Q(models.User.find({where: {googleId: req.param('googleId')}}))
         .then(function(user){
             if(!user)
                 return validateGoogleAccessToken(req.param('googleId'), req.param('accessToken'))
                     .then(function(valid){
                         //check if that email has been used
-                        return Q(models.Account.find({ where: {email: req.param('email')} }));
+                        return Q(models.User.find({ where: {email: req.param('email')} }));
                     })
                     .then(function(account){
                         if(account) return Q.reject({
                             error: "Email: " + req.param('email') + ' has been used to register. If you are owner of that account, ' +
                                 'please login to your account page and click link-to-google to link to your google account'
                         })
-                        else return (models.Account.create({
+                        else return (models.User.create({
                             email: req.param('email'),
                             name: req.param('name'),
                             googleId: req.param('googleId'),
@@ -388,7 +388,7 @@ router.post("/googleRegister", function(req, res){
             req.session.user = user;
 
             //update last logged in timestamp
-            Q(models.Account.update({
+            Q(models.User.update({
                 lastLogin: new Date()
             }, {id: user.id}));
 
@@ -406,7 +406,7 @@ router.post("/facebookLogin", function(req, res){
     var errors = req.validationErrors();
     if (errors) return res.error(utils.formatValidationError(errors));
 
-    Q(models.Account.find({where: {fbId: req.param('fbId'), status: UserStatus.Active}}))
+    Q(models.User.find({where: {fbId: req.param('fbId'), status: UserStatus.Active}}))
         .then(function(user){
             //if not exist such user
             if(!user) return Q.reject({
@@ -435,7 +435,7 @@ router.post("/googleLogin", function(req, res){
     var errors = req.validationErrors();
     if (errors) return res.error(utils.formatValidationError(errors));
 
-    Q(models.Account.find({where: {googleId: req.param('googleId'), status: UserStatus.Active}}))
+    Q(models.User.find({where: {googleId: req.param('googleId'), status: UserStatus.Active}}))
         .then(function(user){
             //if not exist such user
             if(!user) return Q.reject({
@@ -464,7 +464,7 @@ router.post("/userInfo", function(req, res){
         error: "user session not found"
     })
 
-    Q(models.Account.find({where: {id: req.session.user.id, status: UserStatus.Active}}))
+    Q(models.User.find({where: {id: req.session.user.id, status: UserStatus.Active}}))
         .then(function(user){
             if(!user) return res.error({
                 code: 404,
@@ -483,7 +483,7 @@ router.post("/linkFacebook", function(req, res){
         error: "user session not found"
     })
 
-    Q(models.Account.find({where: {fbId: req.param.fbId}}))
+    Q(models.User.find({where: {fbId: req.param.fbId}}))
         .then(function(user){
             if(user)
             {
@@ -491,7 +491,7 @@ router.post("/linkFacebook", function(req, res){
                     " .If you want to link your facebook with this account, please disconnect facebook from account " + user.email + " first");
             }
 
-            return Q(models.Account.update({fbId: fbId}, {id: req.session.user.id}));
+            return Q(models.User.update({fbId: fbId}, {id: req.session.user.id}));
         })
         .then(function(){
             res.success();
@@ -507,7 +507,7 @@ router.post("/linkGoogle", function(req, res){
         error: "user session not found"
     })
 
-    Q(models.Account.find({where: {googleId: req.param.googleId}}))
+    Q(models.User.find({where: {googleId: req.param.googleId}}))
         .then(function(user){
             if(user)
             {
@@ -515,7 +515,7 @@ router.post("/linkGoogle", function(req, res){
                     " .If you want to link your google account with this account, please disconnect google from account " + user.email + " first");
             }
 
-            return Q(models.Account.update({googleId: req.param.googleId}, {id: req.session.user.id}));
+            return Q(models.User.update({googleId: req.param.googleId}, {id: req.session.user.id}));
         })
         .then(function(){
             res.success();
@@ -532,7 +532,7 @@ router.post("/disconnectFacebook", function(req, res){
         error: "user session not found"
     })
 
-    Q(models.Account.update({fbId: ""}, {id: req.session.user.id}))
+    Q(models.User.update({fbId: ""}, {id: req.session.user.id}))
         .then(function(){
             res.success();
         })
@@ -548,7 +548,7 @@ router.post("/disconnectGoogle", function(req, res){
         error: "user session not found"
     })
 
-    Q(models.Account.update({googleId: ""}, {id: req.session.user.id}))
+    Q(models.User.update({googleId: ""}, {id: req.session.user.id}))
         .then(function(){
             res.success();
         })

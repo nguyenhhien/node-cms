@@ -225,7 +225,7 @@
     <div class="col-lg-9 ">
         <select chosen data-placeholder="Select a country"
                 ng-model="account.country"
-                ng-options="c.name for c in countries"
+                ng-options="c for c in countries"
                 class="fixed-width-xxl">
         </select>
     </div>
@@ -307,7 +307,7 @@
 
 
 <div class="panel-footer">
-    <button type="submit" class="btn btn-default pull-right">
+    <button type="submit" class="btn btn-default pull-right" ng-click="saveUserAccount()">
         <i class="fa fa-floppy-o"></i> Save
     </button>
     <a class="btn btn-default" onclick="window.history.back()">

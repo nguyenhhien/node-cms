@@ -25,7 +25,7 @@
     <!-- compiled JavaScript --><% scripts.forEach( function ( file ) { %>
     <script type="text/javascript" src="<%= file %>"></script><% }); %>
   </head>
-  <body>
+  <body style="display: none;">
     <nav class="navbar navbar-inverse main-navbar" role="navigation">
       <div class="container-fluid">
           <div class="navbar-header">
@@ -55,7 +55,7 @@
                           <i class="fa fa-cog"></i>Admin <b class="caret"></b>
                       </a>
                       <ul class="dropdown-menu">
-                          <li><a href="#"><i class="fa fa-group"></i>Users</a></li>
+                          <li><a href="#!/users"><i class="fa fa-group"></i>Users</a></li>
                           <li><a href="#"><i class="fa fa-user"></i>Roles</a></li>
                           <li class="divider"></li>
                           <li><a href="#"><i class="fa fa-cogs"></i>Configurations</a></li>
@@ -72,7 +72,7 @@
                   </li>
 
                   <li class="dropdown account-wrapper">
-                      <a href="#" class="dropdown-toggle account-text" data-toggle="dropdown">
+                      <a href="#!/userAccount" class="dropdown-toggle account-text" data-toggle="dropdown">
                           <span class="avatar_wrapper small">
 								<img class="imgm img-thumbnail" alt="" src="http://lorempixel.com/32/32/people/9" width="32" height="32">
                           </span>
@@ -86,10 +86,10 @@
                             </span>
                           </li>
                           <li class="divider"></li>
-                          <li><a href="#"><i class="fa fa-wrench"></i>Preference</a></li>
+                          <li><a href="#!/userAccount"><i class="fa fa-wrench"></i>Preference</a></li>
                           <li class="divider"></li>
                           <li>
-                              <a href="#"> <i class="fa fa-sign-out"></i> Sign Out</a>
+                              <a href="#!"> <i class="fa fa-sign-out"></i> Sign Out</a>
                           </li>
                       </ul>
                   </li>

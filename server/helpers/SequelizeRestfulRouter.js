@@ -64,7 +64,7 @@ Router.prototype.checkPermission = function(req, modelName, id, associatedModelN
 
     switch(modelName)
     {
-        case 'Account':
+        case 'User':
             if(id == null && req.method != 'GET')
             {
                 return Q.reject(forbiddenMsg);
@@ -170,13 +170,16 @@ Router.prototype.handleRequest = function(req, res) {
                     return (function(){
                         switch(req.method) {
                             case "GET":
+                                //only return allowed get attributes
                                 return Q(that.daoFactories[modelName].find({ where: {id: identifier}, attributes: that.allowedReadAttributes[modelName]}));
                                 break
                             case 'DELETE':
                                 return Q(that.daoFactories[modelName].destroy({ where: {id: identifier}}));
                                 break
                             case 'PUT':
-                                return Q(that.daoFactories[modelName].update(req.body, that.allowedWriteAttributes[modelName]));
+                                //filter put body to only allowed attributes
+                                var updatedAttributes = _.pick(req.body, that.allowedWriteAttributes[modelName]);
+                                return Q(that.daoFactories[modelName].update(updatedAttributes, {id: identifier}));
                                 break
 
                             default:
@@ -186,7 +189,8 @@ Router.prototype.handleRequest = function(req, res) {
                     })()
                 })
                 .then(function(result){
-                    res.success(result);
+                    if(req.method == 'GET') return res.success(result);
+                    res.success();
                 })
                 .fail(function(err){
                     res.error(err);

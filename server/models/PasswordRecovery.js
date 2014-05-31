@@ -1,14 +1,20 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define("PasswordRecovery", {
+    var PasswordRecovery =sequelize.define("PasswordRecovery", {
             passwordResetKey: DataTypes.STRING,
-            expiryDate: DataTypes.DATE,
-            accountId: {
-                type: DataTypes.INTEGER,
-                references: "Account",
-                referencesKey: "id"
-            }
+            expiryDate: DataTypes.DATE
         },
         {
-            freezeTableName: true
+            freezeTableName: true,
+            classMethods: {
+                //relationship with other tables
+                associate: function(models) {
+                    PasswordRecovery.belongsTo(models.User, {foreignKey: 'userId', foreignKeyConstraint: true})
+                }
+            },
+            instanceMethods: {
+
+            }
         })
+
+    return PasswordRecovery;
 }

@@ -43,17 +43,17 @@ exports['Test Sequelize Create/Update/Delete'] = {
     {
         var that = this;
 
-        that.modelName = 'Account';
+        that.modelName = 'User';
         that.daoFactory = sequelize.daoFactoryManager.getDAO(that.modelName, { attribute: 'tableName' });
 
         //create dummy account
-        var insertedAccount = {
+        var insertedUser = {
             email: "hiepkhach7488@gmail.com",
             name: "Nguyen Xuan Tuong",
             password: "111111"
         }
 
-        Q(that.daoFactory.create(insertedAccount))
+        Q(that.daoFactory.create(insertedUser))
             .then(function(account){
                 callback();
             })
@@ -72,7 +72,7 @@ exports['Test Sequelize Create/Update/Delete'] = {
                 callback(err);
             })
     },
-    getAccount: function(test)
+    getUser: function(test)
     {
         var that = this;
         Q(that.daoFactory.find({ where: {email: 'hiepkhach7488@gmail.com'}, attributes: ['id', 'email', 'name']}))
@@ -85,7 +85,7 @@ exports['Test Sequelize Create/Update/Delete'] = {
                 test.ok(false, err);
             })
     },
-    getAllAccounts: function(test)
+    getAllUsers: function(test)
     {
         var that = this;
         Q(that.daoFactory.findAll({attributes: ['id', 'email', 'name']}))
@@ -123,7 +123,7 @@ exports['Test Sequelize Create/Update/Delete'] = {
                 test.ok(false, err);
             })
     },
-    updateAccount: function(test)
+    updateUser: function(test)
     {
         var that = this;
 
@@ -144,6 +144,30 @@ exports['Test Sequelize Create/Update/Delete'] = {
             .fail(function(err){
                 test.ok(false, err);
             })
+    },
+    updateUserInvalid: function(test)
+    {
+        var that = this;
+
+        var updatedAttributes = {
+            name: "Test Information",
+            country: {
+                name: "Singapore",
+                code: "SG"
+            }
+        }
+
+        Q(that.daoFactory.update(updatedAttributes, {email: "hiepkhach7488@gmail.com"}))
+            .then(function(affectedRows){
+                test.equal(affectedRows, 1);
+                return Q(that.daoFactory.find({where: {email: 'hiepkhach7488@gmail.com'}}));
+            })
+            .then(function(account){
+                console.log("NEW ACCOUNT", account);
+            })
+            .fail(function(err){
+                test.ok(false, err);
+            })
     }
 };
 
@@ -152,7 +176,7 @@ exports['Test Sequelize Association Describe'] =
     setUp: function(callback)
     {
         var that = this;
-        that.modelName = 'AccountActivation';
+        that.modelName = 'UserActivation';
         callback();
     },
     tearDown: function(callback)

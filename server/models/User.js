@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define("Account", {
+     var User = sequelize.define("User", {
         email: DataTypes.STRING,
         name: DataTypes.STRING,
         password: DataTypes.STRING,
@@ -15,6 +15,14 @@ module.exports = function(sequelize, DataTypes) {
         googleId: DataTypes.STRING
     },
     {
-        freezeTableName: true
+        freezeTableName: true,
+        classMethods: {
+
+        },
+        instanceMethods: {
+
+        }
     })
+
+    return User;
 }
