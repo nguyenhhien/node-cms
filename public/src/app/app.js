@@ -31,6 +31,7 @@ angular.module( 'mainApp', [
     'ui.router',
     'mainApp.userAccount',
     'mainApp.user',
+    'mainApp.dashboard',
     'commonDirectives'
 ])
 

@@ -14,6 +14,11 @@
 //Every Things
 @import '../../vendor/bootstrap/less/bootstrap.less';
 
+//sematic ui stylesheets
+@import '../../vendor/semantic/build/less/views/comment.less';
+@import '../../vendor/semantic/build/less/views/feed.less';
+@import '../../vendor/semantic/build/less/elements/icon.less';
+
 /**
  * This is our main variables file. It in turn imports the `variables` file from
  * Twitter Bootstrap. We must include it last so we can overwrite any variable
@@ -21,222 +26,8 @@
  */
 
 @import 'variables.less';
-
-
-/**
- * Typography
- */
-
-@font-face{
-  font-family:'ProximaNovaThin';
-  src:url("../assets/fonts/ProximaNova-Thin-webfont.eot?iefix=")
-  format("eot"),url("../assets/fonts/ProximaNova-Thin-webfont.woff")
-  format("woff"),url("../assets/fonts/ProximaNova-Thin-webfont.ttf")
-  format("truetype"),url("../assets/fonts/ProximaNova-Thin-webfont.svg#webfontOmb6oXeh")
-  format("svg");font-weight:normal;
-  font-style:normal
-}
-
-@font-face{
-  font-family:'ProximaNovaRegular';
-  src:url("../assets/fonts/ProximaNova-Reg-webfont.eot?iefix=") format("eot"),
-  url("../assets/fonts/ProximaNova-Reg-webfont.woff") format("woff"),
-  url("../assets/fonts/ProximaNova-Reg-webfont.ttf") format("truetype"),
-  url("../assets/fonts/ProximaNova-Reg-webfont.svg#webfontZam02nTh") format("svg");
-  font-weight:normal;font-style:normal
-}
-
-@font-face{
-  font-family:'ProximaNovaSemibold';
-  src:url("../assets/fonts/ProximaNova-Sbold-webfont.eot");
-  src:url("../assets/fonts/ProximaNova-Sbold-webfont.eot?iefix") format("eot"),
-  url("../assets/fonts/ProximaNova-Sbold-webfont.woff") format("woff"),
-  url("../assets/fonts/ProximaNova-Sbold-webfont.ttf") format("truetype"),
-  url("../assets/fonts/ProximaNova-Sbold-webfont.svg#webfont0AWgWg75") format("svg");
-  font-weight:normal;font-style:normal
-}
-
-@font-face{
-  font-family:'ProximaNovaBold';
-  src:url("../assets/fonts/ProximaNova-Bold-webfont.eot?iefix=") format("eot"),
-  url("../assets/fonts/ProximaNova-Bold-webfont.woff") format("woff"),
-  url("../assets/fonts/ProximaNova-Bold-webfont.ttf") format("truetype"),
-  url("../assets/fonts/ProximaNova-Bold-webfont.svg#webfontZ6etP9ZY") format("svg");
-  font-weight:normal;font-style:normal
-}
-
-@font-face{
-  font-family:'Quattrocento';
-  src:url("../assets/fonts/Quattrocento-Regular-webfont.eot");
-  src:url("../assets/fonts/Quattrocento-Regular-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../assets/fonts/Quattrocento-Regular-webfont.woff") format("woff"),
-  url("../assets/fonts/Quattrocento-Regular-webfont.ttf") format("truetype"),
-  url("../assets/fonts/Quattrocento-Regular-webfont.svg#QuattrocentoRomanRegular") format("svg");
-  font-weight:normal;font-style:normal}
-
-@font-face{
-  font-family:'KlavikaMedium';
-  src:url("../assets/fonts/KlavikaWebBasicMedium.eot?iefix=") format("eot"),
-  url("../assets/fonts/KlavikaWebBasicMedium.woff") format("woff");
-  font-weight:normal;font-style:normal
-}
-
-@font-face{
-  font-family:'KlavikaRegular';
-  src:url("../assets/fonts/KlavikaWebBasicRegular.eot?iefix=") format("eot"),
-  url("../assets/fonts/KlavikaWebBasicRegular.woff") format("woff");
-  font-weight:normal;font-style:normal
-}
-
-body
-{
-  font-family: "ProximaNovaRegular", "Open Sans", "Helvetica Neue",Helvetica,Arial,sans-serif;
-  background: #333D42 url("../assets/images/noise.png");
-  font-size: 14px;
-  line-height: 1.428571429;
-  color: #333;
-}
-
-.main-navbar
-{
-  margin-bottom: 0px;
-
-  .navbar-header
-  {
-    .navbar-brand
-    {
-      .logo
-      {
-        background: url("../assets/images/snowflake.png");
-        width: 33px;
-        height: 33px;
-        display: inline-block;
-        float: left;
-        position: absolute;
-        top: 5px;
-        left: 0;
-        background-size: 33px 33px;
-        margin-left: 11px;
-      }
-
-      .text
-      {
-        margin-left: 48px;
-        margin-top: -2px;
-        font-size: 15px;
-        color: white;
-        display: inline-block;
-        float: left;
-      }
-    }
-  }
-
-  .navbar-collapse
-  {
-    .navbar-nav
-    {
-      & > li
-      {
-        border-right: 1px solid #37393d;
-        font-size: 11px;
-
-        &:first-child
-        {
-          border-left: 1px solid #37393d;
-        }
-
-        & > a
-        {
-          color: white;
-          text-transform: uppercase;
-        }
-
-        a
-        {
-          i.fa
-          {
-            margin-right: 5px;
-          }
-        }
-
-        &.active,
-        &:hover,
-        {
-          background-color: rgba(255,255,255,0.15);
-          & > a
-          {
-            background-color: inherit;
-          }
-        }
-
-        &.with-icon
-        {
-          & > a
-          {
-            padding: 9px 15px;
-
-            i
-            {
-              font-size: 30px;
-            }
-          }
-        }
-
-        &.no-uppercase
-        {
-          & > a
-          {
-            text-transform: capitalize;
-          }
-        }
-      }
-
-      &.navbar-right
-      {
-        .account-wrapper
-        {
-          .account-text
-          {
-            text-transform: capitalize;
-            padding-top: 9px;
-            padding-bottom: 9px;
-
-            .avatar_wrapper
-            {
-              .img-thumbnail
-              {
-                border: none;
-                border-radius: 32px;
-                padding: 0px;
-              }
-            }
-          }
-
-          .dropdown-menu
-          {
-            .avatar-wrapper
-            {
-              height: 80px;
-              width: 80px;
-              overflow: hidden;
-              margin: 10px auto !important;
-              border-radius: 80px;
-              display: block !important;
-
-              .img-thumbnail
-              {
-                max-width: 100%;
-                height: auto;
-                padding: 0;
-                border: none;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
+@import './partials/_typography.less';
+@import './partials/_navbar.less';
 
 .main-page-notification
 {
@@ -279,5 +70,6 @@ body
 //vendor less
 @import './../../vendor/bootstrap-chosen/bootstrap-chosen.less';
 @import './../../vendor/css-toggle-switch/src/toggle-switch.less';
+
 
 
