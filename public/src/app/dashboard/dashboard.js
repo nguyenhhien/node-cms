@@ -6,7 +6,9 @@ var app = angular.module( 'mainApp.dashboard', [
         'utils',
         'localytics.directives',
         'ui.bootstrap',
-        'mgcrea.ngStrap'
+        'mgcrea.ngStrap',
+        'templates-common',
+        'common.commentThread'
     ])
     .config(function config( $stateProvider ) {
         $stateProvider

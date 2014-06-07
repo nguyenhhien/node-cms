@@ -6,12 +6,12 @@ module.exports = function(sequelize, DataTypes) {
             freezeTableName: true,
             classMethods: {
                 associate: function(models) {
-                    Location.hasOne(Location, {as: 'Parent', foreignKey: 'parentID'});
-                    Location.hasMany(Location, {as: 'Children', foreignKey: 'parentID', through: null });
-                    Location.hasOne(models.LocationType, {as: 'LocationType', foreignKey: 'locationID'});
+                    Location.hasOne(Location, {as: 'Parent', foreignKey: 'parentId'});
+                    Location.hasMany(Location, {as: 'Children', foreignKey: 'parentId', through: null });
+                    Location.hasOne(models.LocationType, {as: 'LocationType', foreignKey: 'locationId'});
 
                     //many-many relationship with position
-                    Location.hasMany(models.Position, {through: 'PositionLocation', foreignKey: 'locationID'})
+                    Location.hasMany(models.Position, {through: 'PositionLocation', foreignKey: 'locationId'})
                 }
             },
             instanceMethods: {

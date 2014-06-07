@@ -1,0 +1,35 @@
+<div class="comment">
+    <!--avatar of the commenter-->
+    <a class="avatar">
+        <img ng-src="data.author.avatar">
+    </a>
+
+    <!--content of comment-->
+    <div class="content">
+        <a class="author" ng-bind="data.author.name"></a>
+        <div class="metadata">
+            <span class="date" ng-bind="data.posted | date:'medium'"></span>
+        </div>
+        <div class="text" ng-bind="data.text"></div>
+        <div class="actions">
+            <a class="reply" ng-click="data.dataAddReplyPanel=!data.dataAddReplyPanel">
+                <span ng-show="!!data.dataAddReplyPanel">Hide Panel</span>
+                <span ng-show="!data.dataAddReplyPanel">Reply</span>
+            </a>
+            <a class="delete" ng-click="remove(data)">Delete</a>
+        </div>
+    </div>
+
+    <!--child comments-->
+    <div ng-repeat="data in data.nodes" ng-include="'comments/commentItem.tpl.html'" class="comments"></div>
+
+    <!--add reply panel-->
+    <form class="ui reply form" ng-show="!!data.dataAddReplyPanel">
+        <div class="field">
+            <textarea ng-model='data.text'></textarea>
+        </div>
+        <div class="margin-top-bottom10 btn btn-primary ui button teal submit labeled icon" ng-click="addReply(data)">
+            <i class="icon edit"></i> Add Reply
+        </div>
+    </form>
+</div>

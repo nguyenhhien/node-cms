@@ -1,4 +1,5 @@
-var Users = require("./Users");
+var Users       = require("./Users");
+var Comments    = require("./Comments");
 
 //set up router for the main app
 module.exports = function(app)
@@ -10,4 +11,6 @@ module.exports = function(app)
 
     //import other modules
     app.use('/api/users', Users);
+
+    app.use('/api', Comments);
 }

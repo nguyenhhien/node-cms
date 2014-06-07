@@ -23,6 +23,7 @@ var utils               = require("./server/helpers/Utils.js");
 var restful             = require('./server/helpers/SequelizeRestfulRouter.js');
 var gzippo              = require('gzippo');
 var ActiveSuport        = require('activesupport/active-support-node.js');
+var mongooseModel       = require('./server/mongoose');
 
 
 var Database            = require("./server/database");

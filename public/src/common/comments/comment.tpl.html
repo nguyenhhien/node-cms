@@ -1,0 +1,19 @@
+<div class="ui row threaded comments">
+    <!--Comment System-->
+    <h2 class="ui header">
+        <i class="icon inverted circular blue comment"></i> Comments
+    </h2>
+
+    <!--ng-repeat comments-->
+    <div ng-repeat="data in comments" ng-include="'comments/commentItem.tpl.html'"></div>
+
+    <!--add reply form-->
+    <form class="ui reply form">
+        <div class="field">
+            <textarea ng-model='newComment.text'></textarea>
+        </div>
+        <div class="margin-top-bottom10 btn btn-primary ui fluid blue labeled submit icon button" ng-click='addReply()'>
+            <i class="icon edit"></i> Add Comment
+        </div>
+    </form>
+</div>

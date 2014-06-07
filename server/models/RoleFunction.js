@@ -9,8 +9,8 @@ module.exports = function(sequelize, DataTypes) {
             freezeTableName: true,
             classMethods: {
                 associate: function(models) {
-                    RoleFunction.belongsTo(models.Role, {foreignKey: 'roleID'});
-                    RoleFunction.hasOne(models.Function, {foreignKey: 'roleFunctionID'});
+                    RoleFunction.belongsTo(models.Role, {foreignKey: 'roleId'});
+                    RoleFunction.hasOne(models.Function, {foreignKey: 'roleFunctionId'});
                 }
             },
             instanceMethods: {

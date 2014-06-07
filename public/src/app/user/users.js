@@ -6,7 +6,8 @@ var app = angular.module( 'mainApp.user', [
         'utils',
         'localytics.directives',
         'ui.bootstrap',
-        'mgcrea.ngStrap'
+        'mgcrea.ngStrap',
+        'ngResource'
     ])
     .config(function config( $stateProvider ) {
         $stateProvider
@@ -26,7 +27,7 @@ var app = angular.module( 'mainApp.user', [
 
 app.classy.controller({
     name: "UserSearchController",
-    inject: ['$rootScope', '$scope', '$http', 'User', 'utils'],
+    inject: ['$rootScope', '$scope', '$http', 'User', 'utils', '$resource'],
     getUsers: function(offset, limit)
     {
         var that = this;
@@ -50,9 +51,6 @@ app.classy.controller({
     },
     init: function(){
         var that = this;
-
-        that.$.currentPage = 1; //current page idx
-        that.$.itemsPerPage = 10; //number of items per pages
     }
 });
 

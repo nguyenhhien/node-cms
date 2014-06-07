@@ -7,8 +7,8 @@ module.exports = function(sequelize, DataTypes) {
             freezeTableName: true,
             classMethods: {
                 associate: function(models) {
-                    Role.hasMany(models.Position, {foreignKey: 'roleID'});
-                    Role.hasMany(models.RoleFunction, {foreignKey: 'roleID'});
+                    Role.hasMany(models.Position, {foreignKey: 'roleId'});
+                    Role.hasMany(models.RoleFunction, {foreignKey: 'roleId'});
                 }
             },
             instanceMethods: {

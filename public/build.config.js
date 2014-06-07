@@ -65,6 +65,7 @@ module.exports = {
       'vendor/jquery/dist/jquery.js',
       'vendor/bootstrap/dist/js/bootstrap.js',
       'vendor/angular/angular.js',
+      'vendor/angular-resource/angular-resource.js',
       'vendor/angular-strap/dist/angular-strap.js',
       'vendor/angular-strap/dist/angular-strap.tpl.js',
       'vendor/angular-bootstrap/ui-bootstrap.js',
