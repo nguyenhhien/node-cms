@@ -32,5 +32,9 @@ module.exports = (function()
         return text;
     }
 
+    this.regexEscape= function(s) {
+        return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    };
+
     return this;
 })();

@@ -1,7 +1,7 @@
 <div class="comment">
     <!--avatar of the commenter-->
     <a class="avatar">
-        <img ng-src="data.author.avatar">
+        <img ng-src="{{data.author.avatar}}">
     </a>
 
     <!--content of comment-->
@@ -12,23 +12,23 @@
         </div>
         <div class="text" ng-bind="data.text"></div>
         <div class="actions">
-            <a class="reply" ng-click="data.dataAddReplyPanel=!data.dataAddReplyPanel">
+            <a class="reply" ng-click="toggleReplyPanel(data)">
                 <span ng-show="!!data.dataAddReplyPanel">Hide Panel</span>
                 <span ng-show="!data.dataAddReplyPanel">Reply</span>
             </a>
-            <a class="delete" ng-click="remove(data)">Delete</a>
+            <a class="delete" ng-click="removeReply(data)">Delete</a>
         </div>
     </div>
 
     <!--child comments-->
-    <div ng-repeat="data in data.nodes" ng-include="'comments/commentItem.tpl.html'" class="comments"></div>
+    <div ng-repeat="data in data.replies" ng-include="'comments/commentItem.tpl.html'" class="comments"></div>
 
     <!--add reply panel-->
     <form class="ui reply form" ng-show="!!data.dataAddReplyPanel">
         <div class="field">
-            <textarea ng-model='data.text'></textarea>
+            <textarea ng-model='data.newReply.text'></textarea>
         </div>
-        <div class="margin-top-bottom10 btn btn-primary ui button teal submit labeled icon" ng-click="addReply(data)">
+        <div class="margin-top-bottom10 btn btn-primary ui button teal submit labeled icon" ng-click="addReply(data.newReply)">
             <i class="icon edit"></i> Add Reply
         </div>
     </form>

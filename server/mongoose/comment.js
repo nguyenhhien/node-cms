@@ -11,7 +11,8 @@ var commentSchema = new Schema({
     rating: Number,
     posted: Date,
     updated: Date,
-    parentId: {
+    parentId: String,
+    parent: {
         type: Schema.Types.ObjectId,
         ref: 'Comment'
     },

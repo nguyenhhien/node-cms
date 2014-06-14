@@ -11,6 +11,7 @@ var _                   = require('lodash-node');
 var Chance              = require('chance'),
     chance              = new Chance();
 var                     dateFormat = require('dateformat');
+var Utils               = require("../helpers/Utils.js");
 
 var router = express.Router();
 
@@ -27,11 +28,14 @@ router.post("/comments", function(req, res){
     var errors = req.validationErrors();
     if (errors) return res.error(utils.formatValidationError(errors));
 
-    var parentSlug = req.param("parent") && req.param("parent").slug,
-        parentFullSlug = req.param("parent") && req.param("parent").fullSlug;
+    var newComment = req.body;
 
+    var parentSlug = newComment.parent && newComment.parent.slug,
+        parentFullSlug = newComment.parent && newComment.parent.fullSlug;
+
+    //generate random slug -- avoid special character [ cause regex escape in V8 got error (\\[)
     var now = new Date(),
-        slug = chance.string({length: 4}),
+        slug = chance.string({alpha: true, length: 4}),
         fullSlug = dateFormat(now, "yyyy.mm.dd.hh.MM.ss") + ":" + slug;
 
     //append parent slug into this slug
@@ -46,6 +50,8 @@ router.post("/comments", function(req, res){
         posted: now,
         slug: slug,
         fullSlug: fullSlug,
+        parentId: newComment.parent && newComment.parent._id,
+        parent: newComment.parent && newComment.parent._id,
         author: {
             id: req.session.user.id,
             name: req.session.user.name,
@@ -120,7 +126,7 @@ router.get("/comments", function(req, res){
             })
             .done();
     }
-})
+});
 
 //update comments -- using post because it's not idempotent
 router.post("/comments/:id", function(req, res){
@@ -144,7 +150,7 @@ router.post("/comments/:id", function(req, res){
         .fail(function(err){
             return res.error(err);
         })
-})
+});
 
 //remove comments
 router.delete("/comments/:id", function(req, res){
@@ -156,14 +162,31 @@ router.delete("/comments/:id", function(req, res){
     //get the id of comments
     var commentId = req.param("id");
 
-    //remove comments
-    mongooseModel.Comment.removeQ({_id: commentId, 'author.id': req.session.user.id})
+    //find and remove all child reply + comment
+    mongooseModel.Comment
+        .where('_id', commentId)
+        .where('author.id', req.session.user.id)
+        .execQ()
+        .then(function(comments){
+            if(comments.length == 0)
+                return Q.reject("Comment with id = " + commentId + " not found in the system");
+
+            var comment = comments[0];
+
+            //remove comments
+            return mongooseModel.Comment.removeQ({
+                    discussionId: comment.discussionId,
+                    discussionName: comment.discussionName,
+                    fullSlug: new RegExp('^'+ Utils.regexEscape(comment.fullSlug))
+                })
+        })
         .then(function(){
             res.success();
         })
         .fail(function(err){
             return res.error(err);
         })
+
 });
 
 module.exports = router;
