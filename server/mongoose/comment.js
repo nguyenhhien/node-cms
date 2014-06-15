@@ -5,7 +5,7 @@ var Q               = require('q');
 var commentSchema = new Schema({
     discussionId: String,
     discussionName: String,
-    title: String,
+    name: String,
     slug: String,
     fullSlug: String,
     rating: Number,
