@@ -8,7 +8,8 @@ var app = angular.module( 'mainApp.dashboard', [
         'ui.bootstrap',
         'mgcrea.ngStrap',
         'templates-common',
-        'common.commentThread'
+        'common.commentThread',
+        'common.treeView'
     ])
     .config(function config( $stateProvider ) {
         $stateProvider
@@ -20,12 +21,8 @@ var app = angular.module( 'mainApp.dashboard', [
             });
     });
 
+app.controller("DashboardController", function($rootScope, $scope, $http, User, utils, $resource){
+    this.$inject = ['$rootScope', '$scope', '$http', 'User', 'utils', '$resource'];
 
-app.classy.controller({
-    name: "DashboardController",
-    inject: ['$rootScope', '$scope', '$http', 'User', 'utils'],
-    init: function()
-    {
 
-    }
 });

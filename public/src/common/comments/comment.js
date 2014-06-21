@@ -1,5 +1,4 @@
 var app = angular.module( 'common.commentThread', [
-    'classy',
     'utils',
     'localytics.directives',
     'ui.bootstrap',

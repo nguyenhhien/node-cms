@@ -1,0 +1,14 @@
+<!--Group of child nodes-->
+<ul role="group" class="jstree-children" style="">
+    <li ng-repeat="node in node.childNodes"
+        class="jstree-node" ng-class="{'jstree-leaf': !node.childNodes || !node.childNodes.length, 'jstree-open': node.nodeOpen, 'jstree-closed': !node.nodeOpen}">
+        <i class="jstree-icon jstree-ocl" ng-click="toggleChildNode(node)"></i>
+        <a class="jstree-anchor" href="#"
+           ng-class="{'jstree-clicked': selectedTreeNode.id == node.id}"
+           ng-click="selectTreeNode(node)">
+            <i class="jstree-icon jstree-themeicon"></i>
+            {{node.name}}
+        </a>
+        <span ng-show="!!node.nodeOpen" ng-include="'treeView/treeViewItem.tpl.html'"></span>
+    </li>
+</ul>

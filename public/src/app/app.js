@@ -32,6 +32,7 @@ angular.module( 'mainApp', [
     'mainApp.userAccount',
     'mainApp.user',
     'mainApp.dashboard',
+    'mainApp.location',
     'commonDirectives'
 ])
 

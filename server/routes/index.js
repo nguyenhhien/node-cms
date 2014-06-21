@@ -1,5 +1,6 @@
 var Users       = require("./Users");
 var Comments    = require("./Comments");
+var Location    = require("./Location");
 
 //set up router for the main app
 module.exports = function(app)
@@ -12,5 +13,7 @@ module.exports = function(app)
     //import other modules
     app.use('/api/users', Users);
 
+    //other router
     app.use('/api', Comments);
+    app.use('/api', Location);
 }

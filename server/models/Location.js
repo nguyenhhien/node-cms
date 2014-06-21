@@ -4,8 +4,8 @@ var Q                   = require("q");
 module.exports = function(sequelize, DataTypes) {
     var Location = sequelize.define("Location", {
             name: DataTypes.STRING,
-            left: DataTypes.INTEGER,
-            right: DataTypes.INTEGER,
+            lft: DataTypes.INTEGER,
+            rgt: DataTypes.INTEGER,
             level: DataTypes.INTEGER,
             path: DataTypes.STRING
         },
@@ -32,16 +32,16 @@ module.exports = function(sequelize, DataTypes) {
                     sequelize.transaction(function(t) {
                         Q(Location.find({where: {id: parentId} },{ transaction: t}))
                             .then(function(parent){
-                                //insert node as right-most child node of certain parent node
+                                //insert node as rgt-most child node of certain parent node
                                 if(parent){
-                                    parentRight = parent.right;
-                                    parentLeft = parent.left;
+                                    parentRight = parent.rgt;
+                                    parentLeft = parent.lft;
                                     parentLevel = parent.level;
                                     parentId = parent.id;
 
                                     //update other affected node
-                                    var query = "UPDATE Location SET left = CASE WHEN left > ? THEN left + 2 ELSE left END, " +
-                                        "right= CASE WHEN right > ? THEN right + 2 ELSE right END WHERE right > ?";
+                                    var query = "UPDATE Location SET lft = CASE WHEN lft > ? THEN lft + 2 ELSE lft END, " +
+                                        "rgt= CASE WHEN rgt >= ? THEN rgt + 2 ELSE rgt END WHERE rgt >= ?";
 
                                     return sequelize.query(query, null, {raw: true, transaction: t}, [parentRight, parentRight, parentRight]);
                                 }
@@ -54,23 +54,23 @@ module.exports = function(sequelize, DataTypes) {
                                 //insert the current node
                                 return Q(Location.create({
                                     name: treeNode.name,
-                                    left: parentRight,
-                                    right: parentRight+1,
+                                    lft: parentRight,
+                                    rgt: parentRight+1,
                                     level: parentLevel+1,
-                                    parentId: parent.id
+                                    parentId: parentId
                                 }, {transaction:t}));
                             })
                             .then(function(newLocation){
                                 t.commit().success(function() {
                                     console.log("Transaction is commit");
-                                    return Q.resolve(newLocation);
+                                    return deferred.resolve(newLocation);
                                 });
                             })
                             .fail(function(err){
                                 //fail somewhere -- need to roolback
                                 t.rollback().success(function() {
                                     console.log("Transaction is rollback because " + err);
-                                    return Q.reject(err);
+                                    return deferred.reject(err);
                                 });
                             });
 
@@ -94,12 +94,12 @@ module.exports = function(sequelize, DataTypes) {
                             .then(function(treeNode){
                                 if(treeNode)
                                 {
-                                    nodeLeft = treeNode.left;
-                                    nodeRight = treeNode.right;
+                                    nodeLeft = treeNode.lft;
+                                    nodeRight = treeNode.rgt;
                                     nodeWidth = (nodeRight - nodeLeft + 1);
 
                                     //delete child node
-                                    var query = "DELETE FROM Location WHERE left BETWEEN ? AND ?";
+                                    var query = "DELETE FROM Location WHERE lft BETWEEN ? AND ?";
 
                                     return sequelize.query(query, null, {raw: true, transaction: t}, [nodeLeft, nodeRight]);
                                 }
@@ -110,27 +110,27 @@ module.exports = function(sequelize, DataTypes) {
                             })
                             .then(function(){
                                 //run update other node
-                                var query = "UPDATE Location SET right = right - ? WHERE right > ?";
+                                var query = "UPDATE Location SET rgt = rgt - ? WHERE rgt > ?";
 
                                 return sequelize.query(query, null, {raw: true, transaction: t}, [nodeWidth, nodeRight]);
                             })
                             .then(function(){
                                 //run update other node
-                                var query = "UPDATE Location SET left = left - ? WHERE left > ?";
+                                var query = "UPDATE Location SET lft = lft - ? WHERE lft > ?";
 
                                 return sequelize.query(query, null, {raw: true, transaction: t}, [nodeWidth, nodeRight]);
                             })
                             .then(function(){
                                 t.commit().success(function() {
                                     console.log("Transaction is commit");
-                                    return Q.resolve();
+                                    return deferred.resolve();
                                 });
                             })
                             .fail(function(err){
                                 //fail somewhere -- need to roolback
                                 t.rollback().success(function() {
                                     console.log("Transaction is rollback because " + err);
-                                    return Q.reject(err);
+                                    return deferred.reject(err);
                                 });
                             });
 
@@ -141,6 +141,18 @@ module.exports = function(sequelize, DataTypes) {
                     });
 
                     return deferred.promise;
+                },
+                getFullTree: function()
+                {
+                    //rootnode has left node = 1
+                    var query = "SELECT node.* \
+                                FROM Location AS node, \
+                                Location AS parent \
+                                WHERE node.lft BETWEEN parent.lft AND parent.rgt \
+                                AND parent.lft = 1 \
+                                ORDER BY node.lft";
+
+                    return sequelize.query(query, null, {raw: true}, []);
                 }
             },
             instanceMethods: {
