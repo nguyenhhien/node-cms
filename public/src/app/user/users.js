@@ -25,43 +25,45 @@ var app = angular.module( 'mainApp.user', [
             });
     });
 
-app.classy.controller({
-    name: "UserSearchController",
-    inject: ['$rootScope', '$scope', '$http', 'User', 'utils', '$resource'],
-    getUsers: function(offset, limit)
-    {
-        var that = this;
-        that.User.where({offset: offset, limit: limit})
-            .then(function(response){
-                that.$.users = response.rows;
-                that.$.totalItems = response.count;
-            });
-    },
-    watch: {
-        'currentPage': function(currentPage)
-        {
-            if(!currentPage)
-            {
-                return;
+app.controller("UserSearchController", function($rootScope, $scope, $http, User, utils, $resource){
+
+    this.$inject = ['$rootScope', '$scope', '$http', 'User', 'utils', '$resource'];
+
+    var UserResource = $resource('/api/restful/user/:id', {id: '@_id'}, {
+        query:{
+            isArray: true, method: 'GET',
+            transformResponse: function (data, headers) {
+                if(JSON.parse(data) && JSON.parse(data).rows)
+                {
+                    $scope.totalItems = data.count;
+                    return JSON.parse(data).rows;
+                }
+                else
+                {
+                    return data;
+                }
             }
-
-            //load current page
-            this.getUsers((currentPage-1)*this.$.itemsPerPage, this.$.itemsPerPage);
         }
-    },
-    init: function(){
-        var that = this;
-    }
-});
+    });
 
-app.classy.controller({
-    name: "UserEditController",
-    inject: ['$rootScope', '$scope', '$http', 'User', 'utils'],
-    init: function(){
-        var that = this;
-        that.User.all()
-            .then(function(response){
-                that.$.users = response;
-            });
-    }
+    $scope.getUsers = function(offset, limit)
+    {
+        UserResource.query({
+            limit: limit, offset: offset
+        }).$promise.then(function(response){
+            $scope.users = response;
+        });
+    };
+
+    $scope.$watch('currentPage', function(currentPage)
+    {
+        if(currentPage)
+        {
+            //load current page
+            $scope.getUsers((currentPage-1)* $scope.itemsPerPage, $scope.itemsPerPage);
+        }
+    });
+
+    $scope.itemsPerPage = 10;
+    $scope.currentPage = 1;
 });

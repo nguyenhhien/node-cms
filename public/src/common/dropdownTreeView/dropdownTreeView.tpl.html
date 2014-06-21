@@ -1,0 +1,17 @@
+<!--choosen container style-->
+<div class="chosen-container choosen-treeview chosen-container-single"
+     ng-class="{'chosen-container-active chosen-with-drop': dropdownVisible}" title="">
+    <a class="chosen-single" ng-click="toggleDropdown()" tabindex="-1">
+        <!--selected values-->
+        <span ng-bind="selectedTreeNode.name"></span>
+        <div><b></b></div>
+    </a>
+
+    <div class="chosen-drop">
+        <div class="chosen-search"><input type="text" autocomplete="off"></div>
+        <ul class="chosen-results">
+            <!--treeview models-->
+            <div tree-view object-name='locations' selected-tree-node='selectedTreeNode' init-node-id="{{initNodeId}}"></div>
+        </ul>
+    </div>
+</div>

@@ -25,6 +25,7 @@ if(location.href.indexOf("index.html") != -1)
 
 }
 
+
 angular.module( 'mainApp', [
     'templates-app',
     'templates-common',

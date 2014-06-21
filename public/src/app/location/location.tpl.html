@@ -17,7 +17,7 @@
                     </div>
 
                     <!--tree directive-->
-                    <div tree-view object-name='locations'></div>
+                    <div tree-view object-name='locations' selected-tree-node='selectedLocation'></div>
                 </section>
             </div>
 
@@ -32,7 +32,7 @@
                     </div>
 
                     <div class="form-horizontal">
-                        <div class="form-group">
+                        <div class="form-group" ng-show="0">
                             <label for="locationId" class="control-label col-lg-3 required">
                                 ID
                             </label>
@@ -41,13 +41,25 @@
                                        ng-model='selectedLocation.id' required="required">
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="fullname" class="control-label col-lg-3 required">
-                                Name
+                                Location Name
                             </label>
                             <div class="col-lg-9">
                                 <input type="text" name="fullname" id="fullname" class="fixed-width-xxl"
                                        ng-model='selectedLocation.name' required="required">
+                            </div>
+                        </div>
+
+                        <!--Parent Location-->
+                        <div class="form-group">
+                            <label for="fullname" class="control-label col-lg-3 required">
+                                Parent Location
+                            </label>
+                            <div class="col-lg-9">
+                                <div dropdown-tree-view  class="fixed-width-xxl" object-name='locations'
+                                     selected-tree-node='selectedLocation.parent' init-node-id='{{selectedLocation.parentId}}'></div>
                             </div>
                         </div>
                     </div>

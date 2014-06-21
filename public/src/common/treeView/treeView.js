@@ -12,13 +12,15 @@ app.directive('treeView', ["$rootScope", "$resource", "utils", function($rootSco
 {
     return {
         scope: {
-            objectName: "=",
-            visibleLevel: "="
+            objectName: "@",
+            visibleLevel: "@",
+            initNodeId: "@",
+            selectedTreeNode: "="
         },
         templateUrl: "treeView/treeView.tpl.html",
         link: function (scope, element, attr)
         {
-            var visibleLevel = scope.visibleLevel || 3;
+            var visibleLevel = parseInt(scope.visibleLevel) || 3;
 
             var ObjectResource = $resource('/api/locations/:id', {id: '@_id'}, {
                 query:{
@@ -74,8 +76,29 @@ app.directive('treeView', ["$rootScope", "$resource", "utils", function($rootSco
                     //init rootNodes recursive
                     //by default, rootNodes is open
                     initReplyRecursive(scope.rootNodes);
+
+                    //initialize selected treenode
+                    if(scope.initNodeId)
+                    {
+                        scope.initNodeId = parseInt(scope.initNodeId);
+                        scope.selectedTreeNode = nodeMap[scope.initNodeId];
+                        scope.selectedTreeNode.manualUserSelect = false;
+                        console.log("update node selected with id ", scope.initNodeId);
+                    }
+
+                    scope.$watch('initNodeId', function(nodeId){
+                        if(nodeId)
+                        {
+                            nodeId = parseInt(nodeId);
+                            scope.selectedTreeNode = nodeMap[nodeId];
+                            scope.selectedTreeNode.manualUserSelect = false;
+                            console.log("update selected with id ", nodeId);
+                        }
+                    });
+
                     console.log(scope.rootNodes);
                 });
+
 
             //toggle child node visibility
             scope.toggleChildNode = function(node)
@@ -86,6 +109,7 @@ app.directive('treeView', ["$rootScope", "$resource", "utils", function($rootSco
             scope.selectTreeNode = function(node)
             {
                 scope.selectedTreeNode = node;
+                scope.selectedTreeNode.manualUserSelect = true;
             };
         }
     };

@@ -3,7 +3,7 @@
     <li ng-repeat="node in node.childNodes"
         class="jstree-node" ng-class="{'jstree-leaf': !node.childNodes || !node.childNodes.length, 'jstree-open': node.nodeOpen, 'jstree-closed': !node.nodeOpen}">
         <i class="jstree-icon jstree-ocl" ng-click="toggleChildNode(node)"></i>
-        <a class="jstree-anchor" href="#"
+        <a class="jstree-anchor"
            ng-class="{'jstree-clicked': selectedTreeNode.id == node.id}"
            ng-click="selectTreeNode(node)">
             <i class="jstree-icon jstree-themeicon"></i>

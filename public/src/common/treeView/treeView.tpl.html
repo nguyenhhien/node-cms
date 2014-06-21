@@ -4,7 +4,7 @@
     <ul class="jstree-container-ul jstree-no-dots">
         <li ng-repeat="node in rootNodes" class="jstree-node">
             <i class="jstree-icon jstree-ocl" ng-click="toggleChildNode(node)"></i>
-            <a class="jstree-anchor" href="#" ng-click="selectTreeNode(node)"
+            <a class="jstree-anchor" ng-click="selectTreeNode(node)"
                ng-class="{'jstree-clicked': selectedTreeNode.id == node.id}">
                 <i class="jstree-icon jstree-themeicon"></i>
                 {{node.name}}
