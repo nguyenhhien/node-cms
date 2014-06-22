@@ -35,7 +35,7 @@ app.controller("UserSearchController", function($rootScope, $scope, $http, User,
             transformResponse: function (data, headers) {
                 if(JSON.parse(data) && JSON.parse(data).rows)
                 {
-                    $scope.totalItems = data.count;
+                    $scope.totalItems = JSON.parse(data).count;
                     return JSON.parse(data).rows;
                 }
                 else

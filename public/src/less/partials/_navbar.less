@@ -1,29 +1,48 @@
+//navbar height
+@navbar-top-height: 52px;
+
 .main-navbar
 {
   margin-bottom: 0px;
+  position: fixed;
+  width: 100%;
+  top: 0px;
+  z-index: 500;
 
   .navbar-header
   {
+    .navbar-toggle
+    {
+      margin-top: 7px;
+    }
+
     .navbar-brand
     {
-      .logo
+      line-height: @navbar-top-height;
+      height: auto;
+      float: none;
+
+      .fa.logo
       {
-        background: url("../assets/images/snowflake.png");
-        width: 33px;
-        height: 33px;
-        display: inline-block;
+//        background: url("../assets/images/snowflake.png");
+//        width: 33px;
+//        height: 33px;
+//        display: inline-block;
+//        float: left;
+//        position: absolute;
+//        top: 5px;
+//        left: 0;
+//        background-size: 33px 33px;
+//        margin-left: 11px;
+
         float: left;
-        position: absolute;
-        top: 5px;
-        left: 0;
-        background-size: 33px 33px;
-        margin-left: 11px;
+        line-height: 52px;
+        font-size: 42px;
       }
 
       .text
       {
-        margin-left: 48px;
-        margin-top: -2px;
+        margin: -2px 7px 0px 8px;
         font-size: 15px;
         color: white;
         display: inline-block;
@@ -50,6 +69,10 @@
         {
           color: white;
           text-transform: uppercase;
+
+          height: @navbar-top-height;
+          line-height: @navbar-top-height;
+          padding: 0 16px;
         }
 
         a
@@ -74,7 +97,7 @@
         {
           & > a
           {
-            padding: 9px 15px;
+            padding: 3px 15px;
 
             i
             {
@@ -99,8 +122,6 @@
           .account-text
           {
             text-transform: capitalize;
-            padding-top: 9px;
-            padding-bottom: 9px;
 
             .avatar_wrapper
             {

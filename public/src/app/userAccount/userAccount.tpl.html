@@ -1,3 +1,17 @@
+<!--Header BreadCumb-->
+<div class="page-head">
+    <h2 class="page-title">My Account</h2>
+    <ul class="breadcrumb page-breadcrumb">
+        <li class="breadcrumb-current">
+            <a href="">
+                <i class="fa fa-users"></i>
+                User Account
+            </a>
+        </li>
+    </ul>
+</div>
+
+
 <div class="content bootstrap userAccountPage">
 <form id="user_form" class="userAccountForm form-horizontal"
       action=""
@@ -25,9 +39,10 @@
 
     <div class="col-lg-9">
         <div id="user-thumbnail">
-            <img class="imgm img-thumbnail" alt="" src="http://lorempixel.com/96/96/people/9" width="96" height="96">
+            <img class="imgm img-thumbnail" alt="" ng-src="{{user.avatar}}" width="96" height="96">
         </div>
-        <div class="alert alert-info top7">Your avatar should be 96x96. Alternative you can use your facebook and google profile avatar.
+        <div class="callout-panel alert alert-info top7">
+            <i class="fa fa-info-circle info"></i>Your avatar should be 96x96. Alternative you can use your facebook and google profile avatar.
             You can resize the avatar using our tool.
         </div>
     </div>
@@ -148,14 +163,14 @@
                             <button type="button"
                                     ng-click="showChangePasswordForm = !showChangePasswordForm"
                                     class="btn btn-default">
-                                <i class="fa fa-times"></i>
+                                <i class="btn-icon-action-cancel fa fa-times"></i>
                                 Close
                             </button>
 
                             <button type="button" class="btn btn-default pull-right"
                                     ng-click="changeNewPassword()"
                                     ng-disabled="account.$invalid">
-                                <i class="fa fa-floppy-o"></i>
+                                <i class="btn-icon-action-save fa fa-floppy-o"></i>
                                 Update
                             </button>
                         </div>
@@ -296,7 +311,8 @@
             </button>
         </div>
 
-        <div class="alert alert-info top20">
+        <div class="callout-panel alert alert-info top20">
+            <i class="fa fa-info-circle"></i>
             By linking to your facebook/google account,
             you can easily login to the system after logging in successfully to your facebook/google accounts. If you chose to disconnect from
             facebook or google, you will not be able to use facebook/google login function. So make sure, you are able to use the normal
@@ -308,10 +324,10 @@
 
 <div class="panel-footer">
     <button type="submit" class="btn btn-default pull-right" ng-click="saveUserAccount()">
-        <i class="fa fa-floppy-o"></i> Save
+        <i class="btn-icon-action-save fa fa-floppy-o"></i> Save
     </button>
     <a class="btn btn-default" onclick="window.history.back()">
-        <i class="fa fa-times"></i> Cancel
+        <i class="btn-icon-action-cancel fa fa-times"></i> Cancel
     </a>
 </div>
 </div>

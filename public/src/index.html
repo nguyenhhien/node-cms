@@ -35,8 +35,8 @@
                   <span class="icon-bar"></span>
               </button>
               <a class="navbar-brand" href="#!">
-                  <i class="logo"></i>
-                  <span class="text">IPouch</span>
+                  <i class="logo fa fa-github-square"></i>
+                  <span class="text">Thunder Site</span>
               </a>
           </div>
 
@@ -74,7 +74,7 @@
                   <li class="dropdown account-wrapper">
                       <a href="#!/userAccount" class="dropdown-toggle account-text" data-toggle="dropdown">
                           <span class="avatar_wrapper small">
-								<img class="imgm img-thumbnail" alt="" src="http://lorempixel.com/32/32/people/9" width="32" height="32">
+								<img class="imgm img-thumbnail" alt="" ng-src="{{user.avatar}}" width="32" height="32">
                           </span>
                           My Account <b class="caret"></b>
                       </a>
@@ -82,7 +82,7 @@
                           <li>
                             <span class="avatar-wrapper">
                                 <img class="imgm img-thumbnail" alt=""
-                                     src="http://lorempixel.com/96/96/people/9" width="96" height="96">
+                                     ng-src="{{user.avatar}}" width="96" height="96">
                             </span>
                           </li>
                           <li class="divider"></li>
