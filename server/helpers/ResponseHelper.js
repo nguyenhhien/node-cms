@@ -1,6 +1,8 @@
 //extend the http object
 module.exports = function(http)
 {
+    var winston             = require('winston');
+
     http.ServerResponse.prototype.success = function(data)
     {
        this.json(ResponseCode.OK, data || {});
@@ -23,7 +25,7 @@ module.exports = function(http)
         //errors is object of Error type
         else if (error instanceof Error)
         {
-            logger.error("error", error);
+            winston.error("error", error);
             return this.json(ResponseCode.OK, {
                 error: error.message
             })

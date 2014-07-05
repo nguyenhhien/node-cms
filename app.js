@@ -1,7 +1,7 @@
 require("./server/config.js");
 require("./server/constant.js");
 
-var models              = require("./server/models");
+//third-party modules
 var express 			= require("express");
 var cluster             = require('cluster');
 var path                = require("path");
@@ -17,49 +17,58 @@ var session             = require('express-session')
 var RedisStore          = require('connect-redis')(session);
 var passport            = require('passport');
 var jwt                 = require('express-jwt');
-var routes              = require("./server/routes");
 var expressValidator    = require('express-validator');
+var gzippo              = require('gzippo');
+var winston             = require('winston');
+var os                  = require('os');
+var ActiveSuport        = require('activesupport/active-support-node.js');
+
+//app modules
 var utils               = require("./server/helpers/Utils.js");
 var restful             = require('./server/helpers/SequelizeRestfulRouter.js');
-var gzippo              = require('gzippo');
-var ActiveSuport        = require('activesupport/active-support-node.js');
-var mongooseModel       = require('./server/mongoose');
+var routes              = require("./server/routes");
+var sequelize           = require("./server/database/sequelize.js");
+var redis               = require("./server/database/redis.js");
+var mongo               = require("./server/database/mongo.js");
+var mongoose            = require('./server/database/mongoose.js');
 
-
-var Database            = require("./server/database");
-
-//set logger information
-log4js.configure({
-    "appenders": [
-        {
-            type: "file",
-            filename: path.join(__dirname, "logs.log"),
-            "category" : "main"
-        },
-        {
-            type: "console"
-        }
-    ],
-    replaceConsole: true
+//winston log transport
+winston.remove(winston.transports.Console);
+winston.add(winston.transports.Console, {
+    colorize: true
 });
 
-logger = log4js.getLogger("main");
-logger.setLevel("INFO");
+//TODO: change to error log for error and add mongodb transport
+winston.add(winston.transports.File, {
+    filename: 'logs.log',
+    level: 'info'
+});
 
+// TODO: remove once https://github.com/flatiron/winston/issues/280 is fixed
+winston.err = function (err) {
+    winston.error(err.stack);
+};
 
+//cluster support
 if (cluster.isMaster) {
-    //sync schema model definition
-    //TODO: add callback and only fork after sync success
-    Database.syncSchema();
+    //open sequelize connection and sync schema -- only for worker process
+    sequelize.init()
+        .then(function(){
+            return sequelize.syncSchema();
+        })
+        .then(function(){
+            var cpuCount = require('os').cpus().length;
 
-    var cpuCount = require('os').cpus().length;
+            winston.info("Fork process in " + cpuCount + " CPUs");
 
-    console.log("Fork process in " + cpuCount + " CPUs");
-
-    // Create a worker for each CPU
-    for (var i = 0; i < cpuCount; i += 1) {
-        cluster.fork();
-    }
+            // Create a worker for each CPU
+            for (var i = 0; i < cpuCount; i += 1) {
+                cluster.fork();
+            }
+        })
+        .fail(function(err){
+            winston.error("Error happen when open sequelize")
+        })
 }
 else
 {
@@ -96,9 +105,9 @@ else
         store:  new RedisStore({
             host: 	Config.Redis.host,
             port:	Config.Redis.port,
-            db:		3,
+            db:		Config.Redis.db,
             pass:	Config.Redis.pass,
-            client:	Database.getRedisCli()
+            client:	redis.client
         }),
         maxAge: 3600000,
         secret: 'auth-secret'
@@ -106,6 +115,9 @@ else
 
     //extend response header
     require("./server/helpers/ResponseHelper.js")(http);
+
+    //setup route -- this will route corresponding resquest to correct route handler
+    routes(app);
 
     //set necessary header -- for CORS
     app.use(function(req, res, next)
@@ -115,35 +127,40 @@ else
         res.header('Access-Control-Allow-Headers', 'Content-Type');
         res.header('Access-Control-Allow-Credentials', true); //allow CORS
 
-        next()
-    })
-
-    //setup route
-    routes(app);
+        next();
+    });
 
     //app.use("/", express.static(__dirname + "/public/build"));		// serve public files straight away
-    app.use(gzippo.staticGzip(__dirname + '/public/build'));
+    app.use(gzippo.staticGzip(__dirname + '/public/build')); //TODO: move to nginx gzip
 
-    //setup sequelize restful API endpoint
-    app.use(restful(models.sequelize, {
-        endpoint: '/api/restful',
-        allowed: [
+    //webserver process, then open all connections to redis, mongo, sequelize
+    Q.all([redis.init(), mongo.init(), mongoose.init(), sequelize.init()])
+        .then(function(){
+            //setup restful API endpoint
+            app.use(restful(sequelize.client, {
+                endpoint: '/api/restful',
+                allowed: [
+                    {
+                        tableName: "User",
+                        //attributes cannot be update
+                        restrictedWriteAttributes: ["email", "password"],
+                        //attribute will not be returned
+                        restrictedReadAttributes: ["password"],
+                        //list of restful method allowed
+                        allowedMethods: ["GET", "PUT"]
+                    }
+                ]
+            }));
+
+            //start listen
+            app.listen(PORT, function()
             {
-                tableName: "User",
-                //attributes cannot be update
-                restrictedWriteAttributes: ["email", "password"],
-                //attribute will not be returned
-                restrictedReadAttributes: ["password"],
-                //list of restful method allowed
-                allowedMethods: ["GET", "PUT"]
-            }
-        ]
-    }));
-
-    app.listen(PORT, function()
-    {
-        console.log("Web server process listening on %s:%d ", PORT);
-    });
+                winston.log("Web server process listening on %s:%d ", PORT);
+            });
+        })
+        .fail(function(error){
+            winston.error(error);
+        });
 }
 
 

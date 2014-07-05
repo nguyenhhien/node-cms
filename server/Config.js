@@ -22,7 +22,14 @@ Config =
     {
         host:					"localhost",
         port:					6379,
-        pass:					null
+        pass:					null,
+        db:                     3
+    },
+    Mongo:
+    {
+        host:                   "localhost",
+        port:                   27017,
+        db:                     "auth"
     },
     Oath:
     {

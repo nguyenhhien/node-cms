@@ -1,16 +1,15 @@
 var express             = require('express');
 var bcrypt 		        = require("bcrypt");
-var models              = require("../models");
-var mongooseModel       = require('../mongoose');
+var mongoose            = require('../database/mongoose.js');
 var Q                   = require("q");
 var async               = require("async");
 var utils               = require("../helpers/Utils.js");
 var Email               = require("../modules/email");
 var request 	        = require("request");
 var _                   = require('lodash-node');
-var Chance              = require('chance'),
-    chance              = new Chance();
-var                     dateFormat = require('dateformat');
+var Chance              = require('chance');
+var chance              = new Chance();
+var dateFormat          = require('dateformat');
 var Utils               = require("../helpers/Utils.js");
 
 var router = express.Router();
@@ -61,7 +60,7 @@ router.post("/comments", function(req, res){
     });
 
     //create comments
-    mongooseModel.Comment.createQ(savedComment)
+    mongoose.models.Comment.createQ(savedComment)
         .then(function(comment){
             return res.success(comment);
         })
@@ -86,7 +85,7 @@ router.get("/comments", function(req, res){
     if(limit != null && offset != null)
     {
         Q.all([
-                mongooseModel.Comment
+                mongoose.models.Comment
                     .find()
                     .where('discussionId', req.param('discussionId'))
                     .where('discussionName', req.param('discussionName'))
@@ -94,7 +93,7 @@ router.get("/comments", function(req, res){
                     .limit(limit)
                     .sort({'full_slug': -1})
                     .execQ(),
-                mongooseModel.Comment.count()
+                mongoose.models.Comment.count()
                     .where('discussionId', req.param('discussionId'))
                     .where('discussionName', req.param('discussionName'))
                     .execQ()
@@ -112,7 +111,7 @@ router.get("/comments", function(req, res){
     }
     else
     {
-        mongooseModel.Comment
+        mongoose.models.Comment
             .find()
             .where('discussionId', req.param('discussionId'))
             .where('discussionName', req.param('discussionName'))
@@ -141,7 +140,7 @@ router.post("/comments/:id", function(req, res){
     //updated timestamp
     req.body.updated = new Date();
 
-    mongooseModel.Comment.findOneAndUpdateQ({_id: commentId, 'author.id': req.session.user.id}, req.body)
+    mongoose.models.Comment.findOneAndUpdateQ({_id: commentId, 'author.id': req.session.user.id}, req.body)
         .then(function(newComment){
             if(!newComment || !newComment.id) return res.error("Comment is not found or does not belong to the user");
 
@@ -163,7 +162,7 @@ router.delete("/comments/:id", function(req, res){
     var commentId = req.param("id");
 
     //find and remove all child reply + comment
-    mongooseModel.Comment
+    mongoose.models.Comment
         .where('_id', commentId)
         .where('author.id', req.session.user.id)
         .execQ()
@@ -174,7 +173,7 @@ router.delete("/comments/:id", function(req, res){
             var comment = comments[0];
 
             //remove comments
-            return mongooseModel.Comment.removeQ({
+            return mongoose.models.Comment.removeQ({
                     discussionId: comment.discussionId,
                     discussionName: comment.discussionName,
                     fullSlug: new RegExp('^'+ Utils.regexEscape(comment.fullSlug))

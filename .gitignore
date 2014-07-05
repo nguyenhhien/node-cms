@@ -1,6 +1,8 @@
 .idea/*
 node_modules/
 logs.log
+error.log
+dump.rdb
 public/build
 public/bin
 public/node_modules

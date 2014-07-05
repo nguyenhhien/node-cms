@@ -56,7 +56,13 @@
     "sequelize-restful": "^0.1.0",
     "serve-static": "^1.0.4",
     "socket.io": "^0.9.16",
-    "url": "~0.7.9"
+    "url": "~0.7.9",
+    "winston": "^0.7.3",
+    "socket.io-wildcard": "^0.1.1",
+    "validator": "^3.16.0",
+    "nodeify": "^1.0.0",
+    "then-redis": "^0.3.12",
+    "moment": "^2.7.0"
   },
   "author": "stanley",
   "license": "BSD",

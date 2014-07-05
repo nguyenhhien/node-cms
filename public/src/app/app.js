@@ -17,12 +17,10 @@ if(location.href.indexOf("index.html") != -1)
                 return console.log("ERROR: ", user.error);
             }
 
-//            console.log("USER: ", user);
             User = user;
             $("body").show();
             angular.bootstrap(document, ["mainApp"]);
         });
-
 }
 
 

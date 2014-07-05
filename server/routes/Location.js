@@ -1,16 +1,14 @@
 var express             = require('express');
 var bcrypt 		        = require("bcrypt");
-var models              = require("../models");
-var mongooseModel       = require('../mongoose');
 var Q                   = require("q");
 var async               = require("async");
-var utils               = require("../helpers/Utils.js");
-var Email               = require("../modules/email");
 var request 	        = require("request");
 var _                   = require('lodash-node');
-var Chance              = require('chance'),
-    chance              = new Chance();
 var dateFormat          = require('dateformat');
+
+var sequelize           = require("../database/sequelize.js");
+var utils               = require("../helpers/Utils.js");
+var Email               = require("../modules/email");
 var Utils               = require("../helpers/Utils.js");
 
 var router = express.Router();
@@ -28,7 +26,7 @@ router.post("/locations", function(req, res){
     var errors = req.validationErrors();
     if (errors) return res.error(utils.formatValidationError(errors));
 
-    Q(models.Location.addTreeNode(req.parentId, req.body))
+    Q(sequelize.models.Location.addTreeNode(req.parentId, req.body))
         .then(function(newLocation){
             res.success(newLocation);
         })
@@ -45,7 +43,7 @@ router.get("/locations", function(req, res){
     }
 
     //TODO: return only location accessible by that user
-    Q(models.Location.getFullTree())
+    Q(sequelize.models.Location.getFullTree())
         .then(function(data){
             res.success(data);
         })
@@ -61,7 +59,7 @@ router.get("/locations/:id", function(req, res){
         return res.error("User session not found");
     }
 
-    Q(models.Location.find({where: {id: req.param.id}}))
+    Q(sequelize.models.Location.find({where: {id: req.param.id}}))
         .then(function(location){
             if(!location)
             {
@@ -87,7 +85,7 @@ router.post("/locations/:id", function(req, res){
         return res.error("User session not found");
     }
 
-    Q(models.Location.update(req.body))
+    Q(sequelize.models.Location.update(req.body))
         .then(function(){
             res.success();
         })
@@ -103,7 +101,7 @@ router.delete("/locations/:id", function(req, res){
         return res.error("User session not found");
     }
 
-    Q(models.Location.removeTreeNode(req.param.id))
+    Q(sequelize.models.Location.removeTreeNode(req.param.id))
         .then(function(newLocation){
             res.success();
         })
