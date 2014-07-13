@@ -6,7 +6,8 @@ Config =
 {
     Global: {
         appName: "ePouch",
-        needAccountActivation: 1
+        needAccountActivation: 1,
+        sessionSecret: 'auth-secret'
     },
     MySQL:
     {
@@ -30,10 +31,5 @@ Config =
         host:                   "localhost",
         port:                   27017,
         db:                     "auth"
-    },
-    Oath:
-    {
-        twitterConsumerKey: "P1XmEmbi1fxKQGpqQFcbz7tVz",
-        twitterConsumerSecret: "shNtpt2FbkOyAajbiLitJ3T0yo8HxZJz1Na4JeilAaqX6aUn8L"
     }
 }

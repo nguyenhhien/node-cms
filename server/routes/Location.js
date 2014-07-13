@@ -8,8 +8,6 @@ var dateFormat          = require('dateformat');
 
 var sequelize           = require("../database/sequelize.js");
 var utils               = require("../helpers/Utils.js");
-var Email               = require("../modules/email");
-var Utils               = require("../helpers/Utils.js");
 
 var router = express.Router();
 

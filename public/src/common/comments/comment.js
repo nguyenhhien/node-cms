@@ -11,8 +11,8 @@ app.directive('commentThreadBlock', ["$rootScope", "$resource", "utils", functio
 {
     return {
         scope: {
-            discussionId: "=",
-            discussionName: "=",
+            objectId: "=",
+            collectionName: "=",
             pageSize: "="
         },
         templateUrl: "comments/comment.tpl.html",
@@ -33,8 +33,8 @@ app.directive('commentThreadBlock', ["$rootScope", "$resource", "utils", functio
 
             //load all comments
             Comments.query({
-                discussionId: scope.discussionId,
-                discussionName: scope.discussionName,
+                objectId: scope.objectId,
+                collectionName: scope.collectionName,
                 limit: 100, offset: 0
             }).$promise.then(function(response){
                     scope.comments = scope.comments || [];
@@ -72,8 +72,8 @@ app.directive('commentThreadBlock', ["$rootScope", "$resource", "utils", functio
                 });
 
             scope.newComment = angular.extend(new Comments(), {
-                discussionId: scope.discussionId,
-                discussionName: scope.discussionName
+                objectId: scope.objectId,
+                collectionName: scope.collectionName
             });
 
             //toggle add reply panel
@@ -86,8 +86,8 @@ app.directive('commentThreadBlock', ["$rootScope", "$resource", "utils", functio
                     if(!comment.newReply)
                     {
                         comment.newReply = angular.extend(new Comments(), {
-                            discussionId: scope.discussionId,
-                            discussionName: scope.discussionName,
+                            objectId: scope.objectId,
+                            collectionName: scope.collectionName,
                             parent: _.pick(comment, ["_id", "slug", "fullSlug"])
                         });
                     }
@@ -112,8 +112,8 @@ app.directive('commentThreadBlock', ["$rootScope", "$resource", "utils", functio
                                     scope.comments.push(response);
 
                                     scope.newComment = angular.extend(new Comments(), {
-                                        discussionId: scope.discussionId,
-                                        discussionName: scope.discussionName
+                                        objectId: scope.objectId,
+                                        collectionName: scope.collectionName
                                     });
                                 });
                             }      
@@ -133,8 +133,8 @@ app.directive('commentThreadBlock', ["$rootScope", "$resource", "utils", functio
                                     //parentComment.replies.push(response); //no need; because parent.replies = childMap (already updated)
 
                                     parentComment.newReply = angular.extend(new Comments(), {
-                                        discussionId: scope.discussionId,
-                                        discussionName: scope.discussionName,
+                                        objectId: scope.objectId,
+                                        collectionName: scope.collectionName,
                                         parent: _.pick(parentComment, ["_id", "slug", "fullSlug"])
                                     });
                                 });    

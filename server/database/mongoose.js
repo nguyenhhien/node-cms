@@ -11,7 +11,7 @@
     module.init = function() {
         var deferred = Q.defer();
 
-        mongoose.connect('localhost', 'auth');
+        mongoose.connect('localhost', Config.Mongo.db);
 
         mongoose.connection.on('open', function() {
             winston.info("open mongodb database");
@@ -37,10 +37,23 @@
 
         //export models + client to sequelize
         module = _.extend(module, {
-            models: models
+            models: models,
+            connection: mongoose.connection
         });
 
         return deferred.promise;
     };
+
+    module.close = function()
+    {
+        var deferred = Q.defer();
+
+        mongoose.connection.close(function(err){
+            winston.info("close database");
+            deferred.resolve();
+        });
+
+        return deferred.promise;
+    }
 
 }(exports));

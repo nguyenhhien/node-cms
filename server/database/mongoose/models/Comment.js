@@ -1,10 +1,9 @@
 var mongoose        = require('mongoose');
 var Schema          = mongoose.Schema;
-var Q               = require('q');
 
 var commentSchema = new Schema({
-    discussionId: String,
-    discussionName: String,
+    objectId: String,
+    collectionName: String,
     name: String,
     slug: String,
     fullSlug: String,
