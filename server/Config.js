@@ -24,7 +24,7 @@ Config =
         host:					"localhost",
         port:					6379,
         pass:					null,
-        db:                     3
+        db:                     6
     },
     Mongo:
     {

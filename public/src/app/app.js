@@ -1,29 +1,3 @@
-//manual bootstrap application after get all information needed
-var User;
-
-//temporarily put here because right now both login, main page share same js files
-if(location.href.indexOf("index.html") != -1)
-{
-    $.ajax({
-        url: '/api/users/userInfo',
-        method: "POST",
-        dataType: "json"
-    })
-        .done(function (user)
-        {
-            if(user.error)
-            {
-                window.location = "/login.html";
-                return console.log("ERROR: ", user.error);
-            }
-
-            User = user;
-            $("body").show();
-            angular.bootstrap(document, ["mainApp"]);
-        });
-}
-
-
 angular.module( 'mainApp', [
     'templates-app',
     'templates-common',
@@ -41,10 +15,30 @@ angular.module( 'mainApp', [
 }])
 
 .run(['$http', '$rootScope', function run ($http, $rootScope) {
-    $rootScope.user = User;
+    $http.post('/api/users/userInfo')
+        .then(function(response){
+            var user = response.data;
+
+            if(user.error)
+            {
+                window.location = "/login.html";
+                return console.log("ERROR: ", user.error);
+            }
+
+            $rootScope.user = user;
+        });
 
     //share object for .dot rule angularjs
     $rootScope.globalObj = {};
+
+    //initialize socket
+    $rootScope.socketServer = io.connect(location.protocol + "//" + location.host, {
+        'connect timeout': 500,
+        'reconnect': true,
+        'reconnection delay': 500,
+        'reopen delay': 500,
+        'max reconnection attempts': 10
+    });
 }])
 
 .controller( 'mainCtrl', ['$scope', '$location', function AppCtrl ( $scope, $location ) {

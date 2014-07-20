@@ -3,7 +3,7 @@
 (function(module) {
     var winston             = require('winston');
     var Q                   = require("q");
-    var Core                = require("./Core.js");
+    var SocketCore          = require("./Core.js");
 
     module.chats = {};
 

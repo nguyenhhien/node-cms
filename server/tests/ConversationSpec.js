@@ -12,7 +12,7 @@ var modules             = require("../modules/index.js");
 
 describe('chat conversation module specs', function(){
     beforeEach(function(done){
-        dbmock.init()
+        dbmock.initMongoose()
             .then(function(){
                 done();
             })
@@ -23,7 +23,7 @@ describe('chat conversation module specs', function(){
 
     afterEach(function(done){
         mongoose.connection.db.dropDatabase(function(err, data){
-            dbmock.close()
+            dbmock.closeMongoose()
                 .then(function(){
                     done();
                 })

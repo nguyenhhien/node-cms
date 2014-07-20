@@ -63,7 +63,9 @@
     "nodeify": "^1.0.0",
     "then-redis": "^0.3.12",
     "moment": "^2.7.0",
-    "cookie": "^0.1.2"
+    "cookie": "^0.1.2",
+    "superagent": "^0.18.2",
+    "socket.io-client": "^1.0.6"
   },
   "author": "stanley",
   "license": "BSD",

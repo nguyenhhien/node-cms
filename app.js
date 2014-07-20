@@ -46,7 +46,14 @@ winston.add(winston.transports.File, {
 
 // TODO: remove once https://github.com/flatiron/winston/issues/280 is fixed
 winston.err = function (err) {
-    winston.error(err.stack);
+    if(err.stack)
+    {
+        winston.error(err.stack);
+    }
+    else
+    {
+        winston.error(err);
+    }
 };
 
 //cluster support
@@ -152,7 +159,7 @@ else
             }));
 
             var server = http.createServer(app);
-            var socketIO = require("./server/socket");
+            var socketIO = require("./server/socket/socket.js");
             socketIO.init(server);
 
             //start listen
