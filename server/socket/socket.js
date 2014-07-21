@@ -6,9 +6,6 @@
     var path                = require("path");
     var Q                   = require("q");
     var	SocketIO            = require('socket.io');
-    var socketioWildcard    = require('socket.io-wildcard');
-    var redisSocket         = require('socket.io/node_modules/redis');
-    var RedisStoreSocket    = require('socket.io/lib/stores/redis');
     var cookie              = require('cookie')
     var cookieParser        = require("cookie-parser");
     var fs                  = require('fs');
@@ -23,24 +20,17 @@
     //init for websocket and listen for event
     module.init = function(server)
     {
-        //redis session store to support nodejs clustering
-        var pub = redisSocket.createClient(Config.Redis.port,Config.Redis.host);
-        var sub = redisSocket.createClient(Config.Redis.port,Config.Redis.host);
-        var store = redisSocket.createClient(Config.Redis.port,Config.Redis.host);
+        var io = SocketIO(server);
 
-        pub.auth(Config.Redis.pass, function(err){winston.info(!!err?err:"redis socket pub")});
-        sub.auth(Config.Redis.pass, function(err){winston.info(!!err?err:"redis socket sub")});
-        store.auth(Config.Redis.pass, function(err){winston.info(!!err?err:"redis socket store")});
+        io.set("transports", ['websocket', 'xhr-polling', 'jsonp-polling', 'flashsocket']);
 
-        //attach server to this socket for it to listen on
-        io = socketioWildcard(SocketIO).listen(server, {
-            log: false,
-            transports: ['websocket', 'xhr-polling', 'jsonp-polling', 'flashsocket'],
-            'browser client minification': true
-        });
+        io.adapter(require('socket.io-redis')({
+            host: Config.Redis.host,
+            port: Config.Redis.port
+        }))
 
-        io.set('log level', 1);
-        io.set('store', new RedisStoreSocket({redisPub:pub, redisSub:sub, redisClient:store}));
+        var socketioWildcard    = require('socketio-wildcard')();
+        io.use(socketioWildcard);
 
         module.io = io;
 
@@ -61,8 +51,10 @@
             });
         });
 
-        //authorization cookies
-        io.set('authorization', function (handshakeData, next) {
+        //authorize the connection
+        io.use(function(socket, next) {
+            var handshakeData = socket.request;
+
             if (handshakeData.headers.cookie)
             {
                 handshakeData.cookie = cookie.parse(handshakeData.headers.cookie);
@@ -104,8 +96,8 @@
         });
 
         //on open connection
-        io.sockets.on('connection', function(socket) {
-            var hs = socket.handshake,
+        io.on('connection', function(socket) {
+            var hs = socket.request,
                 sessionID, uid;
 
             winston.info("[socket.io] client connected");
@@ -123,7 +115,6 @@
             //for now, we don't allow anonymous login
             if(socket.uid)
             {
-                //update the redis user session base
                 var sessionUser = hs.session.user;
                 sessionUser.status = 'online';
 
@@ -144,7 +135,7 @@
                         return SocketModules.User.isOnline(socket.uid);
                     })
                     .then(function(data){
-                        //broadcast login event for all connected client
+                        //broadcast login event for all but sender
                         socket.broadcast.emit('user.isOnline', null, data);
                     })
                     .fail(function(err){
@@ -171,13 +162,24 @@
                 }
             });
 
-            socket.on('*', function(payload, callback) {
-                if(!payload.name) {
-                    return winston.warn('[socket.io] Empty method name');
+            socket.on('*', function(payload){
+                if(!payload || !payload.data) return;
+
+                var eventName = payload.data.shift();
+                var args = payload.data.shift();
+                var callback = payload.data.shift();
+
+                //user just provide callback only
+                if (!callback) {
+                    callback = args;
+                    args = null;
                 }
 
-                //get method from namespaces
-                var parts = payload.name.toString().split('.'),
+                if (!eventName || !callback || ! (typeof(callback) == "function")) {
+                    return;
+                }
+
+                var parts = eventName.toString().split('.'),
                     namespace = parts.slice(0, 1),
                     methodToCall = parts.reduce(function(prev, cur) {
                         if (prev !== null && prev[cur]) {
@@ -186,7 +188,6 @@
                             return null;
                         }
                     }, routeNamespaces);
-
 
                 if(!methodToCall) {
                     return winston.warn('[socket.io] Unrecognized message: ' + payload.name);
@@ -197,13 +198,10 @@
                 }
 
                 //call the method
-                methodToCall.call(null, socket, payload.args.length ? payload.args[0] : null, function(err, result) {
-                    if (callback)
-                    {
-                        callback(err?{error: (err.stack || err.error || err)}:null, result);
-                    }
+                methodToCall.call(null, socket, args ? args : null, function(err, result) {
+                    callback && callback(err?{error: (err.stack || err.error || err)}:null, result);
                 });
-            });
+            })
         });
     }
 }(exports));

@@ -22,7 +22,7 @@
                 data.online = online;
                 data.uid = uid;
                 data.timestamp = Date.now();
-                data.rooms = SocketCore.getUserRooms(uid);
+                //data.rooms = SocketCore.getUserRooms(uid);
 
                 return Q.resolve(data);
             });

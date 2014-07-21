@@ -32,6 +32,7 @@ var redis               = require("./server/database/redis.js");
 var mongo               = require("./server/database/mongo.js");
 var mongoose            = require('./server/database/mongoose.js');
 
+
 //winston log transport
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {
@@ -158,7 +159,8 @@ else
                 ]
             }));
 
-            var server = http.createServer(app);
+            var server = http.Server(app);
+
             var socketIO = require("./server/socket/socket.js");
             socketIO.init(server);
 
@@ -169,7 +171,7 @@ else
             });
         })
         .fail(function(error){
-            winston.error(error);
+            winston.error(error.stack || error);
         });
 }
 

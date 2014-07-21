@@ -29,7 +29,9 @@ describe('chat conversation module specs', function(){
     });
 
     it('it should open socket connection', function(done){
-        var client = io.connect(socketURL);
+        var client = io.connect(socketURL, {
+            transports: ['websocket', 'xhr-polling', 'jsonp-polling', 'flashsocket']
+        });
 
         client.on('connect',function(data){
             winston.info("connected");

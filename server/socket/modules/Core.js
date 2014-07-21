@@ -13,7 +13,7 @@
         if (!Socket.io) {
             return uids;
         }
-        var clients = Socket.io.sockets.clients();
+        var clients = Socket.io.sockets.sockets;
 
         clients.forEach(function(client) {
             if(client.uid && uids.indexOf(client.uid) === -1) {
@@ -25,7 +25,7 @@
 
     //get all sockets clients of given uid (userId)
     module.getUserSockets = function(uid) {
-        var sockets = Socket.io.sockets.clients();
+        var sockets = Socket.io.sockets.sockets;
         if(!sockets || !sockets.length) {
             return [];
         }
@@ -76,7 +76,7 @@
 
         function getUidsInRoom() {
             var uids = [];
-            var clients = Socket.io.sockets.clients(roomName);
+            var clients = Socket.io.sockets.sockets(roomName);
             for(var i=0; i<clients.length; ++i) {
                 if (uids.indexOf(clients[i].uid) === -1 && clients[i].uid !== 0) {
                     uids.push(clients[i].uid);

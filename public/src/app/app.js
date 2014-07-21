@@ -37,7 +37,8 @@ angular.module( 'mainApp', [
         'reconnect': true,
         'reconnection delay': 500,
         'reopen delay': 500,
-        'max reconnection attempts': 10
+        'max reconnection attempts': 10,
+        transports: ['websocket', 'xhr-polling', 'jsonp-polling', 'flashsocket']
     });
 }])
 
