@@ -1,4 +1,20 @@
-require("./server/config.js");
+/**
+ * Main entry file: cluster support
+ * Run as test process: NODE_ENV=test node app.js
+ */
+switch(process.env.NODE_ENV)
+{
+    case 'test':
+        global.Config = require("./server/config.js").test;
+        break;
+    case 'production':
+        global.Config = require("./server/config.js").production;
+        break;
+    default:
+        global.Config = require("./server/config.js").development;
+        break;
+}
+
 require("./server/constant.js");
 
 //third-party modules
@@ -39,27 +55,13 @@ winston.add(winston.transports.Console, {
     colorize: true
 });
 
-//TODO: change to error log for error and add mongodb transport
 winston.add(winston.transports.File, {
     filename: 'logs.log',
     level: 'info'
 });
 
-// TODO: remove once https://github.com/flatiron/winston/issues/280 is fixed
-winston.err = function (err) {
-    if(err.stack)
-    {
-        winston.error(err.stack);
-    }
-    else
-    {
-        winston.error(err);
-    }
-};
-
 //cluster support
 if (cluster.isMaster) {
-    //open sequelize connection and sync schema -- only for worker process
     sequelize.init()
         .then(function(){
             return sequelize.syncSchema();
@@ -74,9 +76,9 @@ if (cluster.isMaster) {
                 cluster.fork();
             }
         })
-        .fail(function(err){
-            winston.error("Error happen when open sequelize")
-        })
+        .fail(function(error){
+            winston.error("[cluster fork, sync schema] Error: ", error.stack || error);
+        });
 }
 else
 {
@@ -89,7 +91,7 @@ else
             app.enable("jsonp callback");
 
             //TODO: remove; use 3 different middleware instead - express 3.0
-            app.use(require("body-parser")({ uploadDir: UploadsFolder}));
+            app.use(require("body-parser")({ uploadDir: Config.UploadsFolder}));
 
             //using param validator
             app.use(expressValidator({
@@ -159,15 +161,16 @@ else
                 ]
             }));
 
+            //socket io setup
             var server = http.Server(app);
 
             var socketIO = require("./server/socket/socket.js");
             socketIO.init(server);
 
-            //start listen
-            server.listen(PORT, function()
+            //app start listening
+            server.listen(Config.PORT, function()
             {
-                winston.log("Web server process listening on %s:%d ", PORT);
+                winston.log("Web server process listening on %s:%d ", Config.PORT);
             });
         })
         .fail(function(error){

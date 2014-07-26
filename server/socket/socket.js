@@ -53,26 +53,34 @@
 
         //authorize the connection
         io.use(function(socket, next) {
-            var handshakeData = socket.request;
+            var hsData = socket.request;
 
-            if (handshakeData.headers.cookie)
+            if (hsData.headers.cookie)
             {
-                handshakeData.cookie = cookie.parse(handshakeData.headers.cookie);
-                handshakeData.sessionID = cookieParser.signedCookie(handshakeData.cookie['sid'], Config.Global.sessionSecret);
+                hsData.cookie = cookie.parse(hsData.headers.cookie);
+                hsData.sessionID = cookieParser.signedCookie(hsData.cookie['sid'], Config.Global.sessionSecret);
 
-                if (handshakeData.cookie['sid'] == handshakeData.sessionID)
+                if (hsData.cookie['sid'] == hsData.sessionID)
                 {
                     return next('[socket.io] cookie is invalid.', false);
                 }
             }
+            else if(hsData._query['cookie'])
+            {
+                var hsCookie = hsData._query['cookie'];
+                winston.info("hsCookie", hsCookie);
+                return next();
+            }
             else
             {
+                var queryParams = hsData.query && hsData.query.sid;
+                winston.info("query param being sent", queryParams);
                 winston.info("no cookies being sent");
                 return next('[socket.io] no cookie transmitted.', false);
             }
 
             //get session data -- user info
-            Q.denodeify(redis.get)("sess:" + handshakeData.sessionID)
+            Q.denodeify(redis.get)("sess:" + hsData.sessionID)
                 .then(function(session){
                     if (!session)
                     {
@@ -81,7 +89,7 @@
 
                     try
                     {
-                        handshakeData.session = JSON.parse(session);
+                        hsData.session = JSON.parse(session);
                         next(null, true);
                     }
                     catch (err)
@@ -190,7 +198,7 @@
                     }, routeNamespaces);
 
                 if(!methodToCall) {
-                    return winston.warn('[socket.io] Unrecognized message: ' + payload.name);
+                    return winston.warn('[socket.io] Unrecognized message: ' + eventName);
                 }
 
                 if(socket.uid) {

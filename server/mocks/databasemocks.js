@@ -8,7 +8,8 @@
 'use strict';
 
 (function(module) {
-    require("./config.js");
+    //load config test enviroment
+    global.Config = require("../config.js").test;
     require("../constant.js");
 
     var winston             = require('winston');

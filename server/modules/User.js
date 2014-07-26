@@ -126,7 +126,7 @@
             .spread(function(passwordResetKey){
                 return Email.sendTemplateEmail(EmailType.UserForgetPassword, email, {
                     userName: email,
-                    passwordRecoveryUrl: HOSTURL + "login.html#!/resetPassword?passwordResetKey=" + passwordResetKey
+                    passwordRecoveryUrl: Config.HOSTURL + "login.html#!/resetPassword?passwordResetKey=" + passwordResetKey
                 });
             }); 
     }
@@ -187,7 +187,7 @@
                         .then(function(){
                             return Email.sendTemplateEmail(EmailType.AccountActivation, email, {
                                 userName: email,
-                                activationUrl: HOSTURL + "login.html#!/activateAccount?activationKey=" + activationKey
+                                activationUrl: Config.HOSTURL + "login.html#!/activateAccount?activationKey=" + activationKey
                             });
                         });
                 }

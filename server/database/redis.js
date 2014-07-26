@@ -24,8 +24,11 @@
         });
 
         redisClient.on("connect", function () {
-            winston.info('Connect to Redis successfully');
-            return deferred.resolve();
+            redisClient.select(Config.Redis.db, function(err, data){
+                if(err) return deferred.reject(err.stack || err);
+                winston.info('Connect to Redis successfully', Config.Redis.db);
+                return deferred.resolve();
+            })
         });
 
         module.client = redisClient;
