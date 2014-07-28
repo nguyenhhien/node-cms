@@ -1,5 +1,4 @@
 var express             = require('express');
-var bcrypt 		        = require("bcrypt");
 var mongoose            = require('../database/mongoose.js');
 var Q                   = require("q");
 var async               = require("async");

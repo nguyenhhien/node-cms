@@ -1,5 +1,4 @@
 var express             = require('express');
-var bcrypt 		        = require("bcrypt");
 var Q                   = require("q");
 var async               = require("async");
 var request 	        = require("request");

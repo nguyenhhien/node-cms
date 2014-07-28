@@ -29,32 +29,31 @@ describe('chat conversation module specs', function(){
         rawPassword: '111111'
     };
 
+    var sessionCookie, sessionId;
+
     beforeEach(function(done){
-        Q.all([redis.init(), sequelize.init()])
-            .then(function(){
-                return Q.ninvoke(
-                        superagent.post(Config.HOSTURL + 'api/users/register')
-                            .send(user)
-                            .set('Accept', 'application/json'), 'end')
-                    .then(function(){
-                        return Q.ninvoke(
-                            superagent.post(Config.HOSTURL + 'api/users/signin')
-                                .send(user)
-                                .set('Accept', 'application/json'), 'end');
-                    })
-                    .then(function(response){
-                        agent.saveCookies(response);
-                        var cookieParsed = cookie.parse(response.header['set-cookie'][0]);
-                        var sessionId = cookieParser.signedCookie(cookieParsed['sid'], Config.Global.sessionSecret);
-                    })
-            })
-            .then(function(){
-                done();
-            })
-            .fail(function(error){
-                winston.error(error.stack || error);
-                done(false);
-            });
+        Q.async(function*(){
+            yield Q.all([redis.init(), sequelize.init()]);
+            yield Q.ninvoke(
+                superagent.post(Config.HOSTURL + 'api/users/register')
+                    .send(user)
+                    .set('Accept', 'application/json'), 'end');
+
+            var response = yield Q.ninvoke(
+                superagent.post(Config.HOSTURL + 'api/users/signin')
+                    .send(user)
+                    .set('Accept', 'application/json'), 'end');
+
+            agent.saveCookies(response);
+            sessionCookie = response.header['set-cookie'][0];
+            sessionId = cookieParser.signedCookie(cookie.parse(sessionCookie)['sid'], Config.Global.sessionSecret);
+
+            done();
+        })()
+        .fail(function(error){
+            expect(error).toBe(null);
+            done();
+        });
     });
 
     afterEach(function(done){
@@ -68,13 +67,13 @@ describe('chat conversation module specs', function(){
                 done();
             })
             .fail(function(error){
-                winston.error(error.stack || error);
+                expect(error).toBe(null);
                 done(false);
             });
     });
 
     it('it should open socket connection', function(done){
-        var client = io.connect(Config.HOSTURL + "?cookie=bar", {
+        var client = io.connect(Config.HOSTURL + "?cookie=" + encodeURIComponent(sessionCookie), {
             transports: ['websocket', 'xhr-polling', 'jsonp-polling', 'flashsocket']
         });
 

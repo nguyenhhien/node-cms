@@ -9,8 +9,9 @@
     var Chance              = require('chance');
     var chance              = new Chance();
     var dateFormat          = require('dateformat');
-    var bcrypt 		        = require("bcrypt");
+    var bcrypt 		        = require("bcrypt-nodejs");
     var request 	        = require("request");
+    var superagent          = require('superagent');
 
     var Utils               = require("../helpers/Utils.js");
     var mongoose            = require('../database/mongoose.js');
@@ -19,92 +20,78 @@
     var Email               = require("./email");
 
     //verify the username and password combination
-    module.verifyUserPassword = function(email, password)
-    {
-        return Q(sequelize.models.User.find({where: {email: email, status: UserStatus.Active}}))
-            .then(function(user){
-                if(!user) return [null, Q.reject({
-                    error: "User with email: " + email + " not found"
-                })];
-                return [user, Q.nfcall(bcrypt.compare, password, user.password || "")];
-            });
-    }
+    module.verifyUserPassword = Q.async(function*(email, password){
+        var user = yield sequelize.models.User.find({where: {email: email, status: UserStatus.Active}});
+
+        if(!user) return [null, yield Q.reject({
+            error: "User with email: " + email + " not found"
+        })];
+
+        return [user, yield Q.nfcall(bcrypt.compare, password, user.password || "")];
+    });
 
     //salt and hash the password
-    module.saltAndHash = function(password)
+    module.saltAndHash = Q.async(function*(password)
     {
-        return Q.nfcall(bcrypt.genSalt, 10)
-            .then(function(salt){
-                return Q.nfcall(bcrypt.hash, password, salt);
-            })
-    }
+        var salt = yield Q.nfcall(bcrypt.genSalt, 10);
+        return yield Q.nfcall(bcrypt.hash, password, salt, null);
+    });
 
     
-    //validate accesstoken methods
-    module.validateFacebookAccessToken = function(fbId, accessToken)
+    //validate facebook access token
+    module.validateFacebookAccessToken = Q.async(function*(fbId, accessToken)
     {
-        if (!accessToken) return Q.reject({
+        if (!accessToken) return yield Q.reject({
             error: "accessToken cannot be empty"
         });
-
-        var deferred = Q.defer();
 
         var url = "https://graph.facebook.com/me?access_token=" + accessToken;
-        request({ url: url, json: true }, function(err, httpClient, user){
-            if(err) return deferred.reject({
-                error: "Facebook access token error: " + err
-            });
 
-            if(user.id == fbId) return deferred.resolve(true);
+        var response = yield Q.ninvoke(
+            superagent.get(url)
+                .set('Accept', 'application/json'), 'end');
 
-            else return deferred.reject({
-                error: "FbId " + fbId + " and Token does not match"
-            });
-        })
+        var user = response.body;
 
-        return deferred.promise;
-    }
+        if(user.id == fbId) return yield Q(true);
+        else return yield Q.reject({
+            error: "FbId " + fbId + " and Token does not match"
+        });
+    });
 
-    module.validateGoogleAccessToken = function(googleId, accessToken)
+    module.validateGoogleAccessToken = Q.async(function*(googleId, accessToken)
     {
-        if (!accessToken) return Q.reject({
+        if (!accessToken) return yield Q.reject({
             error: "accessToken cannot be empty"
         });
 
-        var deferred = Q.defer();
-
         var url = "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + accessToken;
-        request({ url: url, json: true }, function(err, httpClient, user){
-            if(err) return deferred.reject({
-                error: "Facebook access token error: " + err
-            });
 
-            if(user.id == googleId) return deferred.resolve(true);
+        var response = yield Q.ninvoke(
+            superagent.get(url)
+                .set('Accept', 'application/json'), 'end');
 
-            else return deferred.reject({
-                error: "GoogleId " + googleId + " and Token does not match"
-            });
-        })
+        var user = response.body;
 
-        return deferred.promise;
-    }
-
+        if(user.id == googleId) return yield Q(true);
+        else return yield Q.reject({
+            error: "GoogleId " + googleId + " and Token does not match"
+        });
+    });
 
     //main methods
-    module.changePassword = function(email, password)
+    module.changePassword = Q.async(function*(email, password, newPasword)
     {
-        return module.verifyUserPassword(email, password)
-            .spread(function(account, same){
-                if(!same) return Q.reject({
-                    error: "Incorrect old password"
-                });
+        var results = yield module.verifyUserPassword(email, password);
+        if(!results[1]) return Q.reject({
+            error: "Incorrect old password"
+        });
 
-                return [account, module.saltAndHash(req.param('newPassword'))];
-            })
-            .spread(function(account, newHash){
-                return Q(account.updateAttributes({password: newHash}));
-            });
-    }
+        var account = results[0];
+        var newHash = yield module.saltAndHash(newPasword);
+
+        yield Q(account.updateAttributes({password: newHash}));
+    });
     
     module.forgotPasswordRequest = function(email)
     {
@@ -193,7 +180,7 @@
                 }
                 else return Q();
             });
-    }
+    };
     
     module.activeAccount = function(activationKey)
     {
@@ -218,81 +205,66 @@
                     activationKey: activationKey
                 }));
             });
-    }
+    };
     
-    module.facebookRegister = function(fbId, accessToken, name, email)
+    module.facebookRegister = Q.async(function*(fbId, accessToken, name, email)
     {
-        return Q(sequelize.models.User.find({where: {fbId: fbId}}))
-            .then(function(user){
-                //if not exist such user, try to register him
-                if(!user)
-                {
-                    return module.validateFacebookAccessToken(fbId, accessToken)
-                        .then(function(valid){
-                            //check if that email has been used
-                            return Q(sequelize.models.User.find({ where: {email: email} }));
-                        })
-                        .then(function(account){
-                            if(account) return Q.reject({
-                                error: "Email: " + email + ' has been used to register. If you are owner of that account, ' +
-                                    'please login to your account page and click to link-to-facebook to link to your facebook account'
-                            })
+        var user = yield sequelize.models.User.find({where: {fbId: fbId}});
 
-                            else return (sequelize.models.User.create({
-                                email: email,
-                                name: name,
-                                fbId: fbId,
-                                status: UserStatus.Active
-                            }));
-                        })
+        if(!user)
+        {
+            var valid = yield module.validateFacebookAccessToken(fbId, accessToken);
+            var account = yield sequelize.models.User.find({ where: {email: email} });
 
-                }                  
-                //otherwise log user in directly
-                else
-                {
-                    return module.validateFacebookAccessToken(fbId, accessToken)
-                        .then(function(){
-                            return Q(user);
-                        });   
-                }                    
+            if(account) return Q.reject({
+                error: "Email: " + email + ' has been used to register. If you are owner of that account, ' +
+                    'please login to your account page and click to link-to-facebook to link to your facebook account'
             })
-    }
-    
-    module.googleRegister = function(googleId, accessToken, name, email)
-    {
-        return Q(sequelize.models.User.find({where: {googleId: googleId}}))
-            .then(function(user){
-                if(!user)
-                {
-                    return module.validateGoogleAccessToken(googleId, accessToken)
-                        .then(function(valid){
-                            //check if that email has been used
-                            return Q(sequelize.models.User.find({ where: {email: email} }));
-                        })
-                        .then(function(account){
-                            if(account) return Q.reject({
-                                error: "Email: " + email + ' has been used to register. If you are owner of that account, ' +
-                                    'please login to your account page and click link-to-google to link to your google account'
-                            })
 
-                            else return (sequelize.models.User.create({
-                                email: email,
-                                name: name,
-                                googleId: googleId,
-                                status: UserStatus.Active
-                            }));
-                        })
-
-                }
-                //otherwise log user in directly
-                else
-                {
-                    return module.validateGoogleAccessToken(googleId, accessToken)
-                        .then(function(){
-                            return Q(user);
-                        });
-                }
+            else return yield sequelize.models.User.create({
+                email: email,
+                name: name,
+                fbId: fbId,
+                status: UserStatus.Active
             });
-    }
+        }
+        //otherwise log user in directly
+        else
+        {
+            yield module.validateFacebookAccessToken(fbId, accessToken);
+            return Q(user);
+        }
+    });
+    
+    module.googleRegister = Q.async(function*(googleId, accessToken, name, email)
+    {
+        var user = yield sequelize.models.User.find({where: {googleId: googleId}});
+
+        if(!user)
+        {
+            var valid = yield module.validateGoogleAccessToken(googleId, accessToken);
+            var account = yield sequelize.models.User.find({ where: {email: email} });
+
+            if(account) return Q.reject({
+                error: "Email: " + email + ' has been used to register. If you are owner of that account, ' +
+                    'please login to your account page and click link-to-google to link to your google account'
+            })
+
+            else {
+                return yield sequelize.models.User.create({
+                    email: email,
+                    name: name,
+                    googleId: googleId,
+                    status: UserStatus.Active
+                });
+            }
+        }
+        //otherwise log user in directly
+        else
+        {
+            yield module.validateGoogleAccessToken(googleId, accessToken);
+            return Q(user);
+        }
+    });
 
 }(exports));

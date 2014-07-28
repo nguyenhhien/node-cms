@@ -1,6 +1,7 @@
 /**
  * Main entry file: cluster support
  * Run as test process: NODE_ENV=test node app.js
+ * Run as ES6-Harmony: NODE_ENV=test node11harmony app.js (node11harmony point to node0.11.13)
  */
 switch(process.env.NODE_ENV)
 {
@@ -48,6 +49,12 @@ var redis               = require("./server/database/redis.js");
 var mongo               = require("./server/database/mongo.js");
 var mongoose            = require('./server/database/mongoose.js');
 
+//sugar function for generator
+global.asyncCallback = function(gen) {
+    return function() {
+        return Q.async(gen).apply(null, arguments).done();
+    };
+}
 
 //winston log transport
 winston.remove(winston.transports.Console);

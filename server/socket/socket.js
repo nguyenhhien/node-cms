@@ -54,53 +54,44 @@
         //authorize the connection
         io.use(function(socket, next) {
             var hsData = socket.request;
+            var hsCookie = hsData.headers.cookie || (hsData._query && hsData._query['cookie']);
 
-            if (hsData.headers.cookie)
-            {
-                hsData.cookie = cookie.parse(hsData.headers.cookie);
-                hsData.sessionID = cookieParser.signedCookie(hsData.cookie['sid'], Config.Global.sessionSecret);
+            var parsedCookie;
 
-                if (hsData.cookie['sid'] == hsData.sessionID)
+            Q.async(function*(){
+                if (hsCookie)
                 {
-                    return next('[socket.io] cookie is invalid.', false);
+                    parsedCookie = cookie.parse(hsCookie);
+                    if(!parsedCookie || !parsedCookie['sid'])
+                    {
+                        return Q.reject('[socket.io] cookie session not found');
+                    }
+
+                    hsData.sessionID = cookieParser.signedCookie(parsedCookie['sid'], Config.Global.sessionSecret);
+
+                    if (parsedCookie['sid'] == hsData.sessionID)
+                    {
+                        return Q.reject('[socket.io] cookie is invalid.');
+                    }
                 }
-            }
-            else if(hsData._query['cookie'])
-            {
-                var hsCookie = hsData._query['cookie'];
-                winston.info("hsCookie", hsCookie);
-                return next();
-            }
-            else
-            {
-                var queryParams = hsData.query && hsData.query.sid;
-                winston.info("query param being sent", queryParams);
-                winston.info("no cookies being sent");
-                return next('[socket.io] no cookie transmitted.', false);
-            }
+                else
+                {
+                    winston.info("no cookies being sent");
+                    return Q.reject('[socket.io] no cookie transmitted.');
+                }
 
-            //get session data -- user info
-            Q.denodeify(redis.get)("sess:" + hsData.sessionID)
-                .then(function(session){
-                    if (!session)
-                    {
-                        return next('[socket.io] session not found.', false);
-                    }
+                var session = yield Q.denodeify(redis.get)("sess:" + hsData.sessionID);
+                if (!session)
+                {
+                    return Q.reject('[socket.io] session not found.');
+                }
 
-                    try
-                    {
-                        hsData.session = JSON.parse(session);
-                        next(null, true);
-                    }
-                    catch (err)
-                    {
-                        return next("[socket.io] unable to parse redis session", false);
-                    }
-                })
-                .fail(function(err){
-                    winston.error(err.stack || err);
-                    return next('[socket.io] error in session store.' + err, false);
-                });
+                hsData.session = JSON.parse(session);
+                next(null, true);
+            })()
+            .fail(function(error){
+                next(error.stack || error, false);
+            });
         });
 
         //on open connection
@@ -126,29 +117,23 @@
                 var sessionUser = hs.session.user;
                 sessionUser.status = 'online';
 
-                Q.denodeify(redis.setObject)("user:" + socket.uid, sessionUser)
-                    .then(function(){
-                        //add to list of sorted set
-                        return Q.denodeify(redis.sortedSetAdd)("users:online", Date.now(), socket.uid);
-                    })
-                    .then(function(data){
-                        //emit event connect -- only for logged in user
-                        socket.emit('event:connect', {
-                            status: 'online',
-                            name: hs.session && hs.session.user.name,
-                            avatar: hs.session && hs.session.user.avatar,
-                            id: hs.session && hs.session.user.id
-                        });
+                Q.async(function*(){
+                    yield Q.denodeify(redis.setObject)("user:" + socket.uid, sessionUser);
+                    yield Q.denodeify(redis.sortedSetAdd)("users:online", Date.now(), socket.uid);
 
-                        return SocketModules.User.isOnline(socket.uid);
-                    })
-                    .then(function(data){
-                        //broadcast login event for all but sender
-                        socket.broadcast.emit('user.isOnline', null, data);
-                    })
-                    .fail(function(err){
-                        winston.error(err.stack || err);
+                    socket.emit('event:connect', {
+                        status: 'online',
+                        name: hs.session && hs.session.user.name,
+                        avatar: hs.session && hs.session.user.avatar,
+                        id: hs.session && hs.session.user.id
                     });
+
+                    var data = yield SocketModules.User.isOnline(socket.uid);
+                    socket.broadcast.emit('user.isOnline', null, data);
+                })()
+                .fail(function(error){
+                    winston.error(error.stack || error);
+                });
             }
 
             socket.on('disconnect', function() {
