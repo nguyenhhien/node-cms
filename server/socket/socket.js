@@ -53,6 +53,8 @@
 
         //authorize the connection
         io.use(function(socket, next) {
+            console.log("socket cookies");
+
             var hsData = socket.request;
             var hsCookie = hsData.headers.cookie || (hsData._query && hsData._query['cookie']);
 
@@ -99,8 +101,6 @@
             var hs = socket.request,
                 sessionID, uid;
 
-            winston.info("[socket.io] client connected");
-
             //assign uid for socket
             if(hs.session && hs.session.user && hs.session.user.id)
             {
@@ -120,6 +120,8 @@
                 Q.async(function*(){
                     yield Q.denodeify(redis.setObject)("user:" + socket.uid, sessionUser);
                     yield Q.denodeify(redis.sortedSetAdd)("users:online", Date.now(), socket.uid);
+
+                    winston.info("[socket.io] client connected", socket.uid);
 
                     socket.emit('event:connect', {
                         status: 'online',

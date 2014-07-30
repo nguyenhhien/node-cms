@@ -1,4 +1,4 @@
-var Config              = require("../config.js").test;
+var Config              = require("../../config.js").test;
 
 var Q                   = require("q");
 var _                   = require('lodash-node');
@@ -12,12 +12,12 @@ var crypto              = require('crypto')
 var cookie              = require('cookie');
 var cookieParser        = require("cookie-parser");
 
-var dbmock              = require('../mocks/databasemocks');
-var mongoose            = require('../database/mongoose.js');
-var sequelize           = require("../database/sequelize.js");
-var redis               = require("../database/redis.js");
-var mongo               = require("../database/mongo.js");
-var modules             = require("../modules/index.js");
+var dbmock              = require('../../mocks/databasemocks');
+var mongoose            = require('../../database/mongoose.js');
+var sequelize           = require("../../database/sequelize.js");
+var redis               = require("../../database/redis.js");
+var mongo               = require("../../database/mongo.js");
+var modules             = require("../../modules/index.js");
 
 describe('user api test suite', function(){
     beforeEach(function(done){

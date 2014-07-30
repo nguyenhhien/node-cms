@@ -3,12 +3,12 @@ var _                   = require('lodash-node');
 var winston             = require('winston');
 var async               = require('async');
 
-var dbmock              = require('../mocks/databasemocks');
-var mongoose            = require('../database/mongoose.js');
-var sequelize           = require("../database/sequelize.js");
-var redis               = require("../database/redis.js");
-var mongo               = require("../database/mongo.js");
-var modules             = require("../modules/index.js");
+var dbmock              = require('../../mocks/databasemocks');
+var mongoose            = require('../../database/mongoose.js');
+var sequelize           = require("../../database/sequelize.js");
+var redis               = require("../../database/redis.js");
+var mongo               = require("../../database/mongo.js");
+var modules             = require("../../modules/index.js");
 
 describe('redis db module specs', function(){
     beforeEach(function(done){

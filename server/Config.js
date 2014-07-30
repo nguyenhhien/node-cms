@@ -21,7 +21,7 @@ module.exports = (function(){
             user:					"root",
             password:				null,
             maxConcurrentQueries:  100,
-            poolSize:   3,
+            poolSize:   100,
             idleTime: 30
         },
         Redis:
@@ -66,7 +66,7 @@ module.exports = (function(){
             user:					"root",
             password:				null,
             maxConcurrentQueries:  100,
-            poolSize:   3,
+            poolSize:   100,
             idleTime: 30
         },
         Redis:
@@ -110,7 +110,7 @@ module.exports = (function(){
             user:					"root",
             password:				null,
             maxConcurrentQueries:  100,
-            poolSize:   3,
+            poolSize:   100,
             idleTime: 30
         },
         Redis:
