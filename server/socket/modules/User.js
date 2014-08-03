@@ -8,7 +8,7 @@
     var SocketCore          = require('./Core.js');
 
     module.isOnline = function(uid) {
-        return Q.denodeify(redis.getObjectFields)('user:' + uid, ["id", "name", "status", "avatar"])
+        return Q.denodeify(redis.getObjectFields)('user:' + uid, ["id", "name", "status", "avatar", "email"])
             .then(function(data){
                 //check if there is connected client
                 var online = SocketCore.getUserSockets(uid).length > 0;

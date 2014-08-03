@@ -72,7 +72,9 @@
     "validator": "^3.16.0",
     "winston": "^0.7.3",
     "googleapis": "^1.0.2",
-    "readline": "0.0.3"
+    "readline": "0.0.3",
+    "cookie-signature": "^1.0.4",
+    "uid-safe": "^1.0.1"
   },
   "author": "stanley",
   "license": "BSD",
