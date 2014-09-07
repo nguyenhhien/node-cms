@@ -74,7 +74,9 @@
     "googleapis": "^1.0.2",
     "readline": "0.0.3",
     "cookie-signature": "^1.0.4",
-    "uid-safe": "^1.0.1"
+    "uid-safe": "^1.0.1",
+    "supertest": "^0.13.0",
+    "methods": "^1.1.0"
   },
   "author": "stanley",
   "license": "BSD",
