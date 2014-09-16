@@ -39,18 +39,27 @@
         beaver.on('router:bind', function(route) {
             route = _.cloneDeep(route);
 
-            app[route.verb || 'all'](route.path, route.target);
+            try
+            {
+                app[route.method || 'all'](route.path, route.target);
+                //beaver.winston.info("[Route Bound]: " + route.path);
+            }
+            catch(e)
+            {
+                beaver.winston.error("[Route]" + JSON.stringify(route, null, 2) + ":" + e.stack || e);
+            }
         });
 
-        //unbind route
+        //unbind route -- TODO: check method also
         beaver.on('router:unbind', function(route) {
             var newRoutes = [];
-            _.each(app.routes[route.method], function(expressRoute) {
-                if (expressRoute.path != route.path) {
-                    newRoutes.push(expressRoute);
+            app._router.stack = app._router.stack.filter(function(elem){
+                if(elem.route && elem.route.path == route.path)
+                {
+                    return false;
                 }
+                else return true;
             });
-            app.routes[route.method] = newRoutes;
         });
 
         //TODO: add cluster support

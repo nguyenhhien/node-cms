@@ -4,8 +4,11 @@ var util                = require('util');
 var winston             = require('winston');
 var async               = require('async');
 var Q                   = require("q");
+var path                = require("path");
+var sailUtil            = require('sails-util');
 
 //extend event emitter
+//TODO: check unhandled exception
 var Beaver = function(){
     events.EventEmitter.call(this);
     this.setMaxListeners(0);
@@ -36,7 +39,7 @@ Beaver.prototype.start = function()
 
     //load config files
     //TODO: check process env and load corresponding config
-    this.config = require('./server/config/index.js').dev;
+    this.config = _.merge(require('./server/config/index.js').dev, require('./server/config/index.js').shared);
 
     //load hook
     this.hooks = require('./server/hooks');
@@ -46,14 +49,18 @@ Beaver.prototype.start = function()
 
     //init all hooks
     var tasks = [];
-    _.each(this.hooks, function(hook){
+    _.each(that.hooks.loadOrders, function(name){
+        var hook = that.hooks[name];
         tasks.push(function(next){
             hook.init(that, next);
         });
     });
 
+    //init hook first -- then start bind route + controllers
     async.series(tasks, function(err, data){
-        //send ready single to restart listening
+        if(err) return that.winston.error("[ERROR]: " + e.stack || e);
+
+        //send ready signal to restart listening
         that.emit('ready');
     });
 }
@@ -63,6 +70,5 @@ Beaver.prototype.stop = function()
 {
 
 }
-
 
 module.exports = Beaver;

@@ -18,12 +18,12 @@
 
     module.signin = function(req, res)
     {
-
+        res.json({say: 'hello'});
     }
 
     module.register = function(req, res)
     {
-
+        res.json({say: 'register'});
     }
 
     module.activateAccount = function(req, res)

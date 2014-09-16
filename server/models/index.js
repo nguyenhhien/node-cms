@@ -15,15 +15,22 @@
             return fs.statSync(path.join(__dirname, file)).isDirectory();
         })
         .forEach(function(dir){
+            module[dir] = module[dir] || {};
+
             var fullPath = path.join(__dirname, dir);
+
             fs.readdirSync(fullPath)
                 .filter(function(file) {
                     return (file.indexOf('.') !== 0) && (file !== 'index.js') && (file.indexOf('.js') !== -1)
                 })
                 .forEach(function(file) {
-                    module[dir] = module[dir] || {};
-                    module[dir][path.basename(file, '.js')] = require(path.join(fullPath, file));
+
+                    var modelName = path.basename(file, '.js');
+                    //also bind the lowercase to the same model --      module[dir][modelName.toLowerCase()] =
+                    module[dir][modelName] = require(path.join(fullPath, file));
                 });
         });
+
+    module.sequelizePath = path.join(__dirname, "sequelize");
 
 }(exports));

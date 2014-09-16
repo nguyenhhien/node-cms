@@ -19,4 +19,12 @@
             module[dir] = require(fullPath);
         });
 
+
+    module.loadOrders = [
+        "moduleloader",
+        "adapter",
+        "http",
+        "beeroutes"
+    ];
+
 }(exports));

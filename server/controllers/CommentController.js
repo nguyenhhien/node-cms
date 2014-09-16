@@ -20,4 +20,11 @@
     {
 
     }
+
+    //setting for uri bind
+    module._config = {
+        actions: false,
+        shortcuts: false,
+        rest: false
+    }
 }(exports));

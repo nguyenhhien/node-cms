@@ -27,13 +27,18 @@
         );
 
         //initialize the models & sequelize relation
-        var models = beaver.models.sequelize;
-        Object.keys(models).forEach(function(modelName) {
+        var models = {};
+        Object.keys(beaver.models.sequelize).forEach(function(modelName) {
+            var model = sequelizeClient.import(path.join(beaver.models.sequelizePath, modelName));
+            models[model.name] = model;
+        });
+
+        Object.keys(beaver.models.sequelize).forEach(function(modelName) {
             if ('associate' in models[modelName]) {
                 //this call method define inside models to establish model relationship
                 models[modelName].associate(models)
             }
-        })
+        });
 
         sequelizeClient
             .authenticate()
@@ -42,14 +47,20 @@
                     deferred.reject('Unable to connect to the database:', err);
                 } else {
                     beaver.winston.info('Connection has been established successfully.');
+                    //TODO: add sync schema in config
+                    module.syncSchema();
                     deferred.resolve();
                 }
             })
 
         //export models + client to sequelize
         module = _.extend(module, {
-            client: sequelizeClient
+            client: sequelizeClient,
+            models: models
         });
+
+        //also export models to sequelize Models
+        beaver.sequelizeModels = models;
 
         return deferred.promise;
     };

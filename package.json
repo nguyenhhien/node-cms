@@ -76,7 +76,9 @@
     "cookie-signature": "^1.0.4",
     "uid-safe": "^1.0.1",
     "supertest": "^0.13.0",
-    "methods": "^1.1.0"
+    "methods": "^1.1.0",
+    "sails-build-dictionary": "^0.10.1",
+    "sails-util": "^0.10.4"
   },
   "author": "stanley",
   "license": "BSD",

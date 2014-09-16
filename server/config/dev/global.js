@@ -11,7 +11,8 @@ module.exports.global = {
         level: 'verbose'
     },
     paths: {
-        public: '/public/build'
+        public: '/public/build',
+        controller: '/Users/xuan_tuong/Documents/workspace/projects/auth/server/controllers'
     },
     cache: {
         maxAge: 3600000
