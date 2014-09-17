@@ -53,8 +53,6 @@
 
         //authorize the connection
         io.use(function(socket, next) {
-            console.log("socket cookies");
-
             var hsData = socket.request;
             var hsCookie = hsData.headers.cookie || (hsData._query && hsData._query['cookie']);
 
@@ -64,6 +62,7 @@
                 if (hsCookie)
                 {
                     parsedCookie = cookie.parse(hsCookie);
+
                     if(!parsedCookie || !parsedCookie['sid'])
                     {
                         return Q.reject('[socket.io] cookie session not found');
@@ -83,15 +82,25 @@
                 }
 
                 var session = yield Q.denodeify(redis.get)("sess:" + hsData.sessionID);
+
                 if (!session)
                 {
                     return Q.reject('[socket.io] session not found.');
                 }
 
                 hsData.session = JSON.parse(session);
-                next(null, true);
+
+                if(hsData.session && hsData.session.user)
+                {
+                    next(null, true);
+                }
+                else
+                {
+                    return Q.reject('[socket.io] no session found. User might not log in');
+                }
             })()
             .fail(function(error){
+                winston.info("[socket.io] ERROR: ", error.stack || error);
                 next(error.stack || error, false);
             });
         });
@@ -149,7 +158,7 @@
                             return SocketModules.User.isOnline(socket.uid)
                         })
                         .then(function(data){
-                            socket.broadcast.emit('user.isOnline', null, data);
+                            socket.broadcast.emit('user.disconnect', null, data);
                         })
                         .fail(function(err){
                             winston.error(err.stack || err);

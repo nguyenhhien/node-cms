@@ -6,17 +6,17 @@
 switch(process.env.NODE_ENV)
 {
     case 'test':
-        global.Config = require("./server/config.js").test;
+        global.Config = require("./../server/config.js").test;
         break;
     case 'production':
-        global.Config = require("./server/config.js").production;
+        global.Config = require("./../server/config.js").production;
         break;
     default:
-        global.Config = require("./server/config.js").development;
+        global.Config = require("./../server/config.js").development;
         break;
 }
 
-require("./server/constant.js");
+require("./../server/constant.js");
 
 //third-party modules
 var express 			= require("express");
@@ -171,7 +171,7 @@ else
             //socket io setup
             var server = http.Server(app);
 
-            var socketIO = require("./server/socket/socket.js");
+            var socketIO = require("./../server/socket/socket.js");
             socketIO.init(server);
 
             //app start listening

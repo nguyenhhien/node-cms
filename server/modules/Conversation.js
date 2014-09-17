@@ -6,7 +6,7 @@
     var fs                  = require('fs');
     var path                = require('path');
     var _                   = require('lodash-node');
-    var mongoose            = require('../database/mongoose.js');
+    var beaver              = require("../../Beaver.js");
 
     //create new conversation and add existing user into list
     module.createNewConversation = function(users)
@@ -15,7 +15,7 @@
             user.joinedDate = new Date();
         })
 
-        return mongoose.models.Conversation
+        return beaver.models.mongoose.Conversation
             .createQ({
                 numPages: 1,
                 users: users
@@ -25,7 +25,7 @@
     //add new user into conversation
     module.addUserIntoConversation = function(conversationId, user)
     {
-        return mongoose.models.Conversation
+        return beaver.models.mongoose.Conversation
             .find()
             .where('_id', conversationId)
             .where('users.id').in([user.id])
@@ -35,7 +35,7 @@
                 if(!conversation.length)
                 {
                     //push user into existing array
-                    mongoose.models.Conversation
+                    beaver.models.mongoose.Conversation
                         .update({
                             _id: conversationId
                         },
@@ -58,7 +58,7 @@
     //remove user from conversation
     module.removeUserFromConversation = function(conversationId, userId)
     {
-        return mongoose.models.Conversation
+        return beaver.models.mongoose.Conversation
             .update({
                 _id: conversationId
             },
@@ -76,7 +76,7 @@
     //delete a certain message inside the array
     module.deleteMessage = function(conversationId, page, userId, messageId)
     {
-        return mongoose.models.ConversationPage
+        return beaver.models.mongoose.ConversationPage
             .update({
                 conversationId: conversationId,
                 page: page,
@@ -94,7 +94,7 @@
     //add new message into list
     module.addMessage = function(conversationId, userId, content)
     {
-        return mongoose.models.Conversation
+        return beaver.models.mongoose.Conversation
             .find()
             .where('_id', conversationId)
             .where('users.id').in([userId])
@@ -108,7 +108,7 @@
 
                 return [
                     conversation,
-                    mongoose.models.ConversationPage.findOneAndUpdate({
+                    beaver.models.mongoose.ConversationPage.findOneAndUpdate({
                         conversationId: conversationId,
                         page: conversation[0].numPages
                     },
@@ -137,7 +137,7 @@
                 //increase number of pages
                 if(conversationPage.count >= 100)
                 {
-                    return mongoose.models.Conversation
+                    return beaver.models.mongoose.Conversation
                         .findOneAndUpdate({
                             _id: conversationId,
                             numPages: conversation[0].numPages

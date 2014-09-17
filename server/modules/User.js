@@ -12,16 +12,12 @@
     var bcrypt 		        = require("bcrypt-nodejs");
     var request 	        = require("request");
     var superagent          = require('superagent');
-
-    var Utils               = require("../helpers/Utils.js");
-    var mongoose            = require('../database/mongoose.js');
-    var sequelize           = require("../database/sequelize.js");
-    var utils               = require("../helpers/Utils.js");
+    var beaver              = require("../../Beaver.js");
     var Email               = require("./email");
 
     //verify the username and password combination
     module.verifyUserPassword = Q.async(function*(email, password){
-        var user = yield sequelize.models.User.find({where: {email: email, status: UserStatus.Active}});
+        var user = yield beaver.sequelizeModels.User.find({where: {email: email, status: UserStatus.Active}});
 
         if(!user) return [null, yield Q.reject({
             error: "User with email: " + email + " not found"
@@ -95,16 +91,16 @@
     
     module.forgotPasswordRequest = function(email)
     {
-        return Q(sequelize.models.User.find({ where: {email: email}}))
+        return Q(beaver.sequelizeModels.User.find({ where: {email: email}}))
             .then(function(account){
                 if(!account) return Q.reject({
                     error: "Account with email: " + email + " not found"
                 });
 
-                var passwordResetKey = utils.randomString(32);
+                var passwordResetKey = chance.string({alpha: true, length: 32});
 
                 //create a records to PasswordRecovery table
-                return [passwordResetKey, Q(sequelize.models.PasswordRecovery.create({
+                return [passwordResetKey, Q(beaver.sequelizeModels.PasswordRecovery.create({
                     passwordResetKey: passwordResetKey,
                     expiryDate: new Date().addDays(3),
                     accountId: account.id
@@ -113,13 +109,13 @@
             .spread(function(passwordResetKey){
                 return Email.sendTemplateEmail(EmailType.UserForgetPassword, email, {
                     userName: email,
-                    passwordRecoveryUrl: Config.HOSTURL + "login.html#!/resetPassword?passwordResetKey=" + passwordResetKey
+                    passwordRecoveryUrl: beaver.config.origin + "login.html#!/resetPassword?passwordResetKey=" + passwordResetKey
                 });
             }); 
     }
     
     module.resetPassword = function(passwordResetKey, password){
-        return Q(sequelize.models.PasswordRecovery.find({where: {passwordResetKey: passwordResetKey}}))
+        return Q(beaver.sequelizeModels.PasswordRecovery.find({where: {passwordResetKey: passwordResetKey}}))
             .then(function(recoveryRecord){
                 if(!recoveryRecord)
                     return Q.reject({
@@ -129,13 +125,13 @@
                 return [recoveryRecord.accountId, module.saltAndHash(password)];
             })
             .spread(function(accountId, newHash){
-                return Q(sequelize.models.User.update({
+                return Q(beaver.sequelizeModels.User.update({
                     password: newHash
                 }, {id: accountId}));
             })
             .then(function(){
                 //delete the activation key
-                return Q(sequelize.models.PasswordRecovery.destroy({
+                return Q(beaver.sequelizeModels.PasswordRecovery.destroy({
                     passwordResetKey: req.param("passwordResetKey")
                 }));
             });
@@ -143,7 +139,7 @@
     
     module.registerAccount = function(email, name, password)
     {
-        return Q(sequelize.models.User.find({ where: {email: email} }))
+        return Q(beaver.sequelizeModels.User.find({ where: {email: email} }))
             .then(function(account){
                 if(account) return Q.reject({
                     error: "Email address is already in used"
@@ -153,9 +149,9 @@
             })
             .then(function(hash){
                 var accountStatus = UserStatus.Active;
-                if(Config.Global.needAccountActivation) accountStatus = UserStatus.Inactive;
+                if(beaver.config.global.needAccountActivation) accountStatus = UserStatus.Inactive;
 
-                return Q(sequelize.models.User.create({
+                return Q(beaver.sequelizeModels.User.create({
                     email: email,
                     name: name,
                     password: hash,
@@ -163,10 +159,10 @@
                 }));
             })
             .then(function(newAccount){
-                if(Config.Global.needAccountActivation)
+                if(beaver.config.global.needAccountActivation)
                 {
-                    var activationKey = utils.randomString(32);
-                    return Q(sequelize.models.UserActivation.create({
+                    var activationKey = chance.string({alpha: true, length: 32});
+                    return Q(beaver.sequelizeModels.UserActivation.create({
                         accountId: newAccount.id,
                         activationKey: activationKey,
                         expiryDate: new Date().addDays(3)
@@ -174,7 +170,7 @@
                         .then(function(){
                             return Email.sendTemplateEmail(EmailType.AccountActivation, email, {
                                 userName: email,
-                                activationUrl: Config.HOSTURL + "login.html#!/activateAccount?activationKey=" + activationKey
+                                activationUrl: beaver.config.origin + "login.html#!/activateAccount?activationKey=" + activationKey
                             });
                         });
                 }
@@ -184,7 +180,7 @@
     
     module.activeAccount = function(activationKey)
     {
-        return Q(sequelize.models.UserActivation.find({where: {
+        return Q(beaver.sequelizeModels.UserActivation.find({where: {
             activationKey: activationKey,
             expiryDate: {
                 gte: new Date()
@@ -195,13 +191,13 @@
                     error: "ActivationKey doesn't not exist or has been expired"
                 });
                 
-                return Q(sequelize.models.User.update({
+                return Q(beaver.sequelizeModels.User.update({
                     status: UserStatus.Active
                 }, {id: activationRecord.accountId}));
             })
             .then(function(){
                 //delete the activation key
-                return Q(sequelize.models.UserActivation.destroy({
+                return Q(beaver.sequelizeModels.UserActivation.destroy({
                     activationKey: activationKey
                 }));
             });
@@ -209,19 +205,19 @@
     
     module.facebookRegister = Q.async(function*(fbId, accessToken, name, email)
     {
-        var user = yield sequelize.models.User.find({where: {fbId: fbId}});
+        var user = yield beaver.sequelizeModels.User.find({where: {fbId: fbId}});
 
         if(!user)
         {
             var valid = yield module.validateFacebookAccessToken(fbId, accessToken);
-            var account = yield sequelize.models.User.find({ where: {email: email} });
+            var account = yield beaver.sequelizeModels.User.find({ where: {email: email} });
 
             if(account) return Q.reject({
                 error: "Email: " + email + ' has been used to register. If you are owner of that account, ' +
                     'please login to your account page and click to link-to-facebook to link to your facebook account'
             })
 
-            else return yield sequelize.models.User.create({
+            else return yield beaver.sequelizeModels.User.create({
                 email: email,
                 name: name,
                 fbId: fbId,
@@ -238,12 +234,12 @@
     
     module.googleRegister = Q.async(function*(googleId, accessToken, name, email)
     {
-        var user = yield sequelize.models.User.find({where: {googleId: googleId}});
+        var user = yield beaver.sequelizeModels.User.find({where: {googleId: googleId}});
 
         if(!user)
         {
             var valid = yield module.validateGoogleAccessToken(googleId, accessToken);
-            var account = yield sequelize.models.User.find({ where: {email: email} });
+            var account = yield beaver.sequelizeModels.User.find({ where: {email: email} });
 
             if(account) return Q.reject({
                 error: "Email: " + email + ' has been used to register. If you are owner of that account, ' +
@@ -251,7 +247,7 @@
             })
 
             else {
-                return yield sequelize.models.User.create({
+                return yield beaver.sequelizeModels.User.create({
                     email: email,
                     name: name,
                     googleId: googleId,
