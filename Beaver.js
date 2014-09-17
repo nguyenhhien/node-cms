@@ -19,6 +19,40 @@ var Beaver = function(){
 
 util.inherits(Beaver, events.EventEmitter);
 
+//some suger functions
+function getUtil()
+{
+    function util()
+    {
+        this.formatValidationError = function(errors)
+        {
+            errors = errors || [];
+
+            //remove duplicate element
+            errors = errors.filter(function(elem, pos) {
+                return errors.map(function(error){return error.param;}).indexOf(elem.param) == pos;
+            });
+
+            var errorMsg = "Invalid Params (";
+            errorMsg += (errors || []).map(function(elem){
+                return elem.param;
+            }).join(",") + ")";
+
+            errorMsg += " .Received (" +  (errors || []).map(function(elem){
+                return elem.value;
+            }).join(",") + ")";
+
+            return errorMsg;
+        }
+
+        this.regexEscape= function(s) {
+            return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        };
+    }
+
+    return new util();
+}
+
 //start bootstrap application
 Beaver.prototype.start = function()
 {
@@ -47,6 +81,11 @@ Beaver.prototype.start = function()
     //load models
     this.models = require('./server/models');
 
+    //load modules
+    this.modules = require('./server/modules');
+
+    this.utils = getUtil();
+
     //init all hooks
     var tasks = [];
     _.each(that.hooks.loadOrders, function(name){
@@ -68,7 +107,8 @@ Beaver.prototype.start = function()
 //stop the application
 Beaver.prototype.stop = function()
 {
-
+    //TODO: peacefully close all database connection
 }
 
-module.exports = Beaver;
+//export only one instance
+module.exports = new Beaver();

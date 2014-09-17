@@ -9,8 +9,7 @@
     var Chance              = require('chance');
     var chance              = new Chance();
     var dateFormat          = require('dateformat');
-    var Utils               = require("../helpers/Utils.js");
-    var mongoose            = require('../database/mongoose.js');
+    var beaver              = require("../../Beaver.js");
 
     //create new comments
     module.createNewComment = function(objectId, collectionname, newComment, postedUser)
@@ -46,7 +45,7 @@
         });
 
         //create comments
-        return mongoose.models.Comment.createQ(savedComment); 
+        return beaver.models.mongoose.Comment.createQ(savedComment); 
     };
 
     //get comments
@@ -56,7 +55,7 @@
         if(limit != null && offset != null)
         {
             return Q.all([
-                    mongoose.models.Comment
+                    beaver.models.mongoose.Comment
                         .find()
                         .where('objectId', objectId)
                         .where('collectionName', collectionname)
@@ -65,7 +64,7 @@
                         .sort({'full_slug': -1})
                         .lean()
                         .execQ(),
-                    mongoose.models.Comment.count()
+                    beaver.models.mongoose.Comment.count()
                         .where('objectId', objectId)
                         .where('collectionName', collectionname)
                         .execQ()
@@ -82,7 +81,7 @@
         }
         else
         {
-            return mongoose.models.Comment
+            return beaver.models.mongoose.Comment
                 .find()
                 .where('objectId', objectId)
                 .where('collectionName', collectionname)
@@ -100,8 +99,8 @@
 
     module.updateComment = function(commentId, userId, newComment)
     {
-        return mongoose.models.Comment
-            .findOneAndUpdate({_id: commentId, 'author.id': req.session.user.id}, newComment)
+        return beaver.models.mongoose.Comment
+            .findOneAndUpdate({_id: commentId, 'author.id': userId}, newComment)
             .lean()
             .execQ()
             .then(function(newComment){
@@ -113,7 +112,7 @@
     module.deleteComment = function(commentId, userId)
     {
         //find and remove all child reply + comment
-        return mongoose.models.Comment
+        return beaver.models.mongoose.Comment
             .where('_id', commentId)
             .where('author.id', userId)
             .lean()
@@ -125,10 +124,10 @@
                 var comment = comments[0];
 
                 //remove comments
-                return mongoose.models.Comment.removeQ({
+                return beaver.models.mongoose.Comment.removeQ({
                     objectId: comment.objectId,
                     collectionName: comment.collectionName,
-                    fullSlug: new RegExp('^'+ Utils.regexEscape(comment.fullSlug))
+                    fullSlug: new RegExp('^'+ beaver.utils.regexEscape(comment.fullSlug))
                 })
             });
     };
