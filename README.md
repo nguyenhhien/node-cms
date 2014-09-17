@@ -1,4 +1,4 @@
-# BEAVER.JS <nguy0066@ntu.edu.sg>
+# BEAVER.JS
 
 *  Beaver.js is a web framework built upon express.js. It is designed to be scalable, fast and well-written.
 *  Beaver.js make writing API easily and enjoyable while maintains best performance offered by Node.
