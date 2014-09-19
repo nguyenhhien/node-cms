@@ -11,7 +11,7 @@ module.exports.global = {
         level: 'verbose'
     },
     paths: {
-        public: '/public/build',
+        public: '/Users/xuan_tuong/Documents/workspace/projects/auth/public/build',
         controller: '/Users/xuan_tuong/Documents/workspace/projects/auth/server/controllers'
     },
     cache: {
