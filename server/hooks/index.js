@@ -24,7 +24,8 @@
         "moduleloader",
         "adapter",
         "http",
-        "beeroutes"
+        "beeroutes",
+        "socket"
     ];
 
 }(exports));

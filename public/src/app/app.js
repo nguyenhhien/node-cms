@@ -15,7 +15,7 @@ angular.module( 'mainApp', [
 }])
 
 .run(['$http', '$rootScope', function run ($http, $rootScope) {
-    $http.post('/api/users/userInfo')
+    $http.post('/api/user/userInfo')
         .then(function(response){
             var user = response.data;
 
@@ -39,6 +39,11 @@ angular.module( 'mainApp', [
         'reopen delay': 500,
         'max reconnection attempts': 10,
         transports: ['websocket', 'xhr-polling', 'jsonp-polling', 'flashsocket']
+    });
+
+    //this is for test
+    $rootScope.socketServer.on("event:connect", function(data){
+        console.log("connected", data);
     });
 }])
 
@@ -74,7 +79,7 @@ appModels.provider('User', function(){
         }
 
         User.inherits(ActiveResource.Base);
-        User.api.set('/api/restful');
+        User.api.set('/api');
 
         return User;
     }];

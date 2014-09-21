@@ -5,7 +5,7 @@
     var winston             = require('winston');
     var Q                   = require("q");
     var redis               = require('../../database/redis.js');
-    var SocketModules       = require('../modules');
+    var SocketModules       = require('.');
 
     //API method -- as socket handler
     module.loadMore = function(socket, data, callback) {

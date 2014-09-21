@@ -78,7 +78,7 @@ loginApp.classy.controller({
     {
         var that = this;
 
-        that.$http.post("/api/users/signin", {email: this.$.userInput.email,
+        that.$http.post("/api/user/signin", {email: this.$.userInput.email,
             password: CryptoJS.MD5(that.$.userInput.password).toString()})
             .then(function(response, status) {
                 var data = response.data;
@@ -117,7 +117,7 @@ loginApp.classy.controller({
 
                 accessToken = response.authResponse.accessToken;
 
-                return that.$http.post("/api/users/facebookLogin", {fbId: response.authResponse.userID, accessToken: accessToken});
+                return that.$http.post("/api/user/facebookLogin", {fbId: response.authResponse.userID, accessToken: accessToken});
             })
             .then(function(response){
                 var data = response.data;
@@ -155,7 +155,7 @@ loginApp.classy.controller({
             })
             .then(function(profile){
                 var googleId = profile.id;
-                return that.$http.post("/api/users/googleLogin", {googleId: googleId, accessToken: accessToken});
+                return that.$http.post("/api/user/googleLogin", {googleId: googleId, accessToken: accessToken});
             })
             .then(function(response){
                 var data = response.data;
@@ -186,7 +186,7 @@ loginApp.classy.controller({
     register: function()
     {
         var that = this;
-        that.$http.post("/api/users/register",{
+        that.$http.post("/api/user/register",{
             name: that.$scope.userInput.name,
             email: that.$scope.userInput.email,
             password: CryptoJS.MD5(that.$scope.userInput.password).toString()
@@ -240,7 +240,7 @@ loginApp.classy.controller({
                     fbId = response.id,
                     name = response.name;
 
-                return that.$http.post("/api/users/facebookRegister", {
+                return that.$http.post("/api/user/facebookRegister", {
                     name: name,
                     email: email,
                     fbId: fbId,
@@ -287,7 +287,7 @@ loginApp.classy.controller({
                     googleId = profile.id,
                     name = profile.name;
 
-                return that.$http.post("/api/users/googleRegister", {
+                return that.$http.post("/api/user/googleRegister", {
                     name: name,
                     email: email,
                     googleId: googleId,
@@ -325,7 +325,7 @@ loginApp.classy.controller({
             return;
         }
 
-        that.$http.post("/api/users/activateAccount", {activationKey: that.activationKey})
+        that.$http.post("/api/user/activateAccount", {activationKey: that.activationKey})
             .then(function(response, status) {
                 var data = response.data;
 
@@ -356,7 +356,7 @@ loginApp.classy.controller({
     {
         var that = this;
 
-        that.$http.post("/api/users/forgotPassword", {email: that.$.userInput.email})
+        that.$http.post("/api/user/forgotPassword", {email: that.$.userInput.email})
             .then(function(response, status) {
                 var data = response.data;
 
@@ -388,7 +388,7 @@ loginApp.classy.controller({
     {
         var that = this;
 
-        that.$http.post("/api/users/resetPassword", {
+        that.$http.post("/api/user/resetPassword", {
             passwordResetKey: that.passwordResetKey,
             password: CryptoJS.MD5(that.$.userInput.password).toString()
         })

@@ -25,11 +25,11 @@ var app = angular.module( 'mainApp.user', [
             });
     });
 
-app.controller("UserSearchController", function($rootScope, $scope, $http, User, utils, $resource){
+app.controller("UserSearchController", ['$rootScope', '$scope', '$http', 'User', 'utils', '$resource', function($rootScope, $scope, $http, User, utils, $resource){
+    $scope.itemsPerPage = 10;
+    $scope.currentPage = 1;
 
-    this.$inject = ['$rootScope', '$scope', '$http', 'User', 'utils', '$resource'];
-
-    var UserResource = $resource('/api/restful/user/:id', {id: '@_id'}, {
+    var UserResource = $resource('/api/user/:id', {id: '@_id'}, {
         query:{
             isArray: true, method: 'GET',
             transformResponse: function (data, headers) {
@@ -63,7 +63,4 @@ app.controller("UserSearchController", function($rootScope, $scope, $http, User,
             $scope.getUsers((currentPage-1)* $scope.itemsPerPage, $scope.itemsPerPage);
         }
     });
-
-    $scope.itemsPerPage = 10;
-    $scope.currentPage = 1;
-});
+}]);
