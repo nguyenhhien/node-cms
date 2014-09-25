@@ -120,7 +120,7 @@ app.directive('chatWidget', ["$rootScope", "$resource", "utils", function($rootS
                 scope.loadingMoreUser = true;
 
                 scope.socketServer.emit('user.loadMore', {set: "users:online", offset: scope.offset, limit: 20}, function(err, data) {
-                    if (data && data.results.length) {
+                    if (data && data.results && data.results.length) {
                         scope.offset += 20;
 
                         //push into current list

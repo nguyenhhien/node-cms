@@ -171,10 +171,10 @@
                     eventEmitter: require('events').EventEmitter
                 });
 
-//                res.on("end", function(){
-//                    //TODO: check the case of error?
-//                    callback && callback(null, res._getData());
-//                });
+                res.on("end", function(){
+                    //TODO: check the case of error?
+                    callback && callback(null, res._getData());
+                });
 
                 beaver.emit("socket:request", req, res);
             });

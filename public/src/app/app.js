@@ -41,9 +41,14 @@ angular.module( 'mainApp', [
         transports: ['websocket', 'xhr-polling', 'jsonp-polling', 'flashsocket']
     });
 
+    $rootScope.superSocket = new SuperSocket($rootScope.socketServer);
+
     //this is for test
     $rootScope.socketServer.on("event:connect", function(data){
         console.log("connected", data);
+//        $rootScope.superSocket.get("/api/user/onlines", {userId: 1}, function(err, data){
+//            console.log("Err, data", err, data.error);
+//        });
     });
 }])
 

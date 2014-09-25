@@ -83,7 +83,7 @@ function response(options) {
         send: function (a, b, c) {
             var _self = this;
             var _formatData = function(a) {
-                if (typeof a === 'object') {
+                if (a && typeof a === 'object') {
                     if (a.statusCode) {
                         _self.statusCode = a.statusCode;
                     }
@@ -145,6 +145,7 @@ function response(options) {
             this.emit('end');
         },
         json: function (code, body) {
+            var self = this;
             this.setHeader('Content-Type', 'application/json');
 
             //don't stringify -- return object immediately
@@ -169,7 +170,7 @@ function response(options) {
                     break;
             }
 
-            this.send(this.statusCode, _data);
+            this.send(self.statusCode, _data);
         },
         write: function (data, encoding) {
             _data += data;
