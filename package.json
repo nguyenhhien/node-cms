@@ -68,7 +68,7 @@
     "superagent": "^0.18.2",
     "superagent-prefix": "0.0.2",
     "then-redis": "^0.3.12",
-    "url": "~0.7.9",
+    "url": "^0.7.9",
     "validator": "^3.16.0",
     "winston": "^0.7.3",
     "googleapis": "^1.0.2",
@@ -78,7 +78,10 @@
     "supertest": "^0.13.0",
     "methods": "^1.1.0",
     "sails-build-dictionary": "^0.10.1",
-    "sails-util": "^0.10.4"
+    "sails-util": "^0.10.4",
+    "mime": "^1.2.11",
+    "qs": "^2.2.4",
+    "node-mocks-http": "^1.1.0"
   },
   "author": "stanley",
   "license": "BSD",

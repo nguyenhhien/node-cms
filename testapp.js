@@ -1,5 +1,6 @@
 require("./server/constant.js");
 
+var winston             = require('winston');
 var http				= require("http");
 
 //TODO: this one just for legacy code -- don't continue to use it

@@ -79,7 +79,7 @@
 
                 bindRoute({
                     method: 'get',
-                    path: baseRoute+"/:id",
+                    path: baseRoute+"/:id(\\d+)",
                     target: beeRouteFactory.findOne(sequelizeModel),
                     routeType: "Bee Route"
                 });
@@ -93,21 +93,21 @@
 
                 bindRoute({
                     method: 'put',
-                    path: baseRoute+"/:id",
+                    path: baseRoute+"/:id(\\d+)",
                     target: beeRouteFactory.update(sequelizeModel),
                     routeType: "Bee Route"
                 });
 
                 bindRoute({
                     method: 'post',
-                    path: baseRoute+"/:id",
+                    path: baseRoute+"/:id(\\d+)",
                     target: beeRouteFactory.update(sequelizeModel),
                     routeType: "Bee Route"
                 });
 
                 bindRoute({
                     method: 'delete',
-                    path: baseRoute+"/:id",
+                    path: baseRoute+"/:id(\\d+)",
                     target: beeRouteFactory.destroy(sequelizeModel),
                     routeType: "Bee Route"
                 });

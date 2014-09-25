@@ -22,6 +22,8 @@
         //create app & http server
         //TODO: specify for http && https -- or using nginx for reverse proxy
         var app = beaver.hooks.http.app = express();
+        var latentApp = beaver.hooks.http.latentApp = express();
+
         app.enabled('trust proxy');
         app.enable("jsonp callback");
 
@@ -42,6 +44,7 @@
             try
             {
                 app[route.method || 'all'](route.path, route.target);
+                latentApp[route.method || 'all'](route.path, route.target);
                 //beaver.winston.info("[Route Bound]: " + route.path);
             }
             catch(e)
@@ -70,6 +73,12 @@
                 beaver.emit('hook:http:listening');
                 callback && callback(err);
             });
+        });
+
+        //forward to latent express
+        //TODO: check unmatched route
+        beaver.on("socket:request", function(req, res){
+            latentApp.handle(req, res);
         });
 
         callback && callback();
