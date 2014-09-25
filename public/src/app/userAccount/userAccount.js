@@ -1,4 +1,4 @@
-var app = angular.module( 'mainApp.userAccount', ['appModels', 'ui.router', 'classy', 'ActiveResource', 'utils', 'localytics.directives'])
+var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'utils', 'localytics.directives'])
 .config(function config( $stateProvider ) {
     $stateProvider
         .state('userAccount', {
@@ -9,7 +9,7 @@ var app = angular.module( 'mainApp.userAccount', ['appModels', 'ui.router', 'cla
         });
 });
 
-app.controller("UserAccountController", ['$rootScope', '$scope', '$http', 'User', 'utils', '$resource', function($rootScope, $scope, $http, User, utils, $resource){
+app.controller("UserAccountController", ['$rootScope', '$scope', '$http', 'utils', '$resource', function($rootScope, $scope, $http, utils, $resource){
     var UserResource = $resource('/api/user/:id', {id: '@_id'});
     var response = UserResource.get({id:$rootScope.user.id}, function() {
         if(!response.error)

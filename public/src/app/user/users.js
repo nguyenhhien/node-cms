@@ -1,8 +1,6 @@
 var app = angular.module( 'mainApp.user', [
-        'appModels',
         'ui.router',
         'classy',
-        'ActiveResource',
         'utils',
         'localytics.directives',
         'ui.bootstrap',
@@ -25,7 +23,7 @@ var app = angular.module( 'mainApp.user', [
             });
     });
 
-app.controller("UserSearchController", ['$rootScope', '$scope', '$http', 'User', 'utils', '$resource', function($rootScope, $scope, $http, User, utils, $resource){
+app.controller("UserSearchController", ['$rootScope', '$scope', '$http', 'utils', '$resource', function($rootScope, $scope, $http, utils, $resource){
     $scope.itemsPerPage = 10;
     $scope.currentPage = 1;
 

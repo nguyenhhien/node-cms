@@ -21,8 +21,8 @@ var app = angular.module( 'mainApp.location', [
     });
 
 
-app.controller("LocationController", function($rootScope, $scope, $http, User, utils, $resource){
-    this.$inject = ['$rootScope', '$scope', '$http', 'User', 'utils', '$resource'];
+app.controller("LocationController", function($rootScope, $scope, $http, utils, $resource){
+    this.$inject = ['$rootScope', '$scope', '$http', 'utils', '$resource'];
     $scope.selectedLocation = {};
     $scope.selectedLocation.parentId = 15;
 });

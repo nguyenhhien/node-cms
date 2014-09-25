@@ -1,8 +1,6 @@
 var app = angular.module( 'mainApp.dashboard', [
-        'appModels',
         'ui.router',
         'classy',
-        'ActiveResource',
         'utils',
         'localytics.directives',
         'ui.bootstrap',
@@ -22,8 +20,8 @@ var app = angular.module( 'mainApp.dashboard', [
             });
     });
 
-app.controller("DashboardController", function($rootScope, $scope, $http, User, utils, $resource){
-    this.$inject = ['$rootScope', '$scope', '$http', 'User', 'utils', '$resource'];
+app.controller("DashboardController", function($rootScope, $scope, $http, utils, $resource){
+    this.$inject = ['$rootScope', '$scope', '$http', 'utils', '$resource'];
 
 
 });
