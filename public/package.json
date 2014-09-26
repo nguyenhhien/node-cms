@@ -1,7 +1,7 @@
 {
   "author": "Stanley",
-  "name": "auth",
-  "version": "0.0.1",
+  "name": "beaver",
+  "version": "0.3.0",
   "devDependencies": {
     "btoa": "~1.1.1",
     "canonical-json": "~0.0.4",

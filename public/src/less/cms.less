@@ -12,12 +12,12 @@
 
 
 //Every Things
-@import '../../vendor/bootstrap/less/bootstrap.less';
+@import './../../vendor/bootstrap/less/bootstrap.less';
 
 //sematic ui stylesheets
-@import '../../vendor/semantic/build/less/views/comment.less';
-@import '../../vendor/semantic/build/less/views/feed.less';
-@import '../../vendor/semantic/build/less/elements/icon.less';
+@import './../../vendor/semantic/build/less/views/comment.less';
+@import './../../vendor/semantic/build/less/views/feed.less';
+@import './../../vendor/semantic/build/less/elements/icon.less';
 
 /**
  * This is our main variables file. It in turn imports the `variables` file from
@@ -54,14 +54,9 @@
  * TODO: In a later version of this boilerplate, I'd like to automate this.
  */
 
-@import '../app/home/home.less';
-@import '../app/login/login.less';
-@import '../app/register/register.less';
-@import '../app/forgotPassword/forgotPassword.less';
-@import '../app/activateAccount/activateAccount.less';
-@import '../app/resetPassword/resetPassword.less';
-@import '../app/userAccount/userAccount.less';
-@import '../app/location/location.less';
+@import './../cms/home/home.less';
+@import './../cms/userAccount/userAccount.less';
+@import './../cms/location/location.less';
 
 //Common less
 @import './partials/_content.less';
