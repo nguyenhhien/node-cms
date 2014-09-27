@@ -44,7 +44,7 @@ app-wide dependencies that are required to assemble your app.
 ```js
 angular.module( 'ngBoilerplate', [
   'templates-app',
-  'templates-common',
+  'templates-cms_common',
   'ngBoilerplate.home',
   'ngBoilerplate.about'
   'ui.state',
