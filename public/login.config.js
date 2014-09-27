@@ -4,7 +4,10 @@ module.exports = {
 
     //login modules
     app_files: {
-        js: ['src/login/**/*.js'],
+        js: [
+            'src/login/login.js',
+            'src/login/**/*.js'
+        ],
         jsunit: [ 'src/login/*.spec.js' ],
         atpl: ['src/login/**/*.tpl.html'],
         ctpl: [ 'src/common/**/*.tpl.html' ],
@@ -32,8 +35,10 @@ module.exports = {
             'vendor/angular-cookies/angular-cookies.js'
         ],
         css: [
+
         ],
         assets: [
+
         ]
     }
 }

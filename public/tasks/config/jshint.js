@@ -1,18 +1,5 @@
 module.exports = function(grunt, gruntAppList) {
-    var settingObj = {};
-
-    //create concat tasks for each apps
-    var srcFiles = [], testFiles = [];
-    gruntAppList.forEach(function(elem){
-        var prefix = elem.prefix;
-
-        srcFiles.push('<%= ' + prefix + 'app_files.js %>');
-        testFiles.push('<%= ' + prefix + 'app_files.jsunit %>');
-    });
-
-    grunt.config.set('jshint',{
-        src: srcFiles,
-        test: testFiles,
+    var settingObj = {
         gruntfile: [
             'Gruntfile.js'
         ],
@@ -27,7 +14,21 @@ module.exports = function(grunt, gruntAppList) {
             loopfunc:true
         },
         globals: {}
+    };
+
+    //create concat tasks for each apps
+    gruntAppList.forEach(function(elem){
+        var prefix = elem.prefix;
+
+        var srcFiles = [], testFiles = [];
+        srcFiles.push('<%= ' + prefix + 'app_files.js %>');
+        testFiles.push('<%= ' + prefix + 'app_files.jsunit %>');
+
+        settingObj[prefix + 'src'] = srcFiles;
+        settingObj[prefix + 'test'] = testFiles;
     });
+
+    grunt.config.set('jshint', settingObj);
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
 };

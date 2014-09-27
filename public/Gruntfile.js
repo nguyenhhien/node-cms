@@ -74,6 +74,8 @@ module.exports = function ( grunt ) {
     //grunt tasks
     var gruntTasks = require("./tasks");
 
+    grunt.renameTask( 'watch', 'delta' );
+
     //load config tasks into grunt -- pass all app list to create task directly
     Object.keys(gruntTasks.config || []).forEach(function(key){
         var configTask = gruntTasks.config[key];
@@ -86,7 +88,10 @@ module.exports = function ( grunt ) {
         registerTask(grunt, gruntAppList);
     });
 
+    grunt.registerTask( 'watch', [ 'build', 'delta' ] );
+
     grunt.registerTask("test", function(){
-        console.log("clean", grunt.config.get("clean"));
+        //console.log("clean", grunt.config.get("login_app_files"));
+        console.log("grunt watch", grunt.config.get("delta").login_jssrc);
     });
 };

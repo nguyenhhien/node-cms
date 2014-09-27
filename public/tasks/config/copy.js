@@ -30,6 +30,18 @@ module.exports = function(grunt, gruntAppList) {
             ]
         };
 
+        obj[prefix+'vendor_assets'] = {
+            files: [
+                {
+                    src: [ '<%= ' + prefix + 'vendor_files.assets %>' ],
+                    dest: '<%= ' + prefix + 'build_dir %>/assets/',
+                    cwd: '.',
+                    expand: true,
+                    flatten: true
+                }
+            ]
+        }
+
 
         obj[(prefix + "app_js")] = {
             files: [

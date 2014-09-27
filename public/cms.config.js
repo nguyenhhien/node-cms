@@ -48,8 +48,10 @@ module.exports = {
             'vendor/angular-chosen-localytics/chosen.js'
         ],
         css: [
+
         ],
         assets: [
+
         ]
     }
 };
