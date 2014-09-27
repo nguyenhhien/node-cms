@@ -5,7 +5,7 @@ var app = angular.module( 'mainApp.location', [
         'ui.bootstrap',
         'mgcrea.ngStrap',
         'common.commentThread',
-        'templates-common',
+        'templates-cms_common',
         'common.treeView',
         'common.dropdownTreeView',
         'ngResource'

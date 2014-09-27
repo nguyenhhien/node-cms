@@ -1,5 +1,5 @@
-var loginApp = angular.module('loginApp', ["utils", "ui.router", "templates-app",
-    "templates-common", "commonDirectives", 'facebook', 'googleplus', 'classy']);
+var loginApp = angular.module('loginApp', ["utils", "ui.router", "templates-login_main",
+    "templates-login_common", "commonDirectives", 'facebook', 'googleplus', 'classy']);
 
 var AUTH_EVENTS = {
     forbidden: 'auth:FORBIDDEN',

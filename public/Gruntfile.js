@@ -1,109 +1,92 @@
+//general build function to support building multiple apps
+function GruntAppBuilder(app_name, options)
+{
+    this.app_name = app_name;
+
+    //build folders
+    this.build_dir = options.build_dir || "build";
+    this.compile_dir = options.compile_dir || "bin";
+
+    //list of vendor files -- subfields are in <app_name>.config.js
+    this.vendor_files = options.vendor_files || [];
+
+    //main app files
+    this.app_files = options.app_files || [];
+
+    //js test files
+    this.test_files = options.test_files || [];
+
+    //templates files
+    this.tpl_files = options.tpl_files || [];
+
+    this._loaded_grunt = false;
+
+    //append prefix to the key
+    this.prefix = this.app_name + "_";
+}
+
+//load grunt and set its config
+GruntAppBuilder.prototype.loadGrunt = function(grunt)
+{
+    var that = this;
+
+    var configFields = [
+        "build_dir",
+        "compile_dir",
+        "vendor_files",
+        "app_files",
+        "test_files",
+        "tpl_files"
+    ];
+
+    var prefix = this.prefix;
+
+    var configObj = {};
+
+    configFields.forEach(function(elem){
+        configObj[prefix + elem] = that[elem];
+    });
+
+    //merge those app specific config files into global grunt files
+    //load it into grunt config has benefit of allowing passing directly argument
+    grunt.config.merge(configObj);
+
+    this._loaded_grunt = true;
+};
+
 module.exports = function ( grunt ) {
     require('load-grunt-tasks')(grunt, {scope: 'devDependencies'});
     require('time-grunt')(grunt);
 
-    //load config files
-    var userConfig = require( './build.config.js' );
+    var beaverCms = new GruntAppBuilder("cms", require("./cms.config.js"));
+    var beaverLogin = new GruntAppBuilder("login", require("./login.config.js"));
 
-    var taskConfig = {
-        pkg: grunt.file.readJSON("package.json"),
+    //initialize grunt for those newly registered apps
+    beaverCms.loadGrunt(grunt);
+    beaverLogin.loadGrunt(grunt);
 
-        meta: {
-            banner:
-                '/**\n' +
-                ' * <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                ' * <%= pkg.homepage %>\n' +
-                ' *\n' +
-                ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
-                ' * Licensed <%= pkg.licenses.type %> <<%= pkg.licenses.url %>>\n' +
-                ' */\n'
-        },
-        index: {
-            build_cms: {
-                dir: '<%= build_dir %>',
-                src: [
-                    '<%= cms_vendor_files.js %>',
-                    '<%= build_dir %>/src/cms/*.js',
-                    '<%= build_dir %>/src/common/*.js',
-                    '<%= html2js.common.dest %>',
-                    '<%= html2js.cms.dest %>',
-                    '<%= cms_vendor_files.css %>',
-                    '<%= less.build_cms.dest %>'
-                ]
-            },
-            compile_cms: {
-                dir: '<%= compile_dir %>',
-                src: [
-                    '<%= concat.cms_js.dest %>',
-                    '<%= cms_vendor_files.css %>',
-                    '<%= less.compile_cms.dest %>'
-                ]
-            }
-        }
-    };
+    //set pkg to package.json files
+    grunt.config.set("pkg", grunt.file.readJSON("package.json"));
 
-    //init grunt with some parameters
-    grunt.initConfig( grunt.util._.extend( taskConfig, userConfig ) );
+    //grunt app list
+    var gruntAppList = [beaverCms, beaverLogin];
 
-        //grunt tasks
+    //grunt tasks
     var gruntTasks = require("./tasks");
 
-    //load config tasks into grunt
+    //load config tasks into grunt -- pass all app list to create task directly
     Object.keys(gruntTasks.config || []).forEach(function(key){
         var configTask = gruntTasks.config[key];
-        configTask(grunt, userConfig);
+        configTask(grunt, gruntAppList);
     });
 
-    //load register tasks into grunt
+    //load register tasks into grunt -- pass all app list to create task directly
     Object.keys(gruntTasks.register || []).forEach(function(key){
         var registerTask = gruntTasks.register[key];
-        registerTask(grunt, userConfig);
+        registerTask(grunt, gruntAppList);
     });
 
-    //index task to build indexes files
-    function filterForJS ( files ) {
-        return files.filter( function ( file ) {
-            return file.match( /\.js$/ );
-        });
-    }
-
-    function filterForCSS ( files ) {
-        return files.filter( function ( file ) {
-            return file.match( /\.css$/ );
-        });
-    }
-
-    grunt.registerMultiTask('index', 'Process index.html template', function () {
-        var dirRE = new RegExp( '^('+grunt.config('build_dir')+'|'+grunt.config('compile_dir')+')\/', 'g' );
-        var jsFiles = filterForJS( this.filesSrc ).map( function ( file ) {
-            return file.replace( dirRE, '' );
-        });
-        var cssFiles = filterForCSS( this.filesSrc ).map( function ( file ) {
-            return file.replace( dirRE, '' );
-        });
-
-        grunt.file.copy('src/index.html', this.data.dir + '/index.html', {
-            process: function ( contents, path ) {
-                return grunt.template.process( contents, {
-                    data: {
-                        scripts: jsFiles,
-                        styles: cssFiles,
-                        version: grunt.config( 'pkg.version' )
-                    }
-                });
-            }
-        });
-
-        grunt.file.copy('src/login.html', this.data.dir + '/login.html', {
-            process: function ( contents, path ) {
-                return grunt.template.process( contents, {
-                    data: {
-                        scripts: jsFiles,
-                        styles: cssFiles,
-                        version: grunt.config( 'pkg.version' )
-                    }
-                });
-            }
-        });
+    grunt.registerTask("test", function(){
+        console.log("clean", grunt.config.get("clean"));
     });
 };

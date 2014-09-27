@@ -1,84 +1,62 @@
-module.exports = function(grunt) {
-    grunt.config.set('copy',{
-        //copy assets to compile and build folder
-        build_cms_assets: {
+module.exports = function(grunt, gruntAppList) {
+    var settingObj = {};
+
+    //create concat tasks for each apps
+    gruntAppList.forEach(function(elem){
+        var prefix = elem.prefix;
+
+        var obj = {};
+
+        //assets copy tasks can be shared between modules
+        obj["build_assets"] = {
             files: [
                 {
                     src: [ '**' ],
-                    dest: '<%= build_dir %>/assets/',
+                    dest: '<%= ' + prefix + 'build_dir %>/assets/',
                     cwd: 'src/assets',
                     expand: true
                 }
             ]
-        },
-        build_vendor_assets: {
-            files: [
-                {
-                    src: [
-                        '<%= cms_vendor_files.assets %>',
-                        '<%= login_vendor_files.assets %>'
-                    ],
-                    dest: '<%= build_dir %>/assets/',
-                    cwd: '.',
-                    expand: true,
-                    flatten: true
-                }
-            ]
-        },
-        compile_assets: {
+        };
+
+        obj["compile_assets"] = {
             files: [
                 {
                     src: [ '**' ],
-                    dest: '<%= compile_dir %>/assets',
-                    cwd: '<%= build_dir %>/assets',
+                    dest: '<%= ' + prefix + 'compile_dir %>/assets/',
+                    cwd: '<%= ' + prefix+ 'build_dir %>/assets',
                     expand: true
                 }
             ]
-        },
-        //copy cms files to build dir -- mainly for develop
-        //(cause in build mode, we uglify directly)
-        build_cmsjs: {
+        };
+
+
+        obj[(prefix + "app_js")] = {
             files: [
                 {
-                    src: [ '<%= cms_files.js %>' ],
-                    dest: '<%= build_dir %>/',
+                    src: [ '<%= ' + prefix + 'app_files.js %>' ],
+                    dest: '<%= ' + prefix + 'build_dir %>/',
                     cwd: '.',
                     expand: true
                 }
             ]
-        },
-        build_cms_vendorjs: {
+        };
+
+        obj[(prefix + "vendor_js")] = {
             files: [
                 {
-                    src: [ '<%= cms_vendor_files.js %>' ],
-                    dest: '<%= build_dir %>/',
+                    src: [ '<%= ' + prefix + 'vendor_files.js %>' ],
+                    dest: '<%= ' + prefix + 'build_dir %>/',
                     cwd: '.',
                     expand: true
                 }
             ]
-        },
-        //copy login files to build dir -- mainly for develop
-        build_loginjs: {
-            files: [
-                {
-                    src: [ '<%= login_files.js %>' ],
-                    dest: '<%= build_dir %>/',
-                    cwd: '.',
-                    expand: true
-                }
-            ]
-        },
-        build_login_vendorjs: {
-            files: [
-                {
-                    src: [ '<%= login_vendor_files.js %>' ],
-                    dest: '<%= build_dir %>/',
-                    cwd: '.',
-                    expand: true
-                }
-            ]
-        }
+        };
+
+        settingObj = grunt.util._.extend(settingObj, obj);
     });
+
+    grunt.config.set('copy', settingObj);
 
     grunt.loadNpmTasks('grunt-contrib-copy');
 };

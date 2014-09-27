@@ -1,22 +1,26 @@
-module.exports = function(grunt) {
-    grunt.config.set('uglify', {
-        cms: {
+module.exports = function(grunt, gruntAppList) {
+    var settingObj = {};
+
+    //create concat tasks for each apps
+    gruntAppList.forEach(function(elem){
+        var prefix = elem.prefix;
+
+        var obj = {};
+
+        obj[elem.app_name] = {
             options: {
                 //banner: '<%= meta.banner %>'
             },
             files: {
-                '<%= concat.cms_js.dest %>': '<%= concat.cms_js.dest %>'
             }
-        },
-        login: {
-            options: {
-                //banner: '<%= meta.banner %>'
-            },
-            files: {
-                '<%= concat.login_js.dest %>': '<%= concat.login_js.dest %>'
-            }
-        }
+        };
+
+        obj[elem.app_name].files['<%= concat.'+ prefix + 'js.dest %>'] = '<%= concat.'+ prefix + 'js.dest %>';
+
+        settingObj = grunt.util._.extend(settingObj, obj);
     });
+
+    grunt.config.set('uglify', settingObj);
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
 };

@@ -5,7 +5,7 @@ var app = angular.module( 'mainApp.dashboard', [
         'localytics.directives',
         'ui.bootstrap',
         'mgcrea.ngStrap',
-        'templates-common',
+        'templates-cms_common',
         'common.commentThread',
         'common.treeView',
         'common.chatWidget'

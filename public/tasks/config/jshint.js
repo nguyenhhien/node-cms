@@ -1,12 +1,18 @@
-module.exports = function(grunt, userConfig) {
+module.exports = function(grunt, gruntAppList) {
+    var settingObj = {};
+
+    //create concat tasks for each apps
+    var srcFiles = [], testFiles = [];
+    gruntAppList.forEach(function(elem){
+        var prefix = elem.prefix;
+
+        srcFiles.push('<%= ' + prefix + 'app_files.js %>');
+        testFiles.push('<%= ' + prefix + 'app_files.jsunit %>');
+    });
+
     grunt.config.set('jshint',{
-        src: [
-            '<%= cms_files.js %>',
-            '<%= login_files.js %>'
-        ],
-        test: [
-            '<%= cms_files.jsunit %>'
-        ],
+        src: srcFiles,
+        test: testFiles,
         gruntfile: [
             'Gruntfile.js'
         ],

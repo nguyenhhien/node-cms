@@ -40,8 +40,6 @@ module.exports = {
           'vendor/angular-ui-utils/ui-utils.js',
           'vendor/angular-cookies/angular-cookies.js',
           'vendor/cryptojslib/rollups/md5.js',
-          'vendor/angular-facebook/lib/angular-facebook.js',
-          'vendor/angular-google-plus/dist/angular-google-plus.js',
           'vendor/lodash/dist/lodash.js',
           'vendor/async/lib/async.js',
           'vendor/chosen/chosen.jquery.js',
@@ -75,7 +73,14 @@ module.exports = {
         js: [
             'vendor/jquery/dist/jquery.js',
             'vendor/bootstrap/dist/js/bootstrap.js',
-            'vendor/angular/angular.js'
+            'vendor/angular/angular.js',
+            'vendor/angular-facebook/lib/angular-facebook.js',
+            'vendor/angular-google-plus/dist/angular-google-plus.js',
+            'vendor/angular-classy/angular-classy.js',
+            'vendor/angular-ui-router/release/angular-ui-router.js',
+            'vendor/angular-ui-utils/ui-utils.js',
+            'vendor/cryptojslib/rollups/md5.js',
+            'vendor/angular-cookies/angular-cookies.js'
         ],
         css: [
         ],

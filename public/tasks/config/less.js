@@ -1,8 +1,14 @@
-module.exports = function(grunt) {
-    grunt.config.set('less', {
-        build_cms: {
-            src: [ '<%= cms_files.less %>' ],
-            dest: '<%= build_dir %>/assets/<%= pkg.name %>-cms-<%= pkg.version %>.css',
+module.exports = function(grunt, gruntAppList) {
+    var settingObj = {};
+
+    //create clean tasks for each apps
+    gruntAppList.forEach(function(elem){
+        var prefix = elem.prefix;
+
+        var obj = {};
+        obj[(prefix + "build")] = {
+            src: [ '<%= ' + (prefix+'app_files') + '.less %>' ],
+            dest: ('<%= ' + (prefix + 'build_dir') + '%>/assets/<%= pkg.name %>_'+prefix+'<%= pkg.version %>.css'),
             options: {
                 compile: true,
                 compress: false,
@@ -10,10 +16,11 @@ module.exports = function(grunt) {
                 noIDs: false,
                 zeroUnits: false
             }
-        },
-        compile_cms: {
-            src: [ '<%= less.build_cms.dest %>' ],
-            dest: '<%= less.build_cms.dest %>',
+        };
+
+        obj[(prefix + "compile")] = {
+            src: [ '<%= less.'+(prefix + "build")+'.dest %>' ],
+            dest: ('<%= ' + (prefix + 'compile_dir') + '%>/assets/<%= pkg.name %>_'+prefix+'<%= pkg.version %>.css'),
             options: {
                 compile: true,
                 compress: true,
@@ -21,30 +28,12 @@ module.exports = function(grunt) {
                 noIDs: false,
                 zeroUnits: false
             }
-        },
-        build_login: {
-            src: [ '<%= login_files.less %>' ],
-            dest: '<%= build_dir %>/assets/<%= pkg.name %>-login-<%= pkg.version %>.css',
-            options: {
-                compile: true,
-                compress: false,
-                noUnderscores: false,
-                noIDs: false,
-                zeroUnits: false
-            }
-        },
-        compile_login: {
-            src: [ '<%= less.build_login.dest %>' ],
-            dest: '<%= less.build_login.dest %>',
-            options: {
-                compile: true,
-                compress: true,
-                noUnderscores: false,
-                noIDs: false,
-                zeroUnits: false
-            }
-        }
+        };
+
+        settingObj = grunt.util._.extend(settingObj, obj);
     });
+
+    grunt.config.set('less', settingObj);
 
     grunt.loadNpmTasks('grunt-contrib-less');
 };

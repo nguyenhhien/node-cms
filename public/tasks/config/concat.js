@@ -1,52 +1,45 @@
 //concat list of files -- and save to destination folder
-module.exports = function(grunt) {
-    grunt.config.set('concat', {
-        //concat vendor + main less files
-        cms_css: {
+module.exports = function(grunt, gruntAppList) {
+    var settingObj = {};
+
+    //create concat tasks for each apps
+    gruntAppList.forEach(function(elem){
+        var prefix = elem.prefix;
+
+        var obj = {};
+
+        //TODO: check if we need to copy to compile dir -- for now,
+        //TODO: it seems to be ok cause we include vendor files directly into less -- but not performance wise
+        obj[(prefix + "css")] = {
             src: [
-                '<%= cms_vendor_files.css %>',
-                '<%= less.build_cms.dest %>'
+                '<%= ' + prefix + 'vendor_files.css %>',
+                '<%= less.' + prefix + 'build.dest %>'
             ],
-            dest: '<%= less.build_cms.dest %>'
-        },
-        cms_js: {
+            dest: '<%= less.' + prefix + 'build.dest %>'
+        };
+
+        //this is for distribution cause in dev-mode, we only copy js files
+        obj[(prefix + "js")] = {
             options: {
                 //banner: '<%= meta.banner %>'
             },
             //vendor files + files under cms (modules angular route files) + common templates
             src: [
-                '<%= cms_vendor_files.js %>',
+                '<%= ' + prefix + 'vendor_files.js %>',
                 'module.prefix',
-                '<%= build_dir %>/cms/**/*.js',
-                '<%= html2js.cms.dest %>',
-                '<%= html2js.common.dest %>',
+                '<%= ' + prefix + 'build_dir %>/' + elem.app_name + '/**/*.js',
+                '<%= ' + prefix + 'build_dir %>/common/**/*.js',
+                '<%= html2js.'+(prefix + "main")+'.dest %>',
+                '<%= html2js.'+(prefix + "common")+'.dest %>',
                 'module.suffix'
             ],
-            dest: '<%= compile_dir %>/assets/<%= pkg.name %>-cms-<%= pkg.version %>.js'
-        },
-        //concat vendor + main less files
-        login_vendor_files: {
-            src: [
-                '<%= login_vendor_files.css %>',
-                '<%= less.build_login.dest %>'
-            ],
-            dest: '<%= less.build_login.dest %>'
-        },
-        login_js: {
-            options: {
-                //banner: '<%= meta.banner %>'
-            },
-            //vendor files + files under login modules + common templates
-            src: [
-                '<%= login_vendor_files.js %>',
-                'module.prefix',
-                '<%= build_dir %>/login/**/*.js',
-                '<%= html2js.login.dest %>',
-                'module.suffix'
-            ],
-            dest: '<%= compile_dir %>/assets/<%= pkg.name %>-login-<%= pkg.version %>.js'
-        }
+            dest: '<%= ' + prefix + 'compile_dir %>/assets/<%= pkg.name %>-' + prefix + '<%= pkg.version %>.js'
+        };
+
+        settingObj = grunt.util._.extend(settingObj, obj);
     });
+
+    grunt.config.set('concat', settingObj);
 
     grunt.loadNpmTasks('grunt-contrib-concat');
 };

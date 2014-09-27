@@ -1,6 +1,6 @@
 angular.module( 'mainApp', [
-    'templates-app',
-    'templates-common',
+    'templates-cms_common',
+    'templates-cms_main',
     'ui.router',
     'mainApp.userAccount',
     'mainApp.user',

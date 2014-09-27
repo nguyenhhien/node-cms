@@ -1,28 +1,33 @@
 //compile html to js
-module.exports = function(grunt, userConfig) {
-    grunt.config.set('html2js',{
-        cms: {
+module.exports = function(grunt, gruntAppList) {
+    var settingObj = {};
+
+    //create clean tasks for each apps
+    gruntAppList.forEach(function(elem){
+        var prefix = elem.prefix;
+
+        var obj = {};
+        obj[(prefix + "main")] = {
             options: {
-                base: 'src/cms'
+                base: 'src/' + elem.app_name
             },
-            src: [ '<%= cms_files.atpl %>' ],
-            dest: '<%= build_dir %>/templates-cms.js'
-        },
-        common: {
+            src: [ '<%= ' + prefix + 'app_files.atpl %>' ],
+            dest: '<%= ' + prefix + 'build_dir %>/' + prefix + 'templates-app.js'
+        };
+
+        //templates inside common folder
+        obj[(prefix + "common")] = {
             options: {
                 base: 'src/common'
             },
-            src: [ '<%= cms_files.ctpl %>' ],
-            dest: '<%= build_dir %>/templates-common.js'
-        },
-        login: {
-            options: {
-                base: 'src/login'
-            },
-            src: [ '<%= login_files.atpl %>' ],
-            dest: '<%= build_dir %>/templates-login.js'
-        }
+            src: [ '<%= ' + prefix + 'app_files.ctpl %>' ],
+            dest: '<%= ' + prefix + 'build_dir %>/' + prefix + 'templates-common.js'
+        };
+
+        settingObj = grunt.util._.extend(settingObj, obj);
     });
+
+    grunt.config.set('html2js', settingObj);
 
     grunt.loadNpmTasks('grunt-html2js');
 };
