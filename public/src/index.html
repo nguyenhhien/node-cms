@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-controller="mainCtrl" ng-app="mainApp">
+<html ng-controller="mainCtrl">
   <head>
     <title ng-bind="pageTitle"></title>
 
@@ -17,11 +17,7 @@
     <meta property="og:description" content="">
 
     <!--socket io-->
-    <script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
-    <!--<script src="/socket.io/socket.io.js"></script>-->
-
-    <!-- font awesome from BootstrapCDN -->
-    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
 
     <!-- compiled CSS --><% styles.forEach( function ( file ) { %>
     <link rel="stylesheet" type="text/css" href="<%= file %>" /><% }); %>
@@ -29,8 +25,9 @@
     <!-- compiled JavaScript --><% scripts.forEach( function ( file ) { %>
     <script type="text/javascript" src="<%= file %>"></script><% }); %>
   </head>
+
   <body style="background: white;">
-    <nav class="navbar navbar-inverse main-navbar" role="navigation">
+    <nav class="navbar navbar-default main-navbar" role="navigation">
       <div class="container-fluid">
           <div class="navbar-header">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -40,7 +37,7 @@
               </button>
               <a class="navbar-brand" href="#!">
                   <i class="logo fa fa-github-square"></i>
-                  <span class="text">Thunder Site</span>
+                  <span class="text">Beaver.Js</span>
               </a>
           </div>
 
@@ -48,7 +45,10 @@
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
                   <li class="active with-icon">
-                      <a href="#"><i class="fa fa-tachometer"></i>Dashboards</a>
+                      <a href="#">
+                          <i class="fa fa-tachometer"></i>
+                          Dashboards
+                      </a>
                   </li>
                   <li class="with-icon">
                       <a href="#"><i class="fa fa-bar-chart-o"></i>Reports</a>
@@ -59,28 +59,36 @@
                           <i class="fa fa-cog"></i>Admin <b class="caret"></b>
                       </a>
                       <ul class="dropdown-menu">
-                          <li><a href="#!/users"><i class="fa fa-group"></i>Users</a></li>
-                          <li><a href="#!"><i class="fa fa-user"></i>Roles</a></li>
+                          <li><a href="#!/users">
+                              <i class="fa fa-group"></i>Users</a>
+                          </li>
+                          <li>
+                              <a href="#!"><i class="fa fa-user"></i>Roles</a>
+                          </li>
                           <li class="divider"></li>
-                          <li><a href="#!"><i class="fa fa-cogs"></i>Configurations</a></li>
-                          <li><a href="#!"><i class="fa fa-clock-o"></i>Service Schedulers</a></li>
+                          <li><a href="#!">
+                              <i class="fa fa-cogs"></i>Configurations</a>
+                          </li>
+                          <li>
+                              <a href="#!"><i class="fa fa-clock-o"></i>Service Schedulers</a>
+                          </li>
                       </ul>
                   </li>
               </ul>
 
               <ul class="nav navbar-nav navbar-right">
-                  <li class="dropdown no-uppercase">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                          Quick Access<b class="caret"></b>
-                      </a>
-                  </li>
+                  <!--<li class="dropdown no-uppercase">-->
+                      <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown">-->
+                          <!--Quick Access<b class="caret"></b>-->
+                      <!--</a>-->
+                  <!--</li>-->
 
                   <li class="dropdown account-wrapper">
                       <a href="#!/userAccount" class="dropdown-toggle account-text" data-toggle="dropdown">
                           <span class="avatar_wrapper small">
 								<img class="imgm img-thumbnail" alt="" ng-src="{{user.avatar}}" width="32" height="32">
                           </span>
-                          My Account <b class="caret"></b>
+                          MY ACCOUNT<b class="caret"></b>
                       </a>
                       <ul class="dropdown-menu">
                           <li>

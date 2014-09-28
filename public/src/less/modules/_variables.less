@@ -1,5 +1,18 @@
 @import "_colors.less";
-@import '../../../vendor/bootstrap/less/variables.less';
+
+@beaver-cms-theme: #005B9A; //3E6D92;
+@greenMainApp: #0191C8;
+@pinkMainApp: @peachLight;
+
+//nav-bar bootstrap override
+@navbar-height: 35px;
+@navbar-default-bg: @beaver-cms-theme;
+@navbar-default-color: white;
+@navbar-default-link-color: white;
+@navbar-default-link-active-color: @beaver-cms-theme;
+@navbar-default-link-active-bg: white;
+@navbar-default-link-hover-color: @beaver-cms-theme;
+@navbar-default-link-hover-bg: white;
 
 @main-color: #383F50 ;
 @primary-color: @blueSkype ;
@@ -19,7 +32,7 @@
 
 // FontAwesome icons;
 @icon-font-family: 'FontAwesome';
-@fa-css-prefix: icon;
+//@fa-css-prefix: icon;
 @icon-size-base: 16px;
 ;
 // Bootstrap variables;
@@ -84,7 +97,6 @@
 @grid-gutter-width: 10px ; // Navbar
 
 // Basics of a navbar;
-@navbar-height: 35px;  // Wells
 @well-bg: #FCFDFE;
 
 // Media queries breakpoints;
