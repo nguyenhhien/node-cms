@@ -97,7 +97,7 @@
                     error: "Account with email: " + email + " not found"
                 });
 
-                var passwordResetKey = chance.string({alpha: true, length: 32});
+                var passwordResetKey = chance.hash({length: 25});
 
                 //create a records to PasswordRecovery table
                 return [passwordResetKey, Q(beaver.sequelizeModels.PasswordRecovery.create({
@@ -109,7 +109,7 @@
             .spread(function(passwordResetKey){
                 return Email.sendTemplateEmail(EmailType.UserForgetPassword, email, {
                     userName: email,
-                    passwordRecoveryUrl: beaver.config.origin + "login.html#!/resetPassword?passwordResetKey=" + passwordResetKey
+                    passwordRecoveryUrl: beaver.config.global.origin + "login.html#!/resetPassword?passwordResetKey=" + passwordResetKey
                 });
             });
     }
@@ -161,16 +161,18 @@
             .then(function(newAccount){
                 if(beaver.config.global.needAccountActivation)
                 {
-                    var activationKey = chance.string({alpha: true, length: 32});
-                    return Q(beaver.sequelizeModels.UserActivation.create({
-                        accountId: newAccount.id,
-                        activationKey: activationKey,
-                        expiryDate: new Date().addDays(3)
-                    }))
+                    var activationKey = chance.hash({length: 25});
+
+                    return Q(beaver.sequelizeModels.UserActivation.create(
+                        {
+                            userId: newAccount.id,
+                            activationKey: activationKey,
+                            expiryDate: new Date().addDays(3)
+                        }))
                         .then(function(){
                             return Email.sendTemplateEmail(EmailType.AccountActivation, email, {
                                 userName: email,
-                                activationUrl: beaver.config.origin + "login.html#!/activateAccount?activationKey=" + activationKey
+                                activationUrl: beaver.config.global.origin + "login.html#!/activateAccount?activationKey=" + activationKey
                             });
                         });
                 }
@@ -194,7 +196,7 @@
                 
                 return Q(beaver.sequelizeModels.User.update({
                     status: UserStatus.Active
-                }, {id: activationRecord.accountId}));
+                }, {id: activationRecord.userId}));
             })
             .then(function(){
                 //delete the activation key

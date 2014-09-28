@@ -19,7 +19,7 @@
 
         //generate random slug -- avoid special character [ cause regex escape in V8 got error (\\[)
         var now = new Date(),
-            slug = chance.string({alpha: true, length: 4}),
+            slug = chance.hash({length: 25}),
             fullSlug = dateFormat(now, "yyyy.mm.dd.hh.MM.ss") + ":" + slug;
 
         //append parent slug into this slug

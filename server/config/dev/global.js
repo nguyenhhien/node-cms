@@ -16,5 +16,6 @@ module.exports.global = {
     },
     cache: {
         maxAge: 3600000
-    }
+    },
+    adminEmail: "noreply@beaver.com"
 };

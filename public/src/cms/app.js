@@ -1,16 +1,17 @@
-var User;
+var LoggedInUser;
 
 //get login user -- then bootstrap application
 superagent
     .post('/api/user/userInfo')
     .set('Accept', 'application/json')
     .end(function(error, res){
-        if(error) {
+        if(error || !!res.body.error) {
             window.location = "/login.html";
             return console.log("ERROR: ", error);
         }
 
-        User = res.body;
+        LoggedInUser = res.body;
+        $("body").show();
         angular.bootstrap(document, ["mainApp"]);
     });
 
@@ -23,7 +24,8 @@ var app = angular.module( 'mainApp', [
     'mainApp.user',
     'mainApp.dashboard',
     'mainApp.location',
-    'commonDirectives'
+    'commonDirectives',
+    'angular-data.DS'
 ]);
 
 app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', function myAppConfig ( $stateProvider, $urlRouterProvider, $locationProvider) {
@@ -32,7 +34,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', functio
 }]);
 
 app.run(['$http', '$rootScope', function run ($http, $rootScope) {
-    $rootScope.user = User;
+    $rootScope.user = LoggedInUser;
 
     //share object for .dot rule angularjs
     $rootScope.globalObj = {};
@@ -53,9 +55,32 @@ app.run(['$http', '$rootScope', function run ($http, $rootScope) {
     $rootScope.socketServer.on("event:connect", function(data){
         console.log("connected", data);
     });
+
+    //logout function
+    $rootScope.logout = function()
+    {
+        $http.post("/api/user/signout")
+            .success(function(res){
+                if(res.error)
+                {
+                    return console.log("[ERROR], unable to sign out");
+                }
+
+                //redirect to login page
+                window.location = "/login.html";
+            });
+    };
 }]);
 
 app.controller( 'mainCtrl', ['$scope', '$location', function AppCtrl ( $scope, $location ) {
 
+}]);
+
+//models
+app.factory('User', ['DS', function (DS) {
+    return DS.defineResource({
+        name: 'user',
+        baseUrl: 'api'
+    });
 }]);
 

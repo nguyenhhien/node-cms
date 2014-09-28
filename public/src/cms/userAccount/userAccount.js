@@ -9,37 +9,26 @@ var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'utils'
         });
 }]);
 
-app.controller("UserAccountController", ['$rootScope', '$scope', '$http', 'utils', '$resource', function($rootScope, $scope, $http, utils, $resource){
-    var UserResource = $resource('/api/user/:id', {id: '@_id'});
-    var response = UserResource.get({id:$rootScope.user.id}, function() {
-        if(!response.error)
-        {
-            $scope.account = response;
-        }
-        else
-        {
-            _showError("ERROR: " + response.error);
-        }
-    });
-
-    var _showError = function(error)
+app.controller("UserAccountController", ['$rootScope', '$scope', '$http', 'utils', '$resource', 'User', 'DS', function($rootScope, $scope, $http, utils, $resource, User, DS){
+    //load current user
+    //TODO: check to see if can set bypassCache: true by default; cause we never want to use cache/dirty version
+    function loadCurrentUser()
     {
-        utils.$safeApply(that.$rootScope, function(){
-            $rootScope.globalObj.notification = {
-                error: error
-            };
-        });
-    };
+        User.find($rootScope.user.id, {bypassCache: true})
+            .then(function(res){
+                safeApply($scope, function(){
+                    $scope.account = res;
+                });
+            }, function(error){
+                showError(error.stack || error.data || error);
+            });
+    }
 
-    var _showMessage = function(msg)
-    {
-        utils.$safeApply(that.$rootScope, function(){
-            that.$rootScope.globalObj.notification = {
-                successMessage: msg
-            };
-        });
-    };
+    $scope.loadCurrentUser = loadCurrentUser;
 
+    $scope.loadCurrentUser();
+
+    //auto generated password function
     $scope.generatePassword = function()
     {
         var newPass = utils.generateRandomString(6);
@@ -47,40 +36,45 @@ app.controller("UserAccountController", ['$rootScope', '$scope', '$http', 'utils
         $scope.account.generatedPassword = $scope.account.newPassword =
             $scope.account.newPasswordConfirmation = newPass;
     };
-    
+
+    //change old password into new password
     $scope.changeNewPassword = function()
     {
+        if(!$scope.account.currentPassword || !$scope.account.newPassword || !$scope.account.newPasswordConfirmation)
+        {
+            return showError("Required field is missing");
+        }
+        else if($scope.account.newPassword !== $scope.account.newPasswordConfirmation)
+        {
+            return showError("New password and password confirmation does not match");
+        }
+
         $http.post("/api/user/changePassword",
             {
-                email: $.account.email,
-                password: CryptoJS.MD5($.account.currentPassword).toString(),
-                newPassword: CryptoJS.MD5($.account.newPassword).toString()
+                email: $scope.account.email,
+                password: CryptoJS.MD5($scope.account.currentPassword).toString(),
+                newPassword: CryptoJS.MD5($scope.account.newPassword).toString(),
+                emailNewPassword: $scope.account.sendEmailNewPassword
             })
-            .then(function(response){
-                var data = response.data;
-                if(!data.error)
-                {
-                    _showMessage("SUCCESS: Password has been updated successfully");
-                }
-                else
-                {
-                    _showError("ERROR: " + data.error);
-                }
-            }); 
+            .success(function(response){
+                showSuccess("Password has been updated successfully");
+            })
+            .error(function(error){
+                showError(error.data || error);
+            });
     };
 
+    //save user account information
     $scope.saveUserAccount = function()
     {
-        $scope.account.$update().then(function(response){
-            if(response.error)
-            {
-                _showError("ERROR: " + response.error);
-            }
-            else
-            {
-                _showMessage("SUCCESS: Account has been updated successfully");
-            }
-        });
+        //TODO: set default cacheResponse: false; otherwise, if response doesn't contain id; it will throw nasty error
+        //TODO: again, we are not interested in caching function
+        User.update($rootScope.user.id, $scope.account, {cacheResponse: false})
+            .then(function(){
+                showSuccess("Account has been updated successfully");
+            }, function(error){
+                showError(error.stack || error.data || error);
+            });
     };
 }]);
 

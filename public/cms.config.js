@@ -46,10 +46,12 @@ module.exports = {
             'vendor/async/lib/async.js',
             'vendor/chosen/chosen.jquery.js',
             'vendor/angular-chosen-localytics/chosen.js',
-            'vendor/superagent/superagent.js'
+            'vendor/angular-data/dist/angular-data.min.js',
+            'vendor/superagent/superagent.js',
+            'vendor/growl/javascripts/jquery.growl.js'
         ],
         css: [
-
+            'vendor/growl/stylesheets/jquery.growl.css'
         ],
         assets: [
 

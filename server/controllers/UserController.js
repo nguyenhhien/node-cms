@@ -80,14 +80,25 @@
                 yield Q(user.updateAttributes({lastLogin: new Date()}));
 
                 req.session.user = user;
-                return res.json(user);
+                return res.success(user);
             })()
             .fail(function(error){
-                return res.json({
-                    code: 501,
+                return res.error({
                     error: error.stack || error
                 });
             });
+    }
+
+    //sign out
+    module.signout = function(req, res)
+    {
+        //clear cookies
+        res.clearCookie('connect.sid');
+
+        //destroy session + success
+        req.session.destroy(function(e){
+            res.success();
+        });
     }
 
     module.register = function(req, res)
@@ -128,6 +139,7 @@
             });
     }
 
+    //TODO: right now, we made an assumption that facebook/google returned email address; but in reality they might not
     module.facebookRegister = function(req, res)
     {
         req.assert('email').notEmpty().isEmail();

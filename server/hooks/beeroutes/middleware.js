@@ -51,10 +51,10 @@ MiddleWareFactory.prototype.findOne = function(modelName)
 
         Q(that.daoFactories[sequelizeModelName].find({ where: {id: id}}))
             .then(function(data){
-                res.json(data);
+                res.success(data);
             })
             .fail(function(error){
-                res.json({
+                res.error({
                    error: error.stack || error
                 });
             });
@@ -123,10 +123,10 @@ MiddleWareFactory.prototype.find = function(modelName)
 
         find()
             .then(function(data){
-                res.json(data);
+                res.success(data);
             })
             .fail(function(error){
-                res.json({
+                res.error({
                     error: error.stack || error
                 });
             });
@@ -145,10 +145,10 @@ MiddleWareFactory.prototype.update = function(modelName)
         //TODO: omit some variable inside body
         Q(that.daoFactories[sequelizeModelName].update(req.body, {id: id}))
             .then(function(data){
-                res.json(data);
+                res.success(data);
             })
             .fail(function(error){
-                res.json({
+                res.error({
                     error: error.stack || error
                 });
             });
@@ -166,10 +166,10 @@ MiddleWareFactory.prototype.destroy = function(modelName)
 
         Q(that.daoFactories[sequelizeModelName].destroy({ where: {id: id}}))
             .then(function(data){
-                res.json(data);
+                res.success(data);
             })
             .fail(function(error){
-                res.json({
+                res.error({
                     error: error.stack || error
                 });
             });
@@ -187,10 +187,10 @@ MiddleWareFactory.prototype.create = function(modelName)
         //TODO: omit some variable inside body
         Q(that.daoFactories[sequelizeModelName].create(req.body))
             .then(function(data){
-                res.json(data);
+                res.success(data);
             })
             .fail(function(error){
-                res.json({
+                res.error({
                     error: error.stack || error
                 });
             });

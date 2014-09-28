@@ -26,7 +26,7 @@
     <script type="text/javascript" src="<%= file %>"></script><% }); %>
   </head>
 
-  <body style="background: white;">
+  <body style="background: white; display: none;">
     <nav class="navbar navbar-default main-navbar" role="navigation">
       <div class="container-fluid">
           <div class="navbar-header">
@@ -101,7 +101,7 @@
                           <li><a href="#!/userAccount"><i class="fa fa-wrench"></i>Preference</a></li>
                           <li class="divider"></li>
                           <li>
-                              <a href="#!"> <i class="fa fa-sign-out"></i> Sign Out</a>
+                              <a ng-click="logout()"> <i class="fa fa-sign-out"></i> Sign Out</a>
                           </li>
                       </ul>
                   </li>

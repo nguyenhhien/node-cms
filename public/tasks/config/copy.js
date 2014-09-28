@@ -65,6 +65,17 @@ module.exports = function(grunt, gruntAppList) {
             ]
         };
 
+        obj[(prefix + "vendor_css")] = {
+            files: [
+                {
+                    src: [ '<%= ' + prefix + 'vendor_files.css %>' ],
+                    dest: '<%= ' + prefix + 'build_dir %>/',
+                    cwd: '.',
+                    expand: true
+                }
+            ]
+        };
+
         settingObj = grunt.util._.extend(settingObj, obj);
     });
 

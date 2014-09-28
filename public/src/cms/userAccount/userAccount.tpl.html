@@ -13,9 +13,8 @@
 
 
 <div class="content bootstrap userAccountPage">
-<form id="user_form" class="userAccountForm form-horizontal"
-      action=""
-      method="post" enctype="multipart/form-data" novalidate="novalidate">
+<form name="accountForm" class="userAccountForm form-horizontal"
+      method="post" enctype="multipart/form-data">
 <input type="hidden" name="id_user" id="id_user">
 
 <div class="panel">
@@ -38,9 +37,17 @@
     </label>
 
     <div class="col-lg-9">
-        <div id="user-thumbnail">
-            <img class="imgm img-thumbnail" alt="" ng-src="{{user.avatar}}" width="96" height="96">
+        <div style="width: 96px; height: 96px;" ng-show="!!user.avatar">
+            <img class="imgm img-thumbnail" alt="" ng-src="{{user.avatar}}" width="96" height="96" >
+            <i class="glyphicon glyphicon-user" ng-show="!user.avatar" style="font-size: 40px; text-align: center;"></i>
         </div>
+
+        <div style="width: 96px; height: 96px;border: 1px solid #e3e3e3;"  ng-show="!user.avatar">
+            <i class="glyphicon glyphicon-user"
+               style="font-size: 60px; text-align: center;color: #e3e3e3;margin-left: 18px;line-height: 96px;">
+            </i>
+        </div>
+
         <div class="callout-panel alert alert-info top7">
             <i class="fa fa-info-circle info"></i>Your avatar should be 96x96. Alternative you can use your facebook and google profile avatar.
             You can resize the avatar using our tool.
@@ -62,7 +69,9 @@
         </div>
     </div>
 </div>
-<div class="form-group">
+
+<!--only allow change password for non google + facebook account-->
+<div class="form-group" ng-show="!account.fbId && !account.googleId">
     <label class="control-label col-lg-3 ">
         Password
     </label>
@@ -76,30 +85,30 @@
                     Change password...
                 </button>
 
-                <div class="form-password-change well" ng-show="showChangePasswordForm">
-                    <div class="form-group" ng-class="{'has-error': account.$errors.currentPassword}">
+                <div class="form-password-change well" ng-if="showChangePasswordForm">
+                    <div class="form-group" ng-class="{'has-error': accountForm.$errors.currentPassword}">
                         <label class="control-label col-lg-2 required">
                             Current password
                         </label>
                         <div class="col-lg-10">
                             <div class="input-group fixed-width-lg">
                                 <span class="input-group-addon"> <i class="fa fa-unlock"></i></span>
-                                <input type="password" ng-model="account.currentPassword"
-                                       ng-blur="account.validate('currentPassword')"
-                                       ng-change="account.validateIfErrored('currentPassword')"
+                                <input type="password" ng-model="account.currentPassword" name="currentPassword"
+                                       ng-minlength="6"
                                        class="form-control" required="required">
                             </div>
 
                             <!--Invalid Form-->
-                            <div class="text-danger top7" ng-show="account.$errors.currentPassword">
-                                {{account.$errors.currentPassword[0]}}
+                            <div class="text-danger top7" ng-show="accountForm.currentPassword.$invalid">
+                                Password must has at least 6 character
                             </div>
                         </div>
                     </div>
                     <hr>
-                    <div class="form-group" ng-class="{'has-error': account.$errors.newPassword}">
+                    <div class="form-group" ng-class="{'has-error': account.$errors.newPassword}" ng-show="!account.generatedPassword">
                         <label class="required control-label col-lg-2">
-                        <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="" data-original-title="Minimum of 6 characters.">
+                        <span class="label-tooltip" data-toggle="tooltip" data-html="true" title=""
+                              data-original-title="Minimum of 6 characters.">
                             New password
                         </span>
                         </label>
@@ -108,18 +117,16 @@
                               <span class="input-group-addon">
                               <i class="fa fa-key"></i>
                               </span>
-                                <input type="password" ng-model="account.newPassword"
-                                       ng-blur="account.validate('newPassword')"
-                                       ng-change="account.validateIfErrored('newPassword')">
+                                <input type="password" ng-model="account.newPassword" ng-minlength="6" name="newPassword">
                             </div>
                             <!--Invalid Password-->
-                            <div class="text-danger top7" ng-show="account.$errors.newPassword[0]">
-                                {{account.$errors.newPassword[0]}}
+                            <div class="text-danger top7" ng-show="accountForm.newPassword.$invalid">
+                                Invalid password
                             </div>
 
                         </div>
                     </div>
-                    <div class="form-group" ng-class="{'has-error': account.$errors.newPassword}">
+                    <div class="form-group" ng-class="{'has-error': account.$errors.newPassword}" ng-show="!account.generatedPassword">
                         <label class="required control-label col-lg-2">
                             Confirm password
                         </label>
@@ -128,17 +135,17 @@
                               <span class="input-group-addon">
                               <i class="fa fa-key"></i>
                               </span>
-                                <input type="password" ng-model="account.newPasswordConfirmation"
-                                       ng-blur="account.validate('newPassword')"
-                                       ng-change="account.validateIfErrored('newPassword')">
+                                <input type="password" ng-model="account.newPasswordConfirmation" name='newPasswordConfirmation'
+                                       ng-minlength="6" name="newPassword">
                             </div>
 
                             <!--Invalid Password Confirmation-->
-                            <div class="text-danger top7" ng-show="account.$errors.newPassword[1]">
-                                {{account.$errors.newPassword[1]}}
+                            <div class="text-danger top7" ng-show="accountForm.newPasswordConfirmation.$invalid">
+                                Password miss match
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <div class="col-lg-10 col-lg-offset-2">
                             <input type="text" ng-model="account.generatedPassword" class="generated-password form-control fixed-width-md pull-left">
@@ -148,7 +155,9 @@
                             </button>
                         </div>
                     </div>
-                    <div class="form-group">
+
+                    <!--this function only available if user choose the autogenerated method-->
+                    <div class="form-group" ng-show="!!account.generatedPassword">
                         <div class="col-lg-10 col-lg-offset-2">
                             <p class="checkbox">
                                 <label>
@@ -161,7 +170,7 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <button type="button"
-                                    ng-click="showChangePasswordForm = !showChangePasswordForm"
+                                    ng-click="$parent.showChangePasswordForm = !$parent.showChangePasswordForm"
                                     class="btn btn-default">
                                 <i class="btn-icon-action-cancel fa fa-times"></i>
                                 Close
@@ -265,21 +274,16 @@
          </span>
     </label>
     <div class="col-lg-9 facebook-login">
-        <div ng-show="!!account.fbId">
-            <div class="top5 text-success">Your account is connected to your facebook account</div>
+        <div>
+            <div class="top5" ng-class="{'text-success': !!account.fbId, 'text-danger': !account.fbId}">
+                Your account is <span ng-show="!account.fbId">not</span> connected to your facebook account
+            </div>
 
             <button class="btn btn-primary top7 fixed-width-xl">
                 <i class="fa fa-facebook"></i>
-                Disconnect From Facebook
-            </button>
-        </div>
-
-        <div ng-show="!account.fbId">
-            <div class="top5 text-danger">Your account is not connected to facebook</div>
-
-            <button class="btn btn-primary top7 fixed-width-xl">
-                <i class="fa fa-facebook"></i>
-                Connect To Facebook
+                <span ng-show="!account.fbId">Connect To</span>
+                <span ng-show="!!account.fbId">Disconnect From</span>
+                Facebook
             </button>
         </div>
     </div>
@@ -293,21 +297,16 @@
          </span>
     </label>
     <div class="col-lg-9 google-login">
-        <div ng-show="!!account.googleId">
-            <div class="top5 text-success">Your account is connected to your google account</div>
+        <div>
+            <div class="top5" ng-class="{'text-success': !!account.googleId, 'text-danger': !account.googleId}">
+                Your account is <span ng-show="!account.googleId">not</span>  connected to google
+            </div>
 
             <button class="btn btn-primary top7 fixed-width-xl">
                 <i class="fa fa-google-plus"></i>
-                Disconnect From Google
-            </button>
-        </div>
-
-        <div ng-show="!account.googleId">
-            <div class="top5 text-danger">Your account is not connected to your google account</div>
-
-            <button class="btn btn-primary top7 fixed-width-xl">
-                <i class="fa fa-google-plus"></i>
-                Connect To Google
+                <span ng-show="!account.googleId">Connect To </span>
+                <span ng-show="!!account.googleId">Disconnect From </span>
+                Google
             </button>
         </div>
 
@@ -326,7 +325,7 @@
     <button type="submit" class="btn btn-default pull-right" ng-click="saveUserAccount()">
         <i class="btn-icon-action-save fa fa-floppy-o"></i> Save
     </button>
-    <a class="btn btn-default" onclick="window.history.back()">
+    <a class="btn btn-default" ng-click="loadCurrentUser()">
         <i class="btn-icon-action-cancel fa fa-times"></i> Cancel
     </a>
 </div>
