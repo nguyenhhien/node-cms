@@ -45,7 +45,8 @@ module.exports = {
             'vendor/lodash/dist/lodash.js',
             'vendor/async/lib/async.js',
             'vendor/chosen/chosen.jquery.js',
-            'vendor/angular-chosen-localytics/chosen.js'
+            'vendor/angular-chosen-localytics/chosen.js',
+            'vendor/superagent/superagent.js'
         ],
         css: [
 

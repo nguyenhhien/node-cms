@@ -121,9 +121,9 @@
                         <td class="center">{{user.id}}</td>
                         <td>{{user.name}}</td>
                         <td>{{user.email}}</td>
-                        <td class="center">{{user.lastLogin | date:'yyyy-MM-dd HH:mm'}}</td>
+                        <td class="center">{{user.lastLogin | date: 'MMM d, y h:mm'}}</td>
                         <td class="center">{{user.status}}</td>
-                        <td class="center">{{user.emailSubscribe}}</td>
+                        <td class="center" style="text-transform: uppercase;">{{user.emailSubscribe}}</td>
 
                         <!--Other actions-->
                         <td class="item-actions">

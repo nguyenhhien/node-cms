@@ -1,5 +1,5 @@
 var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'utils', 'localytics.directives'])
-.config(function config( $stateProvider ) {
+.config(['$stateProvider', function config( $stateProvider) {
     $stateProvider
         .state('userAccount', {
             url: '/userAccount',
@@ -7,7 +7,7 @@ var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'utils'
             controller: 'UserAccountController',
             resolve: {}
         });
-});
+}]);
 
 app.controller("UserAccountController", ['$rootScope', '$scope', '$http', 'utils', '$resource', function($rootScope, $scope, $http, utils, $resource){
     var UserResource = $resource('/api/user/:id', {id: '@_id'});

@@ -1,4 +1,21 @@
-angular.module( 'mainApp', [
+var User;
+
+//get login user -- then bootstrap application
+superagent
+    .post('/api/user/userInfo')
+    .set('Accept', 'application/json')
+    .end(function(error, res){
+        if(error) {
+            window.location = "/login.html";
+            return console.log("ERROR: ", error);
+        }
+
+        User = res.body;
+        angular.bootstrap(document, ["mainApp"]);
+    });
+
+
+var app = angular.module( 'mainApp', [
     'templates-cms_common',
     'templates-cms_main',
     'ui.router',
@@ -7,26 +24,15 @@ angular.module( 'mainApp', [
     'mainApp.dashboard',
     'mainApp.location',
     'commonDirectives'
-])
+]);
 
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', function myAppConfig ( $stateProvider, $urlRouterProvider, $locationProvider) {
+app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', function myAppConfig ( $stateProvider, $urlRouterProvider, $locationProvider) {
     $urlRouterProvider.otherwise( '/' );
     $locationProvider.hashPrefix('!');
-}])
+}]);
 
-.run(['$http', '$rootScope', function run ($http, $rootScope) {
-    $http.post('/api/user/userInfo')
-        .then(function(response){
-            var user = response.data;
-
-            if(user.error)
-            {
-                window.location = "/login.html";
-                return console.log("ERROR: ", user.error);
-            }
-
-            $rootScope.user = user;
-        });
+app.run(['$http', '$rootScope', function run ($http, $rootScope) {
+    $rootScope.user = User;
 
     //share object for .dot rule angularjs
     $rootScope.globalObj = {};
@@ -46,13 +52,10 @@ angular.module( 'mainApp', [
     //this is for test
     $rootScope.socketServer.on("event:connect", function(data){
         console.log("connected", data);
-//        $rootScope.superSocket.get("/api/user/onlines", {userId: 1}, function(err, data){
-//            console.log("Err, data", err, data.error);
-//        });
     });
-}])
+}]);
 
-.controller( 'mainCtrl', ['$scope', '$location', function AppCtrl ( $scope, $location ) {
+app.controller( 'mainCtrl', ['$scope', '$location', function AppCtrl ( $scope, $location ) {
 
 }]);
 

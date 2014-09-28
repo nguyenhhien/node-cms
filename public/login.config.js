@@ -32,7 +32,8 @@ module.exports = {
             'vendor/angular-ui-router/release/angular-ui-router.js',
             'vendor/angular-ui-utils/ui-utils.js',
             'vendor/cryptojslib/rollups/md5.js',
-            'vendor/angular-cookies/angular-cookies.js'
+            'vendor/angular-cookies/angular-cookies.js',
+            'vendor/superagent/superagent.js'
         ],
         css: [
 

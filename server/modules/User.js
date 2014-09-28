@@ -111,7 +111,7 @@
                     userName: email,
                     passwordRecoveryUrl: beaver.config.origin + "login.html#!/resetPassword?passwordResetKey=" + passwordResetKey
                 });
-            }); 
+            });
     }
     
     module.resetPassword = function(passwordResetKey, password){
@@ -180,12 +180,13 @@
     
     module.activeAccount = function(activationKey)
     {
-        return Q(beaver.sequelizeModels.UserActivation.find({where: {
-            activationKey: activationKey,
-            expiryDate: {
-                gte: new Date()
-            }
-        }}))
+        return Q(
+            beaver.sequelizeModels.UserActivation.find({where: {
+                activationKey: activationKey,
+                expiryDate: {
+                    gte: new Date()
+                }
+            }}))
             .then(function(activationRecord){
                 if(!activationRecord) return Q.reject({
                     error: "ActivationKey doesn't not exist or has been expired"

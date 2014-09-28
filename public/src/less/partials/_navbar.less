@@ -3,6 +3,8 @@
 
 .main-navbar
 {
+  border-radius: 0;
+  border: none;
   margin-bottom: 0px;
   position: fixed;
   width: 100%;
@@ -24,17 +26,6 @@
 
       .fa.logo
       {
-//        background: url("../assets/images/snowflake.png");
-//        width: 33px;
-//        height: 33px;
-//        display: inline-block;
-//        float: left;
-//        position: absolute;
-//        top: 5px;
-//        left: 0;
-//        background-size: 33px 33px;
-//        margin-left: 11px;
-
         float: left;
         line-height: 52px;
         font-size: 42px;
@@ -57,22 +48,11 @@
     {
       & > li
       {
-        border-right: 1px solid #37393d;
         font-size: 11px;
-
-        &:first-child
-        {
-          border-left: 1px solid #37393d;
-        }
 
         & > a
         {
-          color: white;
           text-transform: uppercase;
-
-          height: @navbar-top-height;
-          line-height: @navbar-top-height;
-          padding: 0 16px;
         }
 
         a
@@ -80,16 +60,6 @@
           i.fa
           {
             margin-right: 5px;
-          }
-        }
-
-        &.active,
-        &:hover,
-        {
-          background-color: rgba(255,255,255,0.15);
-          & > a
-          {
-            background-color: inherit;
           }
         }
 
@@ -102,6 +72,8 @@
             i
             {
               font-size: 30px;
+              display: block;
+              text-align: center;
             }
           }
         }
@@ -122,13 +94,15 @@
           .account-text
           {
             text-transform: capitalize;
+            padding-top: 10px;
+            padding-bottom: 14px;
 
             .avatar_wrapper
             {
               .img-thumbnail
               {
                 border: none;
-                border-radius: 32px;
+                //border-radius: 32px;
                 padding: 0px;
               }
             }
