@@ -4,7 +4,6 @@ var app = angular.module( 'mainApp.user', [
         'utils',
         'localytics.directives',
         'ui.bootstrap',
-        'mgcrea.ngStrap',
         'ngResource'
     ])
     .config(function config( $stateProvider ) {

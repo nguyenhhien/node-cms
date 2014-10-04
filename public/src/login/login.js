@@ -1,5 +1,14 @@
-var loginApp = angular.module('loginApp', ["utils", "ui.router", "templates-login_main",
-    "templates-login_common", "commonDirectives", 'facebook', 'googleplus', 'classy']);
+var loginApp = angular.module('loginApp', [
+        "utils",
+        "ui.router",
+        'ui.bootstrap',
+        "templates-login_main",
+        "templates-login_common",
+        "commonDirectives",
+        'facebook',
+        'googleplus',
+        'classy'
+    ]);
 
 var AUTH_EVENTS = {
     forbidden: 'auth:FORBIDDEN',
@@ -67,180 +76,177 @@ loginApp.run(["$rootScope", "$state", "AUTH_EVENTS", "$q", "$window",
     });
 }]);
 
-loginApp.classy.controller({
-    name: "LoginController",
-    inject: ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus'],
-    init: function()
-    {
-        this.$.userInput = {};
-    },
-    login: function()
-    {
-        var that = this;
+loginApp.controller("LoginController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$modal', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $modal){
+    $scope.userInput = {};
 
-        that.$http.post("/api/user/signin", {email: this.$.userInput.email,
-            password: CryptoJS.MD5(that.$.userInput.password).toString()})
-            .then(function(response, status) {
-                var data = response.data;
+    $scope.login = function()
+    {
+        $http.post("/api/user/signin", {
+            email: $scope.userInput.email,
+            password: CryptoJS.MD5($scope.userInput.password).toString()})
+            .success(function(response) {
+                var data = response;
 
                 if(data.error)
                 {
-                    that.$rootScope.notificationMessage = data;
-                    that.$rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
+                    $rootScope.notificationMessage = data;
+                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
                 }
                 else
                 {
-                    that.$rootScope.user = data;
-                    that.$rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
+                    $rootScope.user = data;
+                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
                 }
+            })
+            .error(function(error){
+                showError($modal, error.stack || error.error || error);
             });
-    },
-    loginFacebook: function()
+    };
+
+    $scope.loginFacebook = function()
     {
         var that = this;
 
-        if(!that.Facebook.isReady())
+        if(!Facebook.isReady())
         {
             return console.error("facebook failed to initialize");
         }
 
         var accessToken;
 
-        that.Facebook.login(function(){}, {scope: 'email'})
+        Facebook.login(function(){}, {scope: 'email'})
             .then(function(response){
                 if(!response || !response.authResponse || !response.authResponse.accessToken || response.status != 'connected')
                 {
-                    return that.$q.reject({
+                    return $q.reject({
                         error: "Facebook login failed"
                     });
                 }
 
                 accessToken = response.authResponse.accessToken;
 
-                return that.$http.post("/api/user/facebookLogin", {fbId: response.authResponse.userID, accessToken: accessToken});
+                return $http.post("/api/user/facebookLogin", {fbId: response.authResponse.userID, accessToken: accessToken});
             })
             .then(function(response){
-                var data = response.data;
+                var data = response;
 
                 if(data.error)
                 {
-                    that.$rootScope.notificationMessage = data;
-                    that.$rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
+                    $rootScope.notificationMessage = data;
+                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
                 }
                 else
                 {
-                    that.$rootScope.user = data;
-                    that.$rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
+                    $rootScope.user = data;
+                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
                 }
             },function (error) {
-                that.$rootScope.notificationMessage = error;
+                $rootScope.notificationMessage = error;
             });
-    },
-    loginGoogle: function()
-    {
+    };
+
+    $scope.loginGoogle = function(){
         var that = this;
         var accessToken;
 
-        that.GooglePlus.login()
+        GooglePlus.login()
             .then(function (authResult) {
                 if(!authResult.access_token)
                 {
-                    return that.$q.reject({
+                    return $q.reject({
                         error: "Google Login Failed"
                     });
                 }
 
                 accessToken = authResult.access_token;
-                return that.GooglePlus.getUser();
+                return GooglePlus.getUser();
             })
             .then(function(profile){
                 var googleId = profile.id;
-                return that.$http.post("/api/user/googleLogin", {googleId: googleId, accessToken: accessToken});
+                return $http.post("/api/user/googleLogin", {googleId: googleId, accessToken: accessToken});
             })
             .then(function(response){
-                var data = response.data;
+                var data = response;
 
                 if(data.error)
                 {
-                    that.$rootScope.notificationMessage = data;
-                    that.$rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
+                    $rootScope.notificationMessage = data;
+                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
                 }
                 else
                 {
-                    that.$rootScope.user = data;
-                    that.$rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
+                    $rootScope.user = data;
+                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
                 }
             },function (error) {
-                that.$rootScope.notificationMessage = error;
+                $rootScope.notificationMessage = error;
             });
-    }
-});
+    };
+}]);
 
-loginApp.classy.controller({
-    name: "RegisterController",
-    inject: ['$rootScope', '$scope', '$q', '$location', '$window', '$http', 'Facebook', 'GooglePlus'],
-    init: function()
-    {
-        this.$.userInput = {};
-    },
-    register: function()
+
+loginApp.controller("RegisterController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location){
+    $scope.userInput = {};
+
+    $scope.register = function()
     {
         var that = this;
-        that.$http.post("/api/user/register",{
-            name: that.$scope.userInput.name,
-            email: that.$scope.userInput.email,
-            password: CryptoJS.MD5(that.$scope.userInput.password).toString()
+        $http.post("/api/user/register",{
+            name: $scope.userInput.name,
+            email: $scope.userInput.email,
+            password: CryptoJS.MD5($scope.userInput.password).toString()
         })
-            .then(function(response, status) {
-                var data = response.data;
+            .success(function(response, status) {
+                var data = response;
 
                 if(data.error)
                 {
-                    that.$rootScope.notificationMessage = data;
+                    $rootScope.notificationMessage = data;
                 }
                 else
                 {
                     if(data.emailActivation)
                     {
-                        that.$location.path("/activateAccount");
+                        $location.path("/activateAccount");
                     }
                     else
                     {
-                        that.$window.location.href = "index.html";
+                        $window.location.href = "index.html";
                     }
                 }
             });
-    },
-    registerWithFacebook: function()
+    };
+
+    $scope.registerWithFacebook = function()
     {
         var that = this;
 
-        if(!that.Facebook.isReady())
+        if(!Facebook.isReady())
         {
             return console.error("facebook failed to initialize");
         }
 
         var accessToken;
 
-        that.Facebook.login(function(){}, {scope: 'email'})
+        Facebook.login(function(){}, {scope: 'email'})
             .then(function(response){
                 if(!response || !response.authResponse || !response.authResponse.accessToken || response.status != 'connected')
                 {
-                    return that.$q.reject({
+                    return $q.reject({
                         error: "Facebook login failed"
                     });
                 }
 
                 accessToken = response.authResponse.accessToken;
 
-                return that.Facebook.api('/me', function(){});
+                return Facebook.api('/me', function(){});
             })
             .then(function(response){
                 var email = response.email,
                     fbId = response.id,
                     name = response.name;
 
-                return that.$http.post("/api/user/facebookRegister", {
+                return $http.post("/api/user/facebookRegister", {
                     name: name,
                     email: email,
                     fbId: fbId,
@@ -248,46 +254,46 @@ loginApp.classy.controller({
                 });
             })
             .then(function(response){
-                var data = response.data;
+                var data = response;
 
                 if(data.error)
                 {
-                    that.$rootScope.notificationMessage = data;
-                    that.$rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
+                    $rootScope.notificationMessage = data;
+                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
                 }
                 else
                 {
-                    that.$rootScope.user = data;
-                    that.$rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
+                    $rootScope.user = data;
+                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
                 }
             }, function(error){
-                that.$rootScope.notificationMessage = error;
+                $rootScope.notificationMessage = error;
             });
-    },
-    registerWithGoogle: function()
-    {
+    };
+
+    $scope.registerWithGoogle = function(){
         var that = this;
         var accessToken;
 
-        that.GooglePlus.login()
+        GooglePlus.login()
             .then(function (authResult) {
                 if(!authResult.access_token)
                 {
-                    return that.$q.reject({
+                    return $q.reject({
                         error: "Google Login Failed"
                     });
                 }
 
                 accessToken = authResult.access_token;
 
-                return that.GooglePlus.getUser();
+                return GooglePlus.getUser();
             })
             .then(function(profile){
                 var email = profile.email,
                     googleId = profile.id,
                     name = profile.name;
 
-                return that.$http.post("/api/user/googleRegister", {
+                return $http.post("/api/user/googleRegister", {
                     name: name,
                     email: email,
                     googleId: googleId,
@@ -295,70 +301,59 @@ loginApp.classy.controller({
                 });
             })
             .then(function(response){
-                var data = response.data;
+                var data = response;
 
                 if(data.error)
                 {
-                    that.$rootScope.notificationMessage = data;
-                    that.$rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
+                    $rootScope.notificationMessage = data;
+                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
                 }
                 else
                 {
-                    that.$rootScope.user = data;
-                    that.$rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
+                    $rootScope.user = data;
+                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
                 }
             }, function(error){
-                that.$rootScope.notificationMessage = error;
+                $rootScope.notificationMessage = error;
             });
+    };
+}]);
+
+loginApp.controller("ActivateAccountController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location){
+    this.activationKey = $scope.activationKey = $location.search().activationKey;
+
+    if(!activationKey) {
+        return;
     }
-});
 
-loginApp.classy.controller({
-    name: "ActivateAccountController",
-    inject: ['$rootScope', '$scope', '$q', '$location', '$http'],
-    init: function()
-    {
-        var that = this;
-        this.activationKey = that.$.activationKey = that.$location.search().activationKey;
+    $http.post("/api/user/activateAccount", {activationKey: activationKey})
+        .success(function(response, status) {
+            var data = response;
 
-        if(!that.activationKey) {
-            return;
-        }
+            if(data.error)
+            {
+                $scope.activationSuccess = false;
+            }
+            else
+            {
+                console.log("activate successful");
+                $scope.activationSuccess = true;
+            }
+        });
+}]);
 
-        that.$http.post("/api/user/activateAccount", {activationKey: that.activationKey})
-            .then(function(response, status) {
-                var data = response.data;
+loginApp.controller("ForgotPasswordController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location){
+    var that = this;
+    $scope.userInput = {};
+    $scope.passwordResetEmailSent = false;
 
-                if(data.error)
-                {
-                    that.$scope.activationSuccess = false;
-                }
-                else
-                {
-                    console.log("activate successful");
-                    that.$scope.activationSuccess = true;
-                }
-            });
-    }
-});
-
-
-loginApp.classy.controller({
-    name: "ForgotPasswordController",
-    inject: ['$rootScope', '$scope', '$q', '$location', '$http'],
-    init: function()
-    {
-        var that = this;
-        that.$.userInput = {};
-        that.$.passwordResetEmailSent = false;
-    },
-    requestResetPassword: function()
+    $scope.requestResetPassword = function()
     {
         var that = this;
 
-        that.$http.post("/api/user/forgotPassword", {email: that.$.userInput.email})
-            .then(function(response, status) {
-                var data = response.data;
+        $http.post("/api/user/forgotPassword", {email: $scope.userInput.email})
+            .success(function(response, status) {
+                var data = response;
 
                 if(data.error)
                 {
@@ -367,39 +362,36 @@ loginApp.classy.controller({
                 else
                 {
                     console.log("email sent successful");
-                    that.$.passwordResetEmailSent = true;
+                    $scope.passwordResetEmailSent = true;
                 }
             });
-    }
-});
+    };
+}]);
 
+loginApp.controller("ResetPasswordController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location){
+    var that = this;
+    $scope.userInput = {};
+    var passwordResetKey = $scope.passwordResetKey = $location.search().passwordResetKey;
+    $scope.updatedPassword = false;
 
-loginApp.classy.controller({
-    name: "ResetPasswordController",
-    inject: ['$rootScope', '$scope', '$q', '$location', '$http'],
-    init: function()
-    {
-        var that = this;
-        that.$.userInput = {};
-        that.passwordResetKey = that.$.passwordResetKey = that.$location.search().passwordResetKey;
-        that.$.updatedPassword = false;
-    },
-    updatePassword: function()
+    $scope.updatePassword = function()
     {
         var that = this;
 
-        that.$http.post("/api/user/resetPassword", {
-            passwordResetKey: that.passwordResetKey,
-            password: CryptoJS.MD5(that.$.userInput.password).toString()
+        $http.post("/api/user/resetPassword", {
+            passwordResetKey: passwordResetKey,
+            password: CryptoJS.MD5($scope.userInput.password).toString()
         })
-            .then(function(response, status) {
-                var data = response.data;
+            .success(function(response, status) {
+                var data = response;
 
-                that.$.updatedPassword = true;
-                that.$.updateStatus = data;
+                $scope.updatedPassword = true;
+                $scope.updateStatus = data;
             });
-    }
-});
+    };
+}]);
+
+
 
 
 

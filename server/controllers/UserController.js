@@ -302,9 +302,9 @@
             .then(function(){
                 res.success();
             })
-            .fail(function(err){
-                res.error(err)
-            })
+            .fail(function(error){
+                res.error(error.stack || error)
+            });
     }
 
     module.linkGoogle = function(req, res)
@@ -327,9 +327,9 @@
             .then(function(){
                 res.success();
             })
-            .fail(function(err){
-                res.error(err)
-            })
+            .fail(function(error){
+                res.error(error.stack || error)
+            });
     }
 
     module.disconnectFacebook = function(req, res)
@@ -343,9 +343,9 @@
             .then(function(){
                 res.success();
             })
-            .fail(function(err){
-                res.error(err)
-            })
+            .fail(function(error){
+                res.error(error.stack || error)
+            });
     }
 
     module.disconnectGoogle = function(req, res)
@@ -359,8 +359,8 @@
             .then(function(){
                 res.success();
             })
-            .fail(function(err){
-                res.error(err)
-            })
+            .fail(function(error){
+                res.error(error.stack || error)
+            });
     }
 }(exports));

@@ -24,6 +24,7 @@ var app = angular.module( 'mainApp', [
     'mainApp.user',
     'mainApp.dashboard',
     'mainApp.location',
+    'common',
     'commonDirectives',
     'angular-data.DS'
 ]);
@@ -35,9 +36,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', functio
 
 app.run(['$http', '$rootScope', function run ($http, $rootScope) {
     $rootScope.user = LoggedInUser;
-
-    //share object for .dot rule angularjs
-    $rootScope.globalObj = {};
 
     //initialize socket
     $rootScope.socketServer = io.connect(location.protocol + "//" + location.host, {

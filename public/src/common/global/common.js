@@ -12,11 +12,39 @@ function safeApply (scope, expr)
     }
 }
 
-//using jquery growl for now
-//TODO: we should open the popup model incase of error
-function showError(msg)
+function showError($modal, errorMessage, options)
 {
-    $.growl.error({ message: msg});
+    $modal.open({
+        templateUrl : "modal/infoModal.tpl.html",
+        controller : ['$scope', '$modalInstance', function($scope, $modalInstance) {
+            $scope.type = 'error';
+            $scope.title ='ERROR';
+            $scope.description = errorMessage;
+
+            $scope.closeModal = function()
+            {
+                $modalInstance.dismiss('cancel');
+            };
+        }]
+    });
+}
+
+//show info message
+function showInfo($modal, infoMsg, options)
+{
+    $modal.open({
+        templateUrl : "modal/infoModal.tpl.html",
+        controller : ['$scope', '$modalInstance', function($scope, $modalInstance) {
+            $scope.type = 'info';
+            $scope.title ='INFO';
+            $scope.description = infoMsg;
+
+            $scope.closeModal = function()
+            {
+                $modalInstance.dismiss('cancel');
+            };
+        }]
+    });
 }
 
 //show success msg
@@ -25,8 +53,38 @@ function showSuccess(msg)
     $.growl.notice({title: 'Success', message: msg });
 }
 
-//show info message
-function showMessage(title, msg)
+
+var app = angular.module('common', []);
+
+app.directive('headerHint', ["$rootScope", "$resource", "utils", function($rootScope, $resource, utils)
 {
-    $.growl({ title: title, message: msg});
-}
+    return {
+        scope: {
+            description: "@",
+            marginTop: "@"
+        },
+        templateUrl: "global/headerHint.tpl.html",
+        link: function (scope, element, attr)
+        {
+            console.log(scope.description, scope.marginTop);
+
+        }
+    };
+}]);
+
+app.directive('headerBreadCrump', ["$rootScope", "$resource", "utils", function($rootScope, $resource, utils)
+{
+    return {
+        scope: {
+            title: "@",
+            subTitle: "@",
+            iconClass: "@"
+        },
+        templateUrl: "global/headerBreadCrump.tpl.html",
+        link: function (scope, element, attr)
+        {
+        }
+    };
+}]);
+
+

@@ -3,7 +3,6 @@ var app = angular.module( 'mainApp.location', [
         'utils',
         'localytics.directives',
         'ui.bootstrap',
-        'mgcrea.ngStrap',
         'common.commentThread',
         'templates-cms_common',
         'common.treeView',

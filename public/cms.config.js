@@ -48,10 +48,12 @@ module.exports = {
             'vendor/angular-chosen-localytics/chosen.js',
             'vendor/angular-data/dist/angular-data.min.js',
             'vendor/superagent/superagent.js',
-            'vendor/growl/javascripts/jquery.growl.js'
+            'vendor/growl/javascripts/jquery.growl.js',
+            'vendor/fancybox/source/jquery.fancybox.js'
         ],
         css: [
-            'vendor/growl/stylesheets/jquery.growl.css'
+            'vendor/growl/stylesheets/jquery.growl.css',
+            'vendor/fancybox/source/jquery.fancybox.css'
         ],
         assets: [
 

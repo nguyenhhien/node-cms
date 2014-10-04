@@ -2,7 +2,6 @@ var app = angular.module( 'common.commentThread', [
     'utils',
     'localytics.directives',
     'ui.bootstrap',
-    'mgcrea.ngStrap',
     'ngResource',
     'utils'
 ]);
