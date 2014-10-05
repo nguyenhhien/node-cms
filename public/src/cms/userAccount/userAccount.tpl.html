@@ -247,11 +247,8 @@
          </span>
     </label>
     <div class="col-lg-9 ">
-        <select chosen data-placeholder="Select a country"
-                ng-model="account.country"
-                ng-options="c for c in countries"
-                class="fixed-width-xxl">
-        </select>
+        <span beaver-chosen place-holder='Select a country' obj-list='countries' ng-model='account.country'
+              show-attribute='name' model-attribute='name'></span>
     </div>
 </div>
 

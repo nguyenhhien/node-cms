@@ -67,6 +67,8 @@ app.run(['$http', '$rootScope', function run ($http, $rootScope) {
                 window.location = "/login.html";
             });
     };
+
+    $rootScope.countries = countriesList;
 }]);
 
 app.controller( 'mainCtrl', ['$scope', '$location', function AppCtrl ( $scope, $location ) {
