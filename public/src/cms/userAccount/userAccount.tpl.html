@@ -28,12 +28,12 @@
     </label>
 
     <div class="col-lg-9">
-        <div style="width: 96px; height: 96px;" ng-show="!!user.avatar">
-            <img class="imgm img-thumbnail" alt="" ng-src="{{user.avatar}}" width="96" height="96" >
-            <i class="glyphicon glyphicon-user" ng-show="!user.avatar" style="font-size: 40px; text-align: center;"></i>
+        <div style="width: 96px; height: 96px;" ng-show="!!account.avatar">
+            <img class="img img-thumbnail" alt="" ng-src="{{account.avatar}}" width="96" height="96" >
+            <i class="glyphicon glyphicon-user" ng-show="!account.avatar" style="font-size: 40px; text-align: center;"></i>
         </div>
 
-        <div style="width: 96px; height: 96px;border: 1px solid #e3e3e3;"  ng-show="!user.avatar">
+        <div style="width: 96px; height: 96px;border: 1px solid #e3e3e3;"  ng-show="!account.avatar">
             <i class="glyphicon glyphicon-user"
                style="font-size: 60px; text-align: center;color: #e3e3e3;margin-left: 18px;line-height: 96px;">
             </i>
@@ -41,7 +41,7 @@
 
         <div>
             <span beaver-file-upload upload-url="/api/upload/uploadAvatar"
-                  filters="png|jpg|jpeg|gif"
+                  filters="png|jpg|jpeg|gif" form-data="uploadFormData"
                   upload-done="uploadCallback(res)">
                 <input type="file" style="display: none;" />
                 <button class="btn btn-primary upload-btn" onclick="$(this).siblings('input').click()">Upload</button>

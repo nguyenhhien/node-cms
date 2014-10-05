@@ -6,6 +6,7 @@ module.exports.global = {
     protocol: "http",
     host: "auth.epouch.com",
     origin: "http://auth.epouch.com:8080/",
+    resourcePrefix: "http://auth.epouch.com:9000/", //nginx prefix
     port: 8080,
     log: {
         level: 'verbose'

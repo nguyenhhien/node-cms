@@ -1,6 +1,6 @@
 (function()
 {
-    var utils = angular.module('utils', []);
+    var utils = angular.module('utils', []);
 
     utils.factory('utils', function(){
         this.$inject = ["$rootScope", "$exceptionHandler"];

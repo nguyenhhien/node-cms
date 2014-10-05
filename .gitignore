@@ -7,3 +7,5 @@ public/build
 public/bin
 public/node_modules
 public/vendor
+uploads
+content

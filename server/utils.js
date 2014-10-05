@@ -7,6 +7,7 @@
     var fs                  = require('fs');
     var path                = require('path');
     var _                   = require('lodash-node');
+    var childprocess 		= require("child_process");
 
     module = module || {};
 
@@ -35,4 +36,36 @@
         return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     };
 
+    //spawn external process
+    //TODO: auto kill when exceeding timeout allowed
+    module.spawnProcess = function(cmd, args)
+    {
+        var deferred = Q.defer();
+
+        var process = childprocess.spawn(cmd, args);
+
+        process.stdout.on("data", function(data)
+        {
+            console.debug("convert: "+data);
+        });
+
+        process.stderr.on("data", function(data)
+        {
+            console.error("convert: "+data);
+        });
+
+        process.on("exit", function(code)
+        {
+            if (code != 0)
+            {
+                deferred.reject("Error while converting image, code: "+code);
+            }
+            else
+            {
+                deferred.resolve();
+            }
+        });
+
+        return deferred.promise;
+    }
 }(exports));

@@ -40,6 +40,7 @@
                 return require("cookie-parser")();
             })(),
             bodyParser: (function(){
+                //multipart upload has been moved to another middleware
                 return require("body-parser")({ uploadDir: beaver.config.global.uploadsFolder})
             })(),
             expressValidator: (function(){

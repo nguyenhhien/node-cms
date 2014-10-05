@@ -83,7 +83,8 @@
     "qs": "^2.2.4",
     "node-mocks-http": "^1.1.0",
     "sails-mandrill": "^0.10.2",
-    "mandrill-api": "^1.0.40"
+    "mandrill-api": "^1.0.40",
+    "busboy": "^0.2.9"
   },
   "author": "stanley",
   "license": "BSD",

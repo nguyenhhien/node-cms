@@ -1,20 +1,18 @@
 var LoggedInUser;
 
 //get login user -- then bootstrap application
-superagent
-    .post('/api/user/userInfo')
-    .set('Accept', 'application/json')
-    .end(function(error, res){
-        if(error || !!res.body.error) {
+$.post('/api/user/userInfo')
+    .done(function(res){
+        LoggedInUser = res;
+        $("body").show();
+        angular.bootstrap(document, ["mainApp"]);
+    })
+    .fail(function(error){
+        if(error) {
             window.location = "/login.html";
             return console.log("ERROR: ", error);
         }
-
-        LoggedInUser = res.body;
-        $("body").show();
-        angular.bootstrap(document, ["mainApp"]);
     });
-
 
 var app = angular.module( 'mainApp', [
     'templates-cms_common',

@@ -1,73 +1,57 @@
 'use strict';
 
+var Q                   = require("q");
+var async               = require("async");
+var path                = require("path");
+var crypto				= require('crypto');
+var fs					= require("fs");
+var fse					= require("fs-extra");
+
+var beaver              = require("../../Beaver.js");
+var Busboy              = require('busboy');
+var inspect             = require('util').inspect;
+
+//parse multi-part body and hash to create hash filename
 module.exports = function hashFileUpload(req, res, next)
 {
-    var fs					= require("fs");
-    var fse					= require("fs-extra");
-    var crypto				= require('crypto');
-
-    if (!req.files || !req.files.files || !req.files.files.length) return next("No files sent");
-    var file = req.files.files[0];
-
-    if (!file) return next("No files sent");
-
-    var fileName = file.name.replace(/\.\./g,"");
-    var filePath = file.path.replace(/\.\./g,"");
-
-    var extension = "";
-    var filename = file.name.split(".");
-    extension = "." + filename.pop();
-    if( filename.length === 0 ) {
-        extension = "";
-    }
+    var busboy = new Busboy({ headers: req.headers });
+    var hash = crypto.createHash('sha1');
 
     var hashedFileName = "";
     var hashedFileContent = "";
 
-    fs.exists(filePath, function(exists)
-    {
-        if(!exists) return next("File upload failed")
+    //TODO: need to add userId into hash also
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        var saveTo = path.join(beaver.config.global.uploadsFolder, filename);
+        file.pipe(fs.createWriteStream(saveTo));
 
-        fse.mkdirs(ROOTDIR + "/" + serverPath, function(err)
-        {
-            if (err) return next(err);
+        file.on('data', function(data) {
+            hash.update(data);
+        });
 
-            var readStream = fs.createReadStream(filePath);
-            var hash = crypto.createHash('sha1');
-            readStream
-                .on('data', function (chunk) {
-                    hash.update(chunk);
-                })
-                .on('end', function () {
-                    hashedFileContent = hash.digest('hex');
-                    hashedFileName = hashedFileContent + extension;
+        file.on('end', function() {
+            //create sha1 hash of file content
+            hashedFileContent = hash.digest('hex');
+            hashedFileName = hashedFileContent + path.extname(filename);
 
-                    //Check if the hashed file is already inside the destination
-                    //If it is not there move the file over, otherwise just push the map into the array
-                    fs.exists(serverPath + hashedFileName, function(yes)
-                    {
-                        if (!yes)
-                        {
-                            fs.rename(filePath, serverPath + hashedFileName, function(err)
-                            {
-                                if (err) return callback(err);
-
-                                callback(null,{
-                                    name: fileName,
-                                    hashedName: hashedFileName
-                                });
-                            })
-                        }
-                        else
-                        {
-                            callback(null,{
-                                name: fileName,
-                                hashedName: hashedFileName
-                            });
-                        }
-                    })
-                });
-        })
+            //push to list of files in request
+            req.files = req.files || [];
+            req.files.push({
+                name: filename,
+                encoding: encoding,
+                mimetype: mimetype,
+                hashFileName: hashedFileName
+            });
+        });
     });
 
+    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+        req.params[fieldname] = inspect(val);
+    });
+
+    busboy.on('finish', function() {
+        next();
+    });
+
+    req.pipe(busboy);
 }

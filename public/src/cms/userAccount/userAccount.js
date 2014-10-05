@@ -1,4 +1,4 @@
-var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'utils', 'localytics.directives'])
+var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'localytics.directives'])
 .config(['$stateProvider', function config( $stateProvider) {
     $stateProvider
         .state('userAccount', {
@@ -9,7 +9,7 @@ var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'utils'
         });
 }]);
 
-app.controller("UserAccountController", ['$rootScope', '$scope', '$http', 'utils', '$resource', 'User', 'DS', function($rootScope, $scope, $http, utils, $resource, User, DS){
+app.controller("UserAccountController", ['$rootScope', '$scope', '$http', '$resource', 'User', 'DS', function($rootScope, $scope, $http, $resource, User, DS){
     //load current user
     //TODO: check to see if can set bypassCache: true by default; cause we never want to use cache/dirty version
     function loadCurrentUser()
@@ -31,7 +31,7 @@ app.controller("UserAccountController", ['$rootScope', '$scope', '$http', 'utils
     //auto generated password function
     $scope.generatePassword = function()
     {
-        var newPass = utils.generateRandomString(6);
+        var newPass = generateRandomString(6);
 
         $scope.account.generatedPassword = $scope.account.newPassword =
             $scope.account.newPasswordConfirmation = newPass;
@@ -79,7 +79,8 @@ app.controller("UserAccountController", ['$rootScope', '$scope', '$http', 'utils
 
     $scope.uploadCallback = function(res)
     {
-        console.log("upload done", res);
+        //reload current user
+        loadCurrentUser();
     };
 }]);
 

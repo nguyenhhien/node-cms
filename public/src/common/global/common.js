@@ -1,3 +1,24 @@
+function generateRandomString(length)
+{
+    var setC = 'abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+        setP = '$#@*&!()';
+
+    var outS = "";
+
+    for (var i = 0; i < length-2; ++i) {
+        var n = setC.length;
+        outS += setC.charAt(Math.floor(Math.random() * n));
+    }
+
+    for(var j= 0; j<2; ++j)
+    {
+        var m=setP.length;
+        outS += setP.charAt(Math.floor(Math.random() * m));
+    }
+
+    return _.shuffle(outS.split("")).join("");
+}
+
 function safeApply (scope, expr)
 {
     scope = scope || $rootScope;

@@ -19,7 +19,7 @@ function checkFileTypes(files, filter)
 }
 
 //simple file upload directive using jquery file upload
-app.directive('beaverFileUpload', ["$rootScope", "$resource", function($rootScope, $resource)
+app.directive('beaverFileUpload', ["$rootScope", "$resource", '$timeout', function($rootScope, $resource, $timeout)
 {
     return {
         scope: {
