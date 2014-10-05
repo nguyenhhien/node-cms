@@ -1,15 +1,4 @@
-var app = angular.module( 'mainApp.dashboard', [
-        'ui.router',
-        'classy',
-        'utils',
-        'localytics.directives',
-        'ui.bootstrap',
-        'templates-cms_common',
-        'common.commentThread',
-        'common.treeView',
-        'common.chatWidget',
-        'common.fancyBox'
-    ])
+var app = angular.module( 'mainApp.dashboard', [])
     .config(function config( $stateProvider ) {
         $stateProvider
             .state('dashboard', {

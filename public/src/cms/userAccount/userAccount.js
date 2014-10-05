@@ -1,4 +1,4 @@
-var app = angular.module( 'mainApp.userAccount', ['ui.router', 'classy', 'localytics.directives'])
+var app = angular.module( 'mainApp.userAccount', [])
 .config(['$stateProvider', function config( $stateProvider) {
     $stateProvider
         .state('userAccount', {

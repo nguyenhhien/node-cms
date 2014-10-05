@@ -86,22 +86,6 @@
 @import './partials/_navbar.less';
 @import './vendor/bi-app/bi-app-ltr.less';
 
-.main-page-notification
-{
-  width: 100%;
-
-  .troposphere-popup-wrapper
-  {
-    margin-left: 13px;
-    margin-right: 13px;
-
-    .notification-popup-wrapper
-    {
-      position: relative;
-    }
-  }
-}
-
 
 body
 {
@@ -113,6 +97,27 @@ body
   color: #333;
 }
 
+.sidebar
+{
+  max-width: 250px;
+  background: #004779;
+  height: 1000px;
+  color: white;
+  padding-top: 65px;
+  z-index: 0;
+  position: fixed;
+
+  .nav
+  {
+    li
+    {
+      a
+      {
+        color: white;
+      }
+    }
+  }
+}
 /**
  * Now that all app-wide styles have been applied, we can load the styles for
  * all the submodules and components we are using. 

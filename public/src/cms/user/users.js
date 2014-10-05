@@ -1,11 +1,4 @@
-var app = angular.module( 'mainApp.user', [
-        'ui.router',
-        'classy',
-        'utils',
-        'localytics.directives',
-        'ui.bootstrap',
-        'ngResource'
-    ])
+var app = angular.module( 'mainApp.user', [])
     .config(function config( $stateProvider ) {
         $stateProvider
             .state('users', {
