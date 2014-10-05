@@ -2,7 +2,7 @@ module.exports.global = {
     appName: "Beaver.js",
     needAccountActivation: 1,
     sessionSecret: 'auth-secret',
-    uploadsFolder: "./public/uploads/",
+    uploadsFolder: "./uploads/",
     protocol: "http",
     host: "auth.epouch.com",
     origin: "http://auth.epouch.com:8080/",

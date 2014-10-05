@@ -49,7 +49,9 @@ module.exports = {
             'vendor/angular-data/dist/angular-data.min.js',
             'vendor/superagent/superagent.js',
             'vendor/growl/javascripts/jquery.growl.js',
-            'vendor/fancybox/source/jquery.fancybox.js'
+            'vendor/fancybox/source/jquery.fancybox.js',
+            'vendor/jquery-ui/ui/jquery.ui.widget.js',
+            'vendor/blueimp-file-upload/js/jquery.fileupload.js'
         ],
         css: [
             'vendor/growl/stylesheets/jquery.growl.css',

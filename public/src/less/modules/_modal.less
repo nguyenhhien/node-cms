@@ -60,7 +60,7 @@
       color: @brand-danger;
     }
 
-    .btn.btn-close
+    .btn
     {
       display: inline-block;
       height: 30px;
@@ -71,10 +71,22 @@
       line-height: 33px;
       text-transform: uppercase;
       font-weight: bold;
-      color: #929292;
       text-shadow: rgba(255, 255, 255, 0.5) 0 1px 0;
       border-radius: 3px;
-      background: #d2d2d2;
+
+      &.btn-close
+      {
+        color: #929292;
+        background: #d2d2d2;
+      }
+
+      &.btn-success
+      {
+        color: #384819;
+        background: #a6c964;
+        border-color: #739334;
+        text-shadow: rgba(255, 255, 255, 0.5) 0 1px 0;
+      }
 
       &:hover
       {

@@ -1,4 +1,5 @@
 require("./server/constant.js");
+ROOTDIR = __dirname;
 
 var winston             = require('winston');
 var http				= require("http");

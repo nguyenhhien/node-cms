@@ -6,6 +6,8 @@
       method="post" enctype="multipart/form-data">
 <input type="hidden" name="id_user" id="id_user">
 
+<div header-hint margin-top='-15' description='TIP! Learn how to update your account'></div>
+
 <div class="panel">
 <div class="panel-heading">
     <i class="fa fa-user"></i>
@@ -35,6 +37,15 @@
             <i class="glyphicon glyphicon-user"
                style="font-size: 60px; text-align: center;color: #e3e3e3;margin-left: 18px;line-height: 96px;">
             </i>
+        </div>
+
+        <div>
+            <span beaver-file-upload upload-url="/api/upload/uploadAvatar"
+                  filters="png|jpg|jpeg|gif"
+                  upload-done="uploadCallback(res)">
+                <input type="file" style="display: none;" />
+                <button class="btn btn-primary upload-btn" onclick="$(this).siblings('input').click()">Upload</button>
+            </span>
         </div>
 
         <div class="callout-panel alert alert-info top7">

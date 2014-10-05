@@ -2,10 +2,84 @@
 
 <!--Main Content Bootstrap-->
 <div class="content bootstrap userSearchPage">
+    <div class="alert alert-warning" id="order-empty-filters-alert" ng-show="0">
+        <i class="fa fa-info"></i>
+        Please fill at least one field to perform a search in this list.
+    </div>
+
+    <!--Advanced Search Helper-->
+    <form class="defaultForm form-horizontal panel-collapse collapse in" method="post"
+          id="collapseOne"
+          enctype="multipart/form-data">
+        <div class="panel">
+            <div class="panel-heading">
+                <i class="fa fa-search"></i>
+                ADVANCED SEARCH
+            </div>
+
+            <div class="form-wrapper">
+                <div class="form-group">
+                    <label class="control-label col-lg-3 required">
+                            <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">
+                                Register From
+                            </span>
+                    </label>
+
+                    <div class="col-lg-9 ">
+                        <div class="row">
+                            <div class="input-group col-lg-4">
+                                <input id="date_from" type="text" data-hex="true" class="datepicker hasDatepicker">
+                                 <span class="input-group-addon">
+                                    <i class="glyphicon glyphicon-calendar"></i>
+                                 </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-lg-3 required">
+                            <span class="label-tooltip" data-toggle="tooltip" data-html="true" title="">
+                                Register To
+                            </span>
+                    </label>
+
+                    <div class="col-lg-9 ">
+                        <div class="row">
+                            <div class="input-group col-lg-4">
+                                <input id="date_to" type="text" class="datepicker hasDatepicker">
+                                 <span class="input-group-addon">
+                                    <i class="glyphicon glyphicon-calendar"></i>
+                                 </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-footer">
+                <button type="submit" value="1" id="submitPrint" class="btn btn-default pull-right">
+                    <i class="fa fa-search"></i>
+                    Search
+                </button>
+            </div>
+        </div>
+    </form>
+
     <div class="panel">
         <div class="panel-heading">
             <i class="fa fa-user"></i>
             Registered Users
+            <a data-toggle="collapse" data-target="#collapseOne" class="btn pull-right"
+               ng-init="showAdvancedSearch=true"
+               ng-click="showAdvancedSearch=!showAdvancedSearch"
+               style="font-size: 12px;">
+                <span ng-show="!showAdvancedSearch">Show</span>
+                <span ng-show="!!showAdvancedSearch">Hide</span>
+                Advanced Search
+                <i class="glyphicon glyphicon-chevron-right" ng-show="!showAdvancedSearch"></i>
+                <i class="glyphicon glyphicon-chevron-down" ng-show="!!showAdvancedSearch"></i>
+            </a>
         </div>
 
         <div class="table-responsive clearfix">

@@ -26,7 +26,8 @@ var app = angular.module( 'mainApp', [
     'mainApp.location',
     'common',
     'commonDirectives',
-    'angular-data.DS'
+    'angular-data.DS',
+    'common.fileUpload'
 ]);
 
 app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', function myAppConfig ( $stateProvider, $urlRouterProvider, $locationProvider) {

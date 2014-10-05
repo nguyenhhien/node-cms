@@ -141,7 +141,7 @@ loginApp.controller("LoginController", ['$rootScope', '$scope', '$q', '$http', '
                     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
                 }
             },function (error) {
-                $rootScope.notificationMessage = error;
+                showError($modal, error.stack || error.error || error);
             });
     };
 
@@ -179,13 +179,13 @@ loginApp.controller("LoginController", ['$rootScope', '$scope', '$q', '$http', '
                     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
                 }
             },function (error) {
-                $rootScope.notificationMessage = error;
+                showError($modal, error.stack || error.error || error);
             });
     };
 }]);
 
 
-loginApp.controller("RegisterController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location){
+loginApp.controller("RegisterController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', '$modal', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location, $modal){
     $scope.userInput = {};
 
     $scope.register = function()
@@ -199,21 +199,17 @@ loginApp.controller("RegisterController", ['$rootScope', '$scope', '$q', '$http'
             .success(function(response, status) {
                 var data = response;
 
-                if(data.error)
+                if(data.emailActivation)
                 {
-                    $rootScope.notificationMessage = data;
+                    $location.path("/activateAccount");
                 }
                 else
                 {
-                    if(data.emailActivation)
-                    {
-                        $location.path("/activateAccount");
-                    }
-                    else
-                    {
-                        $window.location.href = "index.html";
-                    }
+                    $window.location.href = "index.html";
                 }
+            })
+            .error(function(error){
+                showError($modal, error.stack || error.error || error);
             });
     };
 
@@ -267,7 +263,7 @@ loginApp.controller("RegisterController", ['$rootScope', '$scope', '$q', '$http'
                     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
                 }
             }, function(error){
-                $rootScope.notificationMessage = error;
+                showError($modal, error.stack || error.error || error);
             });
     };
 
@@ -303,23 +299,15 @@ loginApp.controller("RegisterController", ['$rootScope', '$scope', '$q', '$http'
             .then(function(response){
                 var data = response;
 
-                if(data.error)
-                {
-                    $rootScope.notificationMessage = data;
-                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
-                }
-                else
-                {
-                    $rootScope.user = data;
-                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
-                }
+                $rootScope.user = data;
+                $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
             }, function(error){
-                $rootScope.notificationMessage = error;
+                showError($modal, error.stack || error.error || error);
             });
     };
 }]);
 
-loginApp.controller("ActivateAccountController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location){
+loginApp.controller("ActivateAccountController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', '$modal', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location, $modal){
     this.activationKey = $scope.activationKey = $location.search().activationKey;
 
     if(!activationKey) {
@@ -328,21 +316,22 @@ loginApp.controller("ActivateAccountController", ['$rootScope', '$scope', '$q', 
 
     $http.post("/api/user/activateAccount", {activationKey: activationKey})
         .success(function(response, status) {
-            var data = response;
-
-            if(data.error)
+            console.log("activate successful");
+            $scope.activationSuccess = true;
+        })
+        .error(function(error){
+            if(error && error.error)
             {
                 $scope.activationSuccess = false;
             }
             else
             {
-                console.log("activate successful");
-                $scope.activationSuccess = true;
+                showError($modal, error.stack || error.error || error);
             }
         });
 }]);
 
-loginApp.controller("ForgotPasswordController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location){
+loginApp.controller("ForgotPasswordController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', '$modal', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location, $modal){
     var that = this;
     $scope.userInput = {};
     $scope.passwordResetEmailSent = false;
@@ -353,22 +342,23 @@ loginApp.controller("ForgotPasswordController", ['$rootScope', '$scope', '$q', '
 
         $http.post("/api/user/forgotPassword", {email: $scope.userInput.email})
             .success(function(response, status) {
-                var data = response;
-
-                if(data.error)
+                console.log("email sent successful");
+                $scope.passwordResetEmailSent = true;
+            })
+            .error(function(error){
+                if(error && error.error)
                 {
-                    $rootScope.notificationMessage = data;
+                    $scope.activationSuccess = false;
                 }
                 else
                 {
-                    console.log("email sent successful");
-                    $scope.passwordResetEmailSent = true;
+                    showError($modal, error.stack || error.error || error);
                 }
             });
     };
 }]);
 
-loginApp.controller("ResetPasswordController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location){
+loginApp.controller("ResetPasswordController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', '$modal', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location, $modal){
     var that = this;
     $scope.userInput = {};
     var passwordResetKey = $scope.passwordResetKey = $location.search().passwordResetKey;
@@ -387,6 +377,9 @@ loginApp.controller("ResetPasswordController", ['$rootScope', '$scope', '$q', '$
 
                 $scope.updatedPassword = true;
                 $scope.updateStatus = data;
+            })
+            .error(function(error){
+                showError($modal, error.stack || error.error || error);
             });
     };
 }]);

@@ -19,40 +19,6 @@ var Beaver = function(){
 
 util.inherits(Beaver, events.EventEmitter);
 
-//some suger functions
-function getUtil()
-{
-    function util()
-    {
-        this.formatValidationError = function(errors)
-        {
-            errors = errors || [];
-
-            //remove duplicate element
-            errors = errors.filter(function(elem, pos) {
-                return errors.map(function(error){return error.param;}).indexOf(elem.param) == pos;
-            });
-
-            var errorMsg = "Invalid Params (";
-            errorMsg += (errors || []).map(function(elem){
-                return elem.param;
-            }).join(",") + ")";
-
-            errorMsg += " .Received (" +  (errors || []).map(function(elem){
-                return elem.value;
-            }).join(",") + ")";
-
-            return errorMsg;
-        }
-
-        this.regexEscape= function(s) {
-            return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        };
-    }
-
-    return new util();
-}
-
 //start bootstrap application
 Beaver.prototype.start = function()
 {
@@ -84,7 +50,11 @@ Beaver.prototype.start = function()
     //load modules
     this.modules = require('./server/modules');
 
-    this.utils = getUtil();
+    //load middleware
+    this.middlewares = require('./server/middlewares');
+
+    //some sugar utils function
+    this.utils = require("./server/utils.js");
 
     //init all hooks
     var tasks = [];
@@ -95,7 +65,7 @@ Beaver.prototype.start = function()
         });
     });
 
-    //init hook first -- then start bind route + controllers
+    //init hook first -- then start bind route + controllers by emit ready event
     async.series(tasks, function(err, data){
         if(err) return that.winston.error("[ERROR]: " + e.stack || e);
 

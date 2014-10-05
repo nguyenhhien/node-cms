@@ -76,6 +76,11 @@ app.controller("UserAccountController", ['$rootScope', '$scope', '$http', 'utils
                 showError(error.stack || error.data || error);
             });
     };
+
+    $scope.uploadCallback = function(res)
+    {
+        console.log("upload done", res);
+    };
 }]);
 
 
