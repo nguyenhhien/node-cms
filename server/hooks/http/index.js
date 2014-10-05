@@ -43,6 +43,18 @@
 
             try
             {
+                //bind pre-middleware in order first
+                if(route.middlewares && !!route.middlewares.length)
+                {
+                    route.middlewares.forEach(function(elem){
+                        if(beaver.middlewares[elem])
+                        {
+                            app.use(route.path, beaver.middlewares[elem]);
+                            latentApp.use(route.path, beaver.middlewares[elem]);
+                        }
+                    });
+                }
+
                 app[route.method || 'all'](route.path, route.target);
                 latentApp[route.method || 'all'](route.path, route.target);
                 //beaver.winston.info("[Route Bound]: " + route.path);

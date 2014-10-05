@@ -1,13 +1,10 @@
-var app = angular.module( 'common.chatWidget', [
-    'utils',
+var app = angular.module( 'common.chatWidget', [    
     'localytics.directives',
     'ui.bootstrap',
-    'mgcrea.ngStrap',
-    'ngResource',
-    'utils'
+    'ngResource'    
 ]);
 
-app.directive('chatTextarea', ["$rootScope", "utils", function($rootScope, utils){
+app.directive('chatTextarea', ["$rootScope", function($rootScope){
     return {
         scope: {
             submitMessage: "&",
@@ -33,7 +30,7 @@ app.directive('chatTextarea', ["$rootScope", "utils", function($rootScope, utils
     };
 }]);
 
-app.directive('chatWidget', ["$rootScope", "$resource", "utils", function($rootScope, $resource, utils)
+app.directive('chatWidget', ["$rootScope", "$resource", function($rootScope, $resource)
 {
     return {
         scope: {
@@ -79,7 +76,7 @@ app.directive('chatWidget', ["$rootScope", "$resource", "utils", function($rootS
 
                 if(foundIdx == -1)
                 {
-                    utils.$safeApply(scope, function(){
+                    safeApply(scope, function(){
                         scope.chatSessions.push(chatSession);
                     });
                 }
@@ -92,7 +89,7 @@ app.directive('chatWidget', ["$rootScope", "$resource", "utils", function($rootS
                     content: message
                 };
 
-                utils.$safeApply(scope, function(){
+                safeApply(scope, function(){
                     chatSession.messages.push(newMsg);
                     element.animate({scrollTop: element.prop("scrollHeight")}, 500);
                 });
@@ -124,7 +121,7 @@ app.directive('chatWidget', ["$rootScope", "$resource", "utils", function($rootS
                         scope.offset += 20;
 
                         //push into current list
-                        utils.$safeApply(scope, function(){
+                        safeApply(scope, function(){
                             _.forEach(data.results, function(user){
                                 pushUser(user);
                             });
@@ -156,13 +153,13 @@ app.directive('chatWidget', ["$rootScope", "$resource", "utils", function($rootS
 
                 if(user.status == 'online')
                 {
-                    utils.$safeApply(scope, function(){
+                    safeApply(scope, function(){
                         pushUser(user);
                     });
                 }
                 else if(user.status == 'offline')
                 {
-                    utils.$safeApply(scope, function(){
+                    safeApply(scope, function(){
                         popUser(user);
                     });
                 }

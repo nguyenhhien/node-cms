@@ -18,24 +18,32 @@
     {
         try
         {
-            beaver.middleware = {};
+            beaver.controllers = {};
 
             //process controllers
-            _.each(beaver.controllers, function(controller, controllerId){
+            _.each(beaver.controllerFunctions, function(controller, controllerId){
                 _.each(controller, function(action, actionId){
                     if (_.isString(action) || _.isBoolean(action) || !_.isFunction(action))
                     {
                         return;
                     }
 
-                    beaver.middleware[controllerId] = beaver.middleware[controllerId] || {};
+                    var injectedMiddlewares = [];
+                    if(beaver.controllerFunctions[controllerId]._middlewares && beaver.controllerFunctions[controllerId]._middlewares[actionId])
+                    {
+                        injectedMiddlewares = beaver.controllerFunctions[controllerId]._middlewares[actionId];
+                    }
+
+
+                    beaver.controllers[controllerId] = beaver.controllers[controllerId] || {};
                     actionId = actionId.toLowerCase();
-                    beaver.middleware[controllerId][actionId] = action;
+                    beaver.controllers[controllerId][actionId] = action;
 
                     //implicitly bind the route -- default map-all
                     beaver.emit("router:bind", {
+                        middlewares: injectedMiddlewares || [],
                         path: beaver.config.controllers.uri.prefix + "/" + controllerId + "/" + actionId,
-                        target: beaver.middleware[controllerId][actionId]
+                        target: beaver.controllers[controllerId][actionId]
                     });
                 });
             });
@@ -46,7 +54,7 @@
         }
     }
 
-
+    //bind additional REST route, etc... if controller has corresponding sequelize models
     module._bindBeeRoute = function(beaver)
     {
         function bindRoute(route)

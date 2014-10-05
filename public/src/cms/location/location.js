@@ -1,9 +1,7 @@
 var app = angular.module( 'mainApp.location', [
         'ui.router',
-        'utils',
         'localytics.directives',
         'ui.bootstrap',
-        'mgcrea.ngStrap',
         'common.commentThread',
         'templates-cms_common',
         'common.treeView',
@@ -21,8 +19,8 @@ var app = angular.module( 'mainApp.location', [
     });
 
 
-app.controller("LocationController", function($rootScope, $scope, $http, utils, $resource){
-    this.$inject = ['$rootScope', '$scope', '$http', 'utils', '$resource'];
+app.controller("LocationController", function($rootScope, $scope, $http, $resource){
+    this.$inject = ['$rootScope', '$scope', '$http', '$resource'];
     $scope.selectedLocation = {};
     $scope.selectedLocation.parentId = 15;
 });

@@ -2,7 +2,6 @@ var app = angular.module( 'common.dropdownTreeView', [
     'utils',
     'localytics.directives',
     'ui.bootstrap',
-    'mgcrea.ngStrap',
     'ngResource',
     'utils',
     'common.treeView'

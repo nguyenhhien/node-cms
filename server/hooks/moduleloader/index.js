@@ -16,7 +16,7 @@ var buildDictionary     = require('sails-build-dictionary');
             keepDirectoryPath: true,
             replaceExpr: /Controller/
         }, function(err, dictionary){
-            beaver.controllers = dictionary;
+            beaver.controllerFunctions = dictionary;
             callback && callback(err, dictionary);
         });
     }

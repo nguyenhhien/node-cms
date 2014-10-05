@@ -4,7 +4,6 @@ var app = angular.module( 'mainApp.user', [
         'utils',
         'localytics.directives',
         'ui.bootstrap',
-        'mgcrea.ngStrap',
         'ngResource'
     ])
     .config(function config( $stateProvider ) {
@@ -23,7 +22,7 @@ var app = angular.module( 'mainApp.user', [
             });
     });
 
-app.controller("UserSearchController", ['$rootScope', '$scope', '$http', 'utils', '$resource', function($rootScope, $scope, $http, utils, $resource){
+app.controller("UserSearchController", ['$rootScope', '$scope', '$http', '$resource', function($rootScope, $scope, $http, $resource){
     $scope.itemsPerPage = 10;
     $scope.currentPage = 1;
 

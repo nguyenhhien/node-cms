@@ -2,11 +2,12 @@ module.exports.global = {
     appName: "Beaver.js",
     needAccountActivation: 1,
     sessionSecret: 'auth-secret',
-    uploadsFolder: "./public/uploads/",
+    uploadsFolder: "./uploads/",
     protocol: "http",
     host: "auth.epouch.com",
-    origin: "http://auth.epouch.com:8888/",
-    port: 8888,
+    origin: "http://auth.epouch.com:8080/",
+    resourcePrefix: "http://auth.epouch.com:9000/", //nginx prefix
+    port: 8080,
     log: {
         level: 'verbose'
     },
@@ -16,5 +17,6 @@ module.exports.global = {
     },
     cache: {
         maxAge: 3600000
-    }
+    },
+    adminEmail: "noreply@beaver.com"
 };

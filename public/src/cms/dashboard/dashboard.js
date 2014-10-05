@@ -4,11 +4,11 @@ var app = angular.module( 'mainApp.dashboard', [
         'utils',
         'localytics.directives',
         'ui.bootstrap',
-        'mgcrea.ngStrap',
         'templates-cms_common',
         'common.commentThread',
         'common.treeView',
-        'common.chatWidget'
+        'common.chatWidget',
+        'common.fancyBox'
     ])
     .config(function config( $stateProvider ) {
         $stateProvider
@@ -20,8 +20,10 @@ var app = angular.module( 'mainApp.dashboard', [
             });
     });
 
-app.controller("DashboardController", function($rootScope, $scope, $http, utils, $resource){
-    this.$inject = ['$rootScope', '$scope', '$http', 'utils', '$resource'];
-
-
-});
+app.controller("DashboardController", ['$rootScope', '$scope', '$http', 'utils', '$resource', '$modal',
+    function($rootScope, $scope, $http, utils, $resource, $modal){
+    $scope.openModal = function()
+    {
+        showInfo($modal, "Some Error happen");
+    };
+}]);

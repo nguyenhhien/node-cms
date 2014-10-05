@@ -26,7 +26,7 @@
     <script type="text/javascript" src="<%= file %>"></script><% }); %>
   </head>
 
-  <body style="background: white;">
+  <body style="background: white; display: none;">
     <nav class="navbar navbar-default main-navbar" role="navigation">
       <div class="container-fluid">
           <div class="navbar-header">
@@ -93,7 +93,7 @@
                       <ul class="dropdown-menu">
                           <li>
                             <span class="avatar-wrapper">
-                                <img class="imgm img-thumbnail" alt=""
+                                <img class="img img-thumbnail" alt=""
                                      ng-src="{{user.avatar}}" width="96" height="96">
                             </span>
                           </li>
@@ -101,7 +101,7 @@
                           <li><a href="#!/userAccount"><i class="fa fa-wrench"></i>Preference</a></li>
                           <li class="divider"></li>
                           <li>
-                              <a href="#!"> <i class="fa fa-sign-out"></i> Sign Out</a>
+                              <a ng-click="logout()"> <i class="fa fa-sign-out"></i> Sign Out</a>
                           </li>
                       </ul>
                   </li>
@@ -109,10 +109,6 @@
           </div>
       </div>
     </nav>
-
-    <div class="main-page-notification">
-        <div notification-popup='globalObj.notification' auto-close=5 class="troposphere-popup-wrapper"></div>
-    </div>
 
     <div ui-view></div>
   </body>

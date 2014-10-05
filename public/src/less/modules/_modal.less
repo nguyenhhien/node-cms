@@ -1,0 +1,102 @@
+//common style
+.gamification-modal
+{
+  .modal-body, .modal-footer, .modal-header
+  {
+    border: none;
+  }
+
+  .gamification-tip-infobox-title
+  {
+    &.info
+    {
+      .gamification-tip-infobox-title-prefix
+      {
+        background: none;
+      }
+    }
+
+    &.error
+    {
+      color: white;
+      background-color: @brand-danger;
+      border-bottom: 3px solid darken(@brand-danger, 20%);
+
+      .gamification-tip-infobox-title-prefix
+      {
+        color: white;
+        background: none;
+      }
+    }
+  }
+
+  .gamification-tip-infobox-content{
+    .gamification-tip-infobox-content-description
+    {
+      p
+      {
+        min-height: 140px;
+      }
+    }
+
+    i
+    {
+      font-size: 85px;
+      text-align: center;
+      line-height: 175px;
+      margin: auto;
+      position: relative;
+      margin-left: 50px;
+    }
+
+    i.glyphicon.glyphicon-info-sign
+    {
+      color: #93AC64;
+    }
+
+
+    i.glyphicon.glyphicon-warning-sign
+    {
+      color: @brand-danger;
+    }
+
+    .btn
+    {
+      display: inline-block;
+      height: 30px;
+      padding: 0 20px;
+      margin-right: 10px;
+      border: none;
+      border-bottom: solid 3px #ababab;
+      line-height: 33px;
+      text-transform: uppercase;
+      font-weight: bold;
+      text-shadow: rgba(255, 255, 255, 0.5) 0 1px 0;
+      border-radius: 3px;
+
+      &.btn-close
+      {
+        color: #929292;
+        background: #d2d2d2;
+      }
+
+      &.btn-success
+      {
+        color: #384819;
+        background: #a6c964;
+        border-color: #739334;
+        text-shadow: rgba(255, 255, 255, 0.5) 0 1px 0;
+      }
+
+      &:hover
+      {
+        color: #f8f8f8;
+        background: #5f5f5f;
+        border-color: #2c2c2c;
+        text-shadow: rgba(0, 0, 0, 0.5) 0 1px 0;
+      }
+    }
+  }
+}
+
+

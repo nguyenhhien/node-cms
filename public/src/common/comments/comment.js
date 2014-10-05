@@ -1,13 +1,10 @@
 var app = angular.module( 'common.commentThread', [
-    'utils',
     'localytics.directives',
     'ui.bootstrap',
-    'mgcrea.ngStrap',
-    'ngResource',
-    'utils'
+    'ngResource'
 ]);
 
-app.directive('commentThreadBlock', ["$rootScope", "$resource", "utils", function($rootScope, $resource, utils)
+app.directive('commentThreadBlock', ["$rootScope", "$resource", function($rootScope, $resource)
 {
     return {
         scope: {
@@ -108,7 +105,7 @@ app.directive('commentThreadBlock', ["$rootScope", "$resource", "utils", functio
                             
                             if(!parentId)
                             {
-                                utils.$safeApply(scope, function(){
+                                safeApply(scope, function(){
                                     scope.comments.push(response);
 
                                     scope.newComment = angular.extend(new Comments(), {
@@ -128,7 +125,7 @@ app.directive('commentThreadBlock', ["$rootScope", "$resource", "utils", functio
 
                                 childMap[parentComment._id].push(response);
                                 
-                                utils.$safeApply(scope, function(){
+                                safeApply(scope, function(){
                                     parentComment.replies = ( parentComment.replies || []);
                                     //parentComment.replies.push(response); //no need; because parent.replies = childMap (already updated)
 
@@ -150,7 +147,7 @@ app.directive('commentThreadBlock', ["$rootScope", "$resource", "utils", functio
                     .then(function(response){
                         if(!response.error)
                         {
-                            utils.$safeApply(scope, function(){
+                            safeApply(scope, function(){
                                 //remove from maps
                                 delete commentMap[reply._id];
                                 if(reply.parentId)
