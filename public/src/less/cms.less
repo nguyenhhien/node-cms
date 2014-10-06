@@ -97,27 +97,6 @@ body
   color: #333;
 }
 
-.sidebar
-{
-  max-width: 250px;
-  background: #004779;
-  height: 1000px;
-  color: white;
-  padding-top: 65px;
-  z-index: 0;
-  position: fixed;
-
-  .nav
-  {
-    li
-    {
-      a
-      {
-        color: white;
-      }
-    }
-  }
-}
 /**
  * Now that all app-wide styles have been applied, we can load the styles for
  * all the submodules and components we are using. 
@@ -139,6 +118,7 @@ body
 @import './partials/_icons.less';
 @import './partials/_components.less';
 @import "./modules/_modal.less";
+@import "./modules/_sidebar.less";
 
 //external files
 @import './modules/external/gamification.less';

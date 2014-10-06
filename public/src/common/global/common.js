@@ -87,8 +87,6 @@ app.directive('headerHint', ["$rootScope", "$resource", "utils", function($rootS
         templateUrl: "global/headerHint.tpl.html",
         link: function (scope, element, attr)
         {
-            console.log(scope.description, scope.marginTop);
-
         }
     };
 }]);
