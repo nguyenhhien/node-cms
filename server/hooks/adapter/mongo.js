@@ -59,7 +59,7 @@
     };
 
     module.close = function() {
-        if(mongoClient) mongoClient.quit();
+        if(mongoClient) mongoClient.close();
     };
 
     module.helpers = module.helpers || {};

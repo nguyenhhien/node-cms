@@ -1,3 +1,4 @@
+//TODO: TOPMOST important is to handle unhandled exception; like one of the config missing; no error being throws?????
 var events              = require('events');
 var _                   = require('lodash-node');
 var util                = require('util');
@@ -37,9 +38,19 @@ Beaver.prototype.start = function()
 
     this.winston = winston;
 
-    //load config files
-    //TODO: check process env and load corresponding config
-    this.config = _.merge(require('./server/config/index.js').dev, require('./server/config/index.js').shared);
+    //load config files: NODE_ENV=development node app.js
+    if(process.env.NODE_ENV == "test")
+    {
+        this.config = _.merge(require('./server/config/index.js').test, require('./server/config/index.js').shared);
+    }
+    else if(process.env.NODE_ENV == "prod")
+    {
+        this.config = _.merge(require('./server/config/index.js').prod, require('./server/config/index.js').shared);
+    }
+    else
+    {
+        this.config = _.merge(require('./server/config/index.js').dev, require('./server/config/index.js').shared);
+    }
 
     //load hook
     this.hooks = require('./server/hooks');
@@ -78,6 +89,47 @@ Beaver.prototype.start = function()
 Beaver.prototype.stop = function()
 {
     //TODO: peacefully close all database connection
+}
+
+//this is only for mocking test
+Beaver.prototype.mock = function(callback)
+{
+    var that = this;
+
+    this.winston = winston;
+
+    this.config = _.merge(require('./server/config/index.js').test, require('./server/config/index.js').shared);
+
+    //load hook
+    this.hooks = require('./server/hooks');
+
+    //load models
+    this.models = require('./server/models');
+
+    //load modules
+    this.modules = require('./server/modules');
+
+    //load middleware
+    this.middlewares = require('./server/middlewares');
+
+    //some sugar utils function
+    this.utils = require("./server/utils.js");
+
+    that.hooks.loadOrders = [
+        "adapter"
+    ];
+
+    var tasks = [];
+    _.each(that.hooks.loadOrders, function(name){
+        var hook = that.hooks[name];
+        tasks.push(function(next){
+            hook.init(that, next);
+        });
+    });
+
+    async.series(tasks, function(err, data){
+        callback && callback(err);
+    });
 }
 
 //export only one instance
