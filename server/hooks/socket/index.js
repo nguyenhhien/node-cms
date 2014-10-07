@@ -121,6 +121,12 @@
                         });
 
                         //broadcast event to other connected sockets?
+                        socket.broadcast.emit('user.isOnline', null, {
+                            status: 'online',
+                            name: hs.session && hs.session.user.name,
+                            avatar: hs.session && hs.session.user.avatar,
+                            id: hs.session && hs.session.user.id
+                        });
                     })()
                     .fail(function(error){
                         beaver.winston.error(error.stack || error);
@@ -134,7 +140,7 @@
                         beaver.winston.info("[socket.io] client disconnected");
                     })
                     .then(function(data){
-                        socket.broadcast.emit('user.disconnect', null, socket.uid);
+                        socket.broadcast.emit('user.disconnect', null, {id: socket.uid});
                     })
                     .fail(function(err){
                         beaver.winston.error(err.stack || err);
