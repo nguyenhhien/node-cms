@@ -1,4 +1,3 @@
-//TODO: TOPMOST important is to handle unhandled exception; like one of the config missing; no error being throws?????
 var events              = require('events');
 var _                   = require('lodash-node');
 var util                = require('util');
@@ -69,6 +68,7 @@ Beaver.prototype.start = function()
 
     //init all hooks
     var tasks = [];
+
     _.each(that.hooks.loadOrders, function(name){
         var hook = that.hooks[name];
         tasks.push(function(next){
@@ -77,8 +77,10 @@ Beaver.prototype.start = function()
     });
 
     //init hook first -- then start bind route + controllers by emit ready event
+    //Note: just realize that any exception in the final error handler will be catch by itself. So make sure you handle it properly
+    //for example, try to change the below to err.stack -> e.stack -- then you will have hidden, undesired exception
     async.series(tasks, function(err, data){
-        if(err) return that.winston.error("[ERROR]: " + e.stack || e);
+        if(err) return that.winston.error("[ERROR]: " + err.stack || err);
 
         //send ready signal to restart listening
         that.emit('ready');

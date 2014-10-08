@@ -24,7 +24,6 @@
                     return (file.indexOf('.') !== 0) && (file !== 'index.js') && (file.indexOf('.js') !== -1)
                 })
                 .forEach(function(file) {
-
                     var modelName = path.basename(file, '.js');
                     //also bind the lowercase to the same model --      module[dir][modelName.toLowerCase()] =
                     module[dir][modelName] = require(path.join(fullPath, file));

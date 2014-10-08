@@ -3,8 +3,12 @@ ROOTDIR = __dirname;
 
 var winston             = require('winston');
 var http				= require("http");
+var domainWrapper       = require('domain').create();
 
-//TODO: this one just for legacy code -- don't continue to use it
+domainWrapper.on('error', function(err){
+    console.log("[ERROR: ] in domain wrapper", err.stack || err);
+});
+
 http.ServerResponse.prototype.success = function(data)
 {
     if(typeof data === 'object')
@@ -17,7 +21,7 @@ http.ServerResponse.prototype.success = function(data)
     }
 }
 
-
+//TODO: change it into another error code
 http.ServerResponse.prototype.error = function(statusCode, error)
 {
     //swap parameter if only one argument is supplied
@@ -31,7 +35,11 @@ http.ServerResponse.prototype.error = function(statusCode, error)
     return this.status(501).send(error);
 }
 
-var beaver = require('./Beaver.js');
-beaver.start();
+//wrap process in domain wrapper so that no hidden exception
+domainWrapper.run(function(){
+    var beaver = require('./Beaver.js');
+    beaver.start();
+});
+
 
 

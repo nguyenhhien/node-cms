@@ -166,7 +166,7 @@
 
                 console.log("[socket.io] request receive", path, body);
 
-                //TODO: forward request to latent express
+                //forward request to latent express
                 var req = mockRequest({
                     method: body.method || "GET",
                     url: path,
