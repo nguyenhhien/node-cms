@@ -50,7 +50,7 @@ Finally we add a custom data property, pageTitle, which will be used to set the 
 title (see the app.js controller).
 
 ```js
-.config(function config( $stateProvider ) {
+.config(['$stateProvider', function config( $stateProvider ) {
   $stateProvider.state( 'home', {
     url: '/home',
     views: {

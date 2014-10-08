@@ -1,5 +1,5 @@
 var app = angular.module( 'mainApp.dashboard', [])
-    .config(function config( $stateProvider ) {
+    .config(['$stateProvider', function config( $stateProvider ) {
         $stateProvider
             .state('dashboard', {
                 url: '/',
@@ -7,7 +7,7 @@ var app = angular.module( 'mainApp.dashboard', [])
                 controller: 'DashboardController',
                 resolve: {}
             });
-    });
+    }]);
 
 app.controller("DashboardController", ['$rootScope', '$scope', '$http', 'utils', '$resource', '$modal',
     function($rootScope, $scope, $http, utils, $resource, $modal){

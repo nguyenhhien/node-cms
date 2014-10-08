@@ -8,7 +8,6 @@ var path                = require("path");
 var sailUtil            = require('sails-util');
 
 //extend event emitter
-//TODO: check unhandled exception
 var Beaver = function(){
     events.EventEmitter.call(this);
     this.setMaxListeners(0);
@@ -117,6 +116,7 @@ Beaver.prototype.mock = function(callback)
     //some sugar utils function
     this.utils = require("./server/utils.js");
 
+    //just initialize adapter for mock test
     that.hooks.loadOrders = [
         "adapter"
     ];
