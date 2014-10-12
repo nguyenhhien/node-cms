@@ -1,16 +1,5 @@
-var app = angular.module( 'mainApp.dashboard', [
-        'ui.router',
-        'classy',
-        'utils',
-        'localytics.directives',
-        'ui.bootstrap',
-        'templates-cms_common',
-        'common.commentThread',
-        'common.treeView',
-        'common.chatWidget',
-        'common.fancyBox'
-    ])
-    .config(function config( $stateProvider ) {
+var app = angular.module( 'mainApp.dashboard', [])
+    .config(['$stateProvider', function config( $stateProvider ) {
         $stateProvider
             .state('dashboard', {
                 url: '/',
@@ -18,7 +7,7 @@ var app = angular.module( 'mainApp.dashboard', [
                 controller: 'DashboardController',
                 resolve: {}
             });
-    });
+    }]);
 
 app.controller("DashboardController", ['$rootScope', '$scope', '$http', 'utils', '$resource', '$modal',
     function($rootScope, $scope, $http, utils, $resource, $modal){

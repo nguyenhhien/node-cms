@@ -5,8 +5,8 @@ module.exports.adapters = {
         host:					"127.0.0.1",
         user:					"root",
         password:				null,
-        maxConcurrentQueries:   100,
-        poolSize:               100,
+        maxConcurrentQueries:   400,
+        poolSize:               400,
         idleTime:               30
     },
     Redis:

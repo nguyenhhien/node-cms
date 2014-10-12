@@ -1,30 +1,34 @@
+require("../../constant.js");
+
 var Q                   = require("q");
 var _                   = require('lodash-node');
 var winston             = require('winston');
 var async               = require('async');
 
-var dbmock              = require('../../mocks/databasemocks');
-var mongoose            = require('../../database/mongoose.js');
-var sequelize           = require("../../database/sequelize.js");
-var redis               = require("../../database/redis.js");
-var mongo               = require("../../database/mongo.js");
-var modules             = require("../../modules/index.js");
+var beaver              = require('../../../Beaver.js');
 
 describe('chat conversation module specs', function(){
     beforeEach(function(done){
-        dbmock.initMongoose()
-            .then(function(){
-                done();
-            })
-            .fail(function(){
+        beaver.mock(function(error, data){
+            if(error)
+            {
+                console.log(error.stack || error);
                 done(false);
-            })
+            }
+            else
+            {
+                done();
+            }
+        });
     });
 
     afterEach(function(done){
-        mongoose.connection.db.dropDatabase(function(err, data){
-            dbmock.closeMongoose()
+        beaver.mongoose.client.db.dropDatabase(function(err, data){
+            beaver.mongoose.close()
                 .then(function(){
+                    beaver.redis.close();
+                    beaver.sequelize.close();
+                    beaver.mongo.close();
                     done();
                 })
                 .fail(function(err){
@@ -48,16 +52,16 @@ describe('chat conversation module specs', function(){
     it('add new/remove user conversation', function(done){
         var newConversation = {};
 
-        modules.Conversation.createNewConversation([users[0]])
+        beaver.modules.Conversation.createNewConversation([users[0]])
             .then(function(conversation){
                 newConversation = conversation;
 
                 //add new user into conversation
-                return modules.Conversation.addUserIntoConversation(conversation._id, users[1]);
+                return beaver.modules.Conversation.addUserIntoConversation(conversation._id, users[1]);
             })
             .then(function(){
                 //check if there are two users in the conversation
-                return mongoose.models.Conversation
+                return beaver.models.mongoose.Conversation
                     .findById(newConversation._id)
                     .lean()
                     .execQ()
@@ -68,10 +72,10 @@ describe('chat conversation module specs', function(){
                     })
             })
             .then(function(){
-                return modules.Conversation.removeUserFromConversation(newConversation._id, users[0].id);
+                return beaver.modules.Conversation.removeUserFromConversation(newConversation._id, users[0].id);
             })
             .then(function(){
-                return mongoose.models.Conversation
+                return beaver.models.mongoose.Conversation
                     .findById(newConversation._id)
                     .lean()
                     .execQ()
@@ -92,13 +96,13 @@ describe('chat conversation module specs', function(){
         var newConversation = {};
         var conversationPage;
 
-        modules.Conversation.createNewConversation(users)
+        beaver.modules.Conversation.createNewConversation(users)
             .then(function(conversation){
                 newConversation = conversation;
-                return modules.Conversation.addMessage(newConversation._id, users[0].id, "message 1");
+                return beaver.modules.Conversation.addMessage(newConversation._id, users[0].id, "message 1");
             })
             .then(function(conversation){
-                return mongoose.models.ConversationPage
+                return beaver.models.mongoose.ConversationPage
                     .find()
                     .lean()
                     .execQ()
@@ -111,11 +115,11 @@ describe('chat conversation module specs', function(){
                     })
             })
             .then(function(){
-                return modules.Conversation.deleteMessage(conversationPage.conversationId, conversationPage.page, users[0].id, conversationPage.messages[0]._id);
+                return beaver.modules.Conversation.deleteMessage(conversationPage.conversationId, conversationPage.page, users[0].id, conversationPage.messages[0]._id);
             })
             .then(function(){
                 //check if message is soft-deleted
-                return mongoose.models.ConversationPage
+                return beaver.models.mongoose.ConversationPage
                     .findOne()
                     .where('_id', conversationPage._id)
                     .where('page', conversationPage.page)
@@ -137,7 +141,7 @@ describe('chat conversation module specs', function(){
         var newConversation = {};
         var conversationPage;
         var pageSize = 100;
-        modules.Conversation.createNewConversation(users)
+        beaver.modules.Conversation.createNewConversation(users)
             .then(function(conversation){
                 newConversation = conversation;
 
@@ -147,7 +151,7 @@ describe('chat conversation module specs', function(){
                 {
                     (function(i){
                         finalPromise = finalPromise.then(function(){
-                            return modules.Conversation.addMessage(newConversation._id, users[i%2].id, "message " +i);
+                            return beaver.modules.Conversation.addMessage(newConversation._id, users[i%2].id, "message " +i);
                         })
                     }(i));
                 }
@@ -156,14 +160,14 @@ describe('chat conversation module specs', function(){
             })
             .then(function(){
                 //there is exactly two conversation pages
-                return mongoose.models.ConversationPage
+                return beaver.models.mongoose.ConversationPage
                     .countQ()
                     .then(function(count){
                         expect(count).toBe(2);
                     })
             })
             .then(function(){
-                return mongoose.models.ConversationPage
+                return beaver.models.mongoose.ConversationPage
                     .findOne()
                     .where('conversationId', newConversation._id)
                     .where('page', 2)

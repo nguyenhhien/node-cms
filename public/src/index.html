@@ -59,14 +59,14 @@
                           <i class="fa fa-cog"></i>Admin <b class="caret"></b>
                       </a>
                       <ul class="dropdown-menu">
-                          <li><a href="#!/users">
+                          <li><a ui-sref="users">
                               <i class="fa fa-group"></i>Users</a>
                           </li>
                           <li>
                               <a href="#!"><i class="fa fa-user"></i>Roles</a>
                           </li>
                           <li class="divider"></li>
-                          <li><a href="#!">
+                          <li><a ui-sref="configuration">
                               <i class="fa fa-cogs"></i>Configurations</a>
                           </li>
                           <li>
@@ -84,7 +84,7 @@
                   <!--</li>-->
 
                   <li class="dropdown account-wrapper">
-                      <a href="#!/userAccount" class="dropdown-toggle account-text" data-toggle="dropdown">
+                      <a class="dropdown-toggle account-text" data-toggle="dropdown">
                           <span class="avatar_wrapper small">
 								<img class="imgm img-thumbnail" alt="" ng-src="{{user.avatar}}" width="32" height="32">
                           </span>
@@ -98,7 +98,7 @@
                             </span>
                           </li>
                           <li class="divider"></li>
-                          <li><a href="#!/userAccount"><i class="fa fa-wrench"></i>Preference</a></li>
+                          <li><a ui-sref='userAccount'><i class="fa fa-wrench"></i>My Account</a></li>
                           <li class="divider"></li>
                           <li>
                               <a ng-click="logout()"> <i class="fa fa-sign-out"></i> Sign Out</a>

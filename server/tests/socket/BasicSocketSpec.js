@@ -1,3 +1,5 @@
+require("../../constant.js");
+
 var Q                   = require("q");
 var _                   = require('lodash-node');
 var winston             = require('winston');
@@ -9,13 +11,7 @@ var crypto              = require('crypto')
 var cookie              = require('cookie');
 var cookieParser        = require("cookie-parser");
 
-var dbmock              = require('../../mocks/databasemocks');
-var mongoose            = require('../../database/mongoose.js');
-var sequelize           = require("../../database/sequelize.js");
-var redis               = require("../../database/redis.js");
-var mongo               = require("../../database/mongo.js");
-var modules             = require("../../modules/index.js");
-var SocketModules       = require('../../socket/modules');
+var beaver              = require('../../../Beaver.js');
 
 describe('chat conversation module specs', function(){
     var options ={
@@ -46,12 +42,12 @@ describe('chat conversation module specs', function(){
 
     var loginReturnSession = Q.async(function*(user){
         yield Q.ninvoke(
-            superagent.post(Config.HOSTURL + 'api/users/register')
+            superagent.post(beaver.config.global.origin + 'api/user/register')
                 .send(user)
                 .set('Accept', 'application/json'), 'end');
 
         var response = yield Q.ninvoke(
-            superagent.post(Config.HOSTURL + 'api/users/signin')
+            superagent.post(beaver.config.global.origin + 'api/user/signin')
                 .send(user)
                 .set('Accept', 'application/json'), 'end');
 
@@ -69,14 +65,33 @@ describe('chat conversation module specs', function(){
 
     var sessionCookies, sessionIds;
 
+    //init beaver
+    function beaverInit()
+    {
+        var deferred = Q.defer();
+
+        beaver.mock(function(error, data){
+            if(error)
+            {
+                deferred.reject(error.stack || error);
+            }
+            else
+            {
+                deferred.resolve();
+            }
+        });
+
+        return deferred.promise;
+    }
+
     beforeEach(function(done){
         Q.async(function*(){
-            yield Q.all([redis.init(), sequelize.init()]);
+            yield beaverInit();
 
             sessionCookies = [yield loginReturnSession(users[0]), yield loginReturnSession(users[1]), yield loginReturnSession(users[2])];
 
             sessionIds = sessionCookies.map(function(elem){
-                return cookieParser.signedCookie(cookie.parse(elem)['sid'], Config.Global.sessionSecret);
+                return cookieParser.signedCookie(cookie.parse(elem)['sid'], beaver.config.global.sessionSecret);
             });
 
             done();
@@ -89,12 +104,14 @@ describe('chat conversation module specs', function(){
 
     afterEach(function(done){
         Q.all([
-                redis.flushdb(),
-                Q(sequelize.client.query("DELETE FROM User"))
+                beaver.redis.flushdb(),
+                Q(beaver.sequelize.client.query("DELETE FROM User"))
             ])
             .then(function(){
-                dbmock.closeRedis();
-                sequelize.close();
+                beaver.redis.close();
+                beaver.sequelize.close();
+                beaver.mongoose.close();
+                beaver.mongo.close();
                 done();
             })
             .fail(function(error){
@@ -107,7 +124,7 @@ describe('chat conversation module specs', function(){
     {
         var deferred = Q.defer();
 
-        var client = io.connect(Config.HOSTURL + "?cookie=" + encodeURIComponent(sessionCookies[userIdx]), {
+        var client = io.connect(beaver.config.global.origin + "?cookie=" + encodeURIComponent(sessionCookies[userIdx]), {
             transports: ['websocket', 'xhr-polling', 'jsonp-polling', 'flashsocket'],
             'force new connection': true
         });
@@ -122,7 +139,7 @@ describe('chat conversation module specs', function(){
 
     it('it should register user and login', function(done){
         Q.async(function*(){
-            var count = yield sequelize.models.User.count();
+            var count = yield beaver.sequelize.models.User.count();
             expect(count).toBe(3);
             done();
         })()
@@ -136,10 +153,10 @@ describe('chat conversation module specs', function(){
         Q.async(function*(){
             var client = yield socketLogin(0);
 
-            var onlineUserKeys = yield Q.ninvoke(redis.client, 'keys', 'user:*');
+            var onlineUserKeys = yield Q.ninvoke(beaver.redis.client, 'keys', 'user:*');
             expect(onlineUserKeys.length).toBe(1);
 
-            var onUser = yield Q.denodeify(redis.getObject)(onlineUserKeys[0]);
+            var onUser = yield Q.denodeify(beaver.redis.getObject)(onlineUserKeys[0]);
             expect(onUser.email).toBe(users[0].email);
 
             client.disconnect();
@@ -157,7 +174,7 @@ describe('chat conversation module specs', function(){
             var socketClients = yield Q.all([socketLogin(0), socketLogin(1), socketLogin(2)]);
 
             //check if redis is set properly
-            var allUserOnlineIds = yield Q.denodeify(redis.getSortedSetRange)("users:online", 0, -1);
+            var allUserOnlineIds = yield Q.denodeify(beaver.redis.getSortedSetRange)("users:online", 0, -1);
             expect(allUserOnlineIds.length).toBe(3);
 
             var differences = _.difference(
@@ -179,15 +196,15 @@ describe('chat conversation module specs', function(){
     });
 
     it('it should receive user online event', function(done){
-        var client = io.connect(Config.HOSTURL + "?cookie=" + encodeURIComponent(sessionCookies[0]), {
+        var client1;
+
+        var client = io.connect(beaver.config.global.origin + "?cookie=" + encodeURIComponent(sessionCookies[0]), {
             transports: ['websocket', 'xhr-polling', 'jsonp-polling', 'flashsocket'],
             'force new connection': true
         });
 
-        var client1;
-
         client.on('event:connect',function(data){
-            client1 = io.connect(Config.HOSTURL + "?cookie=" + encodeURIComponent(sessionCookies[1]), {
+            client1 = io.connect(beaver.config.global.origin + "?cookie=" + encodeURIComponent(sessionCookies[1]), {
                 transports: ['websocket', 'xhr-polling', 'jsonp-polling', 'flashsocket'],
                 'force new connection': true
             });

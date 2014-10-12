@@ -8,17 +8,19 @@ module.exports = function(grunt, gruntAppList) {
 
         var obj = {};
 
+        //using miss-match pattern to prevent wrong loading order
         obj[(prefix + "build")] = {
             dir: '<%= ' + prefix + 'build_dir %>',
             src: [
                 '<%= ' + prefix + 'vendor_files.js %>',
-                '<%= ' + prefix + 'build_dir %>/src/' + elem.app_name + '/*.js',
-                '<%= ' + prefix + 'build_dir %>/src/' + elem.app_name + '/**/*.js',
-                '<%= ' + prefix + 'build_dir %>/src/common/**/*.js',
                 '<%= html2js.' + prefix + 'common.dest %>',
                 '<%= html2js.' + prefix + 'main.dest %>',
                 '<%= ' + prefix + 'vendor_files.css %>',
-                '<%= less.' + prefix + 'build.dest %>'
+                '<%= less.' + prefix + 'build.dest %>',
+                '<%= ' + prefix + 'build_dir %>/src/' + elem.app_name + '/**/*.js',
+                '!<%= ' + prefix + 'build_dir %>/src/' + elem.app_name + '/*.js',
+                '<%= ' + prefix + 'build_dir %>/src/common/**/*.js',
+                '<%= ' + prefix + 'build_dir %>/src/' + elem.app_name + '/*.js'
             ]
         };
 
@@ -62,6 +64,9 @@ module.exports = function(grunt, gruntAppList) {
         var cssFiles = filterForCSS( this.filesSrc ).map( function ( file ) {
             return file.replace( dirRE, '' );
         });
+
+        //TODO: for js files, need to make sure it follow the load order otherwise, angular bootstrap might fail
+        //so be careful cause you might duplicate regex pattern in the above files pattern which can mess-up load-order
 
         switch(this.target)
         {

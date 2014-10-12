@@ -1,12 +1,5 @@
-var app = angular.module( 'mainApp.user', [
-        'ui.router',
-        'classy',
-        'utils',
-        'localytics.directives',
-        'ui.bootstrap',
-        'ngResource'
-    ])
-    .config(function config( $stateProvider ) {
+var app = angular.module( 'mainApp.user', [])
+    .config(['$stateProvider', function config( $stateProvider ) {
         $stateProvider
             .state('users', {
                 url: '/users',
@@ -20,7 +13,7 @@ var app = angular.module( 'mainApp.user', [
                 controller: 'UserEditController',
                 resolve: {}
             });
-    });
+    }]);
 
 app.controller("UserSearchController", ['$rootScope', '$scope', '$http', '$resource', function($rootScope, $scope, $http, $resource){
     $scope.itemsPerPage = 10;

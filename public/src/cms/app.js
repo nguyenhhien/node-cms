@@ -22,6 +22,7 @@ var app = angular.module( 'mainApp', [
     'mainApp.user',
     'mainApp.dashboard',
     'mainApp.location',
+    'mainApp.configuration',
     'common',
     'commonDirectives',
     'angular-data.DS',

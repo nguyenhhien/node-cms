@@ -8,7 +8,7 @@ var app = angular.module( 'mainApp.location', [
         'common.dropdownTreeView',
         'ngResource'
     ])
-    .config(function config( $stateProvider ) {
+    .config(['$stateProvider', function config( $stateProvider ) {
         $stateProvider
             .state('locations', {
                 url: '/locations',
@@ -16,7 +16,7 @@ var app = angular.module( 'mainApp.location', [
                 controller: 'LocationController',
                 resolve: {}
             });
-    });
+    }]);
 
 
 app.controller("LocationController", function($rootScope, $scope, $http, $resource){
