@@ -22,7 +22,6 @@ http.ServerResponse.prototype.success = function(data)
     }
 }
 
-//TODO: change it into another error code
 http.ServerResponse.prototype.error = function(statusCode, error)
 {
     //swap parameter if only one argument is supplied
@@ -33,24 +32,36 @@ http.ServerResponse.prototype.error = function(statusCode, error)
 
     var error = error.error || error.message || error;
 
-    return this.status(501).send(error);
+    return this.status(400).send(error);
 }
 
-//cluster support -- with cluster, app can handle 1000+ request / seconds (tested)
-if (cluster.isMaster) {
-    var cpuCount = require('os').cpus().length;
+if(process.env.cluster)
+{
+    //cluster support -- with cluster, app can handle 1000+ request / seconds (tested)
+    //TODO: each process should be wrapped in its own domain
+    if (cluster.isMaster) {
+        var cpuCount = require('os').cpus().length;
 
-    //TODO: master process should do thing like syncSchema -- so move logic to master process only
-    winston.info("Fork process in " + cpuCount + " CPUs");
+        //TODO: master process should do thing like syncSchema -- so move logic to master process only
+        winston.info("Fork process in " + cpuCount + " CPUs");
 
-    // Create a worker for each CPU
-    for (var i = 0; i < cpuCount; i += 1) {
-        cluster.fork();
+        // Create a worker for each CPU
+        for (var i = 0; i < cpuCount; i += 1) {
+            cluster.fork();
+        }
+
+        cluster.on('exit', function(worker, code, signal) {
+            console.log('worker ' + worker.process.pid + ' died');
+        });
     }
-
-    cluster.on('exit', function(worker, code, signal) {
-        console.log('worker ' + worker.process.pid + ' died');
-    });
+    else
+    {
+        //wrap process in domain wrapper so that no hidden exception
+        domainWrapper.run(function(){
+            var beaver = require('./Beaver.js');
+            beaver.start();
+        });
+    }
 }
 else
 {

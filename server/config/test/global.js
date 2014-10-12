@@ -4,9 +4,9 @@ module.exports.global = {
     sessionSecret: 'auth-secret',
     uploadsFolder: "./public/uploads/",
     protocol: "http",
-    host: "auth.epouch.com",
-    origin: "http://auth.epouch.com:8889/",
-    resourcePrefix: "http://auth.epouch.com:9000/", //nginx prefix
+    host: "cms.beaver.com",
+    origin: "http://cms.beaver.com:8889/",
+    resourcePrefix: "http://cms.beaver.com:9000/", //nginx prefix
     port: 8889,
     log: {
         level: 'verbose'

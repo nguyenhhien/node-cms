@@ -1,0 +1,139 @@
+<!--settings-->
+<div class="page-content">
+    <div class="content bootstrap">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="col-lg-6">
+                    <div class="panel">
+                        <h3>
+                            <i class="glyphicon glyphicon-info"></i>
+                            Server Information
+                        </h3>
+                        <p>
+                            <strong>Server Information:</strong>
+                            <span ng-bind="configuration.systemInfo.os"></span>
+                        </p>
+                        <p>
+                            <strong>Number Of Cores:</strong>
+                            <span ng-bind="configuration.systemInfo.cpus.length"></span>
+                        </p>
+                        <p>
+                            <strong>CPU Core Info:</strong>
+                            <span ng-bind="configuration.systemInfo.cpus[0].model"></span>
+                        </p>
+                        <p>
+                            <strong>Memory Limit:</strong>
+                            <span ng-bind="configuration.systemInfo.totalMem"></span>
+                        </p>
+                        <p>
+                            <strong>Memory Available:</strong>
+                            <span ng-bind="configuration.systemInfo.availMem"></span>
+                        </p>
+                        <p>
+                            <strong>Node.JS Version:</strong>
+                            <span ng-bind="configuration.systemInfo.nodeVersion"></span>
+                        </p>
+                    </div>
+                    <div class="panel">
+                        <h3>
+                            <i class="glyphicon glyphicon-info"></i>
+                            MYSQL Information
+                        </h3>
+                        <p>
+                            <strong>MySQL server:</strong>
+                            <span ng-bind="configuration.adapters.MySQL.host"></span>
+                        </p>
+                        <p ng-show="!!configuration.adapters.MySQL.port">
+                            <strong>MySQL Port:</strong>
+                            <span ng-bind="configuration.adapters.MySQL.port"></span>
+                        </p>
+                        <p>
+                            <strong>MySQL database:</strong>
+                            <span ng-bind="configuration.adapters.MySQL.dbName"></span>
+                        </p>
+                        <p>
+                            <strong>MySQL user:</strong>
+                            <span ng-bind="configuration.adapters.MySQL.user"></span>
+                        </p>
+                        <p>
+                            <strong>Use Replication:</strong>
+                            <span ng-show="!!configuration.adapters.MySQL.replication">Yes</span>
+                            <span ng-show="!configuration.adapters.MySQL.replication">No</span>
+                        </p>
+                        <p>
+                        <p class="callout-panel alert alert-info top20">
+                            <i class="fa fa-info-circle"></i>
+                            If the system using load balancer, the port will be listening port of the balancer instead.
+                        </p>
+
+                        <p>
+                            <strong>MySQL Read DB Port:</strong>
+                                <span ng-show="!!configuration.adapters.MySQL.replication">
+                                   <span ng-bind="configuration.adapters.MySQL.replication.read.port"></span>
+                                </span>
+                        </p>
+
+                        <p>
+                            <strong>MySQL Write DB Port:</strong>
+                                <span ng-show="!!configuration.adapters.MySQL.replication">
+                                   <span ng-bind="configuration.adapters.MySQL.replication.write.port"></span>
+                                </span>
+                        </p>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="panel">
+                        <h3>
+                            <i class="glyphicon glyphicon-info"></i>
+                            Redis Information
+                        </h3>
+                        <p>
+                            <strong>Redis server:</strong>
+                            <span ng-bind="configuration.adapters.Redis.host"></span>
+                        </p>
+                        <p ng-show="!!configuration.adapters.Redis.port">
+                            <strong>Redis Port:</strong>
+                            <span ng-bind="configuration.adapters.Redis.port"></span>
+                        </p>
+                        <p>
+                            <strong>Redis database:</strong>
+                            <span ng-bind="configuration.adapters.Redis.db"></span>
+                        </p>
+                    </div>
+
+                    <div class="panel">
+                        <h3>
+                            <i class="glyphicon glyphicon-info"></i>
+                            Mongo Information
+                        </h3>
+                        <p>
+                            <strong>Mongo server:</strong>
+                            <span ng-bind="configuration.adapters.Mongo.host"></span>
+                        </p>
+                        <p ng-show="!!configuration.adapters.Mongo.port">
+                            <strong>Mongo Port:</strong>
+                            <span ng-bind="configuration.adapters.Mongo.port"></span>
+                        </p>
+                        <p>
+                            <strong>Mongo database:</strong>
+                            <span ng-bind="configuration.adapters.Mongo.db"></span>
+                        </p>
+                    </div>
+
+                    <div class="panel">
+                        <h3>
+                            <i class="glyphicon glyphicon-info"></i>
+                            Web information
+                        </h3>
+                        <p>
+                            <strong>Your web browser</strong>
+                            <span ng-bind="userAgent"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

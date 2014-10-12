@@ -185,7 +185,7 @@ loginApp.controller("LoginController", ['$rootScope', '$scope', '$q', '$http', '
 }]);
 
 
-loginApp.controller("RegisterController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', '$modal', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location, $modal){
+loginApp.controller("RegisterController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', '$modal', '$window', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location, $modal, $window){
     $scope.userInput = {};
 
     $scope.register = function()
@@ -308,7 +308,7 @@ loginApp.controller("RegisterController", ['$rootScope', '$scope', '$q', '$http'
 }]);
 
 loginApp.controller("ActivateAccountController", ['$rootScope', '$scope', '$q', '$http', 'Facebook', 'GooglePlus', '$location', '$modal', function($rootScope, $scope, $q, $http, Facebook, GooglePlus, $location, $modal){
-    this.activationKey = $scope.activationKey = $location.search().activationKey;
+    var activationKey = $scope.activationKey = $location.search().activationKey;
 
     if(!activationKey) {
         return;

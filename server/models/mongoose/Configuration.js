@@ -21,7 +21,19 @@ var configurationSchema = new Schema({
         {
             dbName:					String,
             host:					String,
-            user:					String
+            user:					String,
+            replication: {
+                write: {
+                    port: String,
+                    poolSize:       Number,
+                    idleTime:       Number
+                },
+                read: {
+                    port: String,
+                    poolSize:       Number,
+                    idleTime:       Number
+                }
+            }
         },
         Redis:
         {

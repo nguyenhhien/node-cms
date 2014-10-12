@@ -93,8 +93,10 @@
                 "message": message, "async": async, "ip_pool": ip_pool, "send_at": send_at
             },
             function(result) {
+                beaver.winston.info("email sent successfully", recipients, result);
                 deferred.resolve(result);
             }, function(e) {
+                beaver.winston.error("Email sending error", e);
                 deferred.reject('A mandrill error occurred: ' + e.name + ' - ' + e.message);
             });
 

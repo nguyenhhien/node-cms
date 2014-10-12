@@ -46,7 +46,7 @@
                         {
                             return Q.reject('[socket.io] cookie session not found');
                         }
-
+                        //console.log("beaver config", beaver.config.global.sessionSecret);
                         hsData.sessionID = cookieParser.signedCookie(parsedCookie['sid'],
                             beaver.config.global.sessionSecret);
 
