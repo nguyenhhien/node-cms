@@ -52,7 +52,8 @@ module.exports = {
             'vendor/fancybox/source/jquery.fancybox.js',
             'vendor/jquery-ui/ui/jquery.ui.widget.js',
             'vendor/blueimp-file-upload/js/jquery.fileupload.js',
-            'vendor/bootstrap-sidebar/dist/js/sidebar.js'
+            'vendor/bootstrap-sidebar/dist/js/sidebar.js',
+            'vendor/moment/min/moment.min.js'
         ],
         css: [
             'vendor/growl/stylesheets/jquery.growl.css',

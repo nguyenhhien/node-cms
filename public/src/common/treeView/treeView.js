@@ -2,8 +2,7 @@ var app = angular.module( 'common.treeView', [
     'utils',
     'localytics.directives',
     'ui.bootstrap',
-    'ngResource',
-    'utils'
+    'ngResource'
 ]);
 
 

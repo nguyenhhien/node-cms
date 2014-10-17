@@ -1,10 +1,15 @@
 <div>
     <div class="chat-window" style="right: 10px;">
         <div class="chat-window-title">
-            <div class="text">Chat</div>
+            <div class="text">
+                Chat
+                <i class="glyphicon pull-right"
+                   ng-class="{'glyphicon-chevron-down': !!collapsed, 'glyphicon-chevron-up': !collapsed}"
+                   ng-click="collapsed=!collapsed;"></i>
+            </div>
         </div>
-        <div class="chat-window-content">
-            <div class="chat-window-inner-content">
+        <div class="chat-window-content" ng-init="collapsed=false;">
+            <div class="chat-window-inner-content" ng-class="{'collapsed': !!collapsed}">
                 <div class="user-list-item" ng-repeat="user in users" ng-click="openChat(user)">
                     <img class="profile-picture"
                          ng-src="{{user.avatar}}">
@@ -15,29 +20,11 @@
         </div>
     </div>
 
-    <div class="chat-window" style="right: 252px;" ng-repeat="chatSession in chatSessions">
-        <div class="chat-window-title" ng-class="{'online': chatSession.users[0].status == 'online'}">
-            <div class="close" ng-class="closeChat(chatSession)"></div>
-            <div class="text">{{chatSession.users[0].name}}</div>
-        </div>
-        <div class="chat-window-content">
-            <div class="chat-window-inner-content">
-                <div class="chat-message" ng-repeat="chatMessage in chatSession.messages">
-                    <div class="chat-gravatar-wrapper">
-                        <img ng-src="{{chatMessage.user.avatar}}" style="width: 32px; height: 32px;">
-                    </div>
-                    <div class="chat-text-wrapper">
-                        <p class="" ng-bind="chatMessage.content"></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chat-window-text-box-wrapper">
-                <!--chat input window-->
-                <textarea rows="1" class="chat-window-text-box" chat-textarea chat-session='chatSession'
-                          submit-message='submitMessage(chatSession, message)'
-                          style="overflow: hidden; word-wrap: break-word; resize: none; height: 26px;"></textarea>
-            </div>
-        </div>
+    <div class="chat-window" style="right: 295px;"
+         chat-conversation
+         chat-session="chatSession"
+         super-socket="superSocket"
+         idx="idx"
+         ng-repeat="(idx, chatSession) in chatSessions">
     </div>
 </div>

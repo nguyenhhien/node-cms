@@ -121,7 +121,7 @@
                         });
 
                         //broadcast event to other connected sockets?
-                        socket.broadcast.emit('user.isOnline', null, {
+                        socket.broadcast.emit('user.changeStatus', null, {
                             status: 'online',
                             name: hs.session && hs.session.user.name,
                             avatar: hs.session && hs.session.user.avatar,
@@ -177,9 +177,21 @@
                     eventEmitter: require('events').EventEmitter
                 });
 
+                req.io = io;
+                req.socket = socket;
+                req.session.user = sessionUser;
+
                 res.on("end", function(){
-                    //TODO: check the case of error?
-                    callback && callback(null, res._getData());
+                    if(res.statusCode != 200)
+                    {
+                        //error happen
+                        callback && callback(res._getData());
+                    }
+                    else
+                    {
+                        //everything is fine
+                        callback && callback(null, res._getData());
+                    }
                 });
 
                 beaver.emit("socket:request", req, res);

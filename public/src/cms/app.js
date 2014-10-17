@@ -26,7 +26,8 @@ var app = angular.module( 'mainApp', [
     'common',
     'commonDirectives',
     'angular-data.DS',
-    'common.fileUpload'
+    'common.fileUpload',
+    'common.chatWidget'
 ]);
 
 app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', function myAppConfig ( $stateProvider, $urlRouterProvider, $locationProvider) {

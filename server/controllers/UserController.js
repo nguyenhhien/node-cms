@@ -4,6 +4,7 @@
     var Q                   = require("q");
     var async               = require("async");
     var beaver              = require("../../Beaver.js");
+    var _                   = require("lodash-node");
 
     module.changePassword = function(req, res)
     {

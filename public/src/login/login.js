@@ -20,19 +20,39 @@ var AUTH_EVENTS = {
 
 loginApp.constant('AUTH_EVENTS', AUTH_EVENTS);
 
+var Configuration;
+
 loginApp.config(['FacebookProvider', '$stateProvider', '$urlRouterProvider', '$locationProvider', 'GooglePlusProvider',
     function (FacebookProvider, $stateProvider, $urlRouterProvider, $locationProvider, GooglePlusProvider) {
     $locationProvider.hashPrefix('!');
 
-    //init appId
-    FacebookProvider.init("627149314039365");
-    GooglePlusProvider.init({
-        clientId: '136519802127',
-        scopes: [
-            'https://www.googleapis.com/auth/plus.login',
-            'https://www.googleapis.com/auth/plus.profile.emails.read'
-        ]
-    });
+    $.post('/api/configuration/find')
+        .done(function(res){
+            Configuration = res;
+            try
+            {
+                if(Configuration)
+                {
+                    FacebookProvider.init(Configuration.oath.Facebook.clientId);
+                    GooglePlusProvider.init({
+                        clientId: Configuration.oath.Google.clientId,
+                        scopes: [
+                            'https://www.googleapis.com/auth/plus.login',
+                            'https://www.googleapis.com/auth/plus.profile.emails.read'
+                        ]
+                    });
+                }
+            }
+            catch(e)
+            {
+                console.log("Error", e.stack || e);
+            }
+        })
+        .fail(function(error){
+            if(error) {
+                showError(error.stack || error);
+            }
+        });
 
     $stateProvider
         .state('login', {
@@ -87,16 +107,8 @@ loginApp.controller("LoginController", ['$rootScope', '$scope', '$q', '$http', '
             .success(function(response) {
                 var data = response;
 
-                if(data.error)
-                {
-                    $rootScope.notificationMessage = data;
-                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
-                }
-                else
-                {
-                    $rootScope.user = data;
-                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
-                }
+                $rootScope.user = data;
+                $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
             })
             .error(function(error){
                 showError($modal, error.stack || error.error || error);
@@ -130,16 +142,8 @@ loginApp.controller("LoginController", ['$rootScope', '$scope', '$q', '$http', '
             .then(function(response){
                 var data = response;
 
-                if(data.error)
-                {
-                    $rootScope.notificationMessage = data;
-                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
-                }
-                else
-                {
-                    $rootScope.user = data;
-                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
-                }
+                $rootScope.user = data;
+                $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
             },function (error) {
                 showError($modal, error.stack || error.error || error);
             });
@@ -168,16 +172,9 @@ loginApp.controller("LoginController", ['$rootScope', '$scope', '$q', '$http', '
             .then(function(response){
                 var data = response;
 
-                if(data.error)
-                {
-                    $rootScope.notificationMessage = data;
-                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
-                }
-                else
-                {
-                    $rootScope.user = data;
-                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
-                }
+                $rootScope.user = data;
+                $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
+
             },function (error) {
                 showError($modal, error.stack || error.error || error);
             });
@@ -252,16 +249,8 @@ loginApp.controller("RegisterController", ['$rootScope', '$scope', '$q', '$http'
             .then(function(response){
                 var data = response;
 
-                if(data.error)
-                {
-                    $rootScope.notificationMessage = data;
-                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed, data);
-                }
-                else
-                {
-                    $rootScope.user = data;
-                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
-                }
+                $rootScope.user = data;
+                $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data);
             }, function(error){
                 showError($modal, error.stack || error.error || error);
             });

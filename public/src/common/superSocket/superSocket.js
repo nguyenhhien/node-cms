@@ -10,6 +10,10 @@ SuperSocket.prototype._isConnected = function() {
     return this.socketServer && this.socketServer.connected;
 };
 
+SuperSocket.prototype.on = function(eventName, fn)
+{
+    this.socketServer.on(eventName, fn);
+};
 
 SuperSocket.prototype.get = function(url, data, cb) {
     //make data optional
