@@ -1,8 +1,4 @@
-var app = angular.module( 'common.chatWidget', [    
-    'localytics.directives',
-    'ui.bootstrap',
-    'ngResource'    
-]);
+var app = angular.module( 'common.chatWidget', []);
 
 app.filter("filterFirstName", function(){
     return function(input){

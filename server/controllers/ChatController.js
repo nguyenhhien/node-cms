@@ -84,9 +84,10 @@
                 {
                     //get the first matched
                     conversation = conversation[0];
-                }
 
-                //TODO: also return list of message in history
+                    //TODO: also return list of message in history
+                    var oldMessage = yield beaver.modules.Conversation.loadPreviousMessages(conversation._id);
+                }
 
                 //broadcast conversation event for the other users involved
                 if(req.io && req.socket)

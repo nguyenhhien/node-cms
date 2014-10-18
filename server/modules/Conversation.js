@@ -195,8 +195,6 @@
                     return Q.reject("Conversation not found or user doesn't involve in the conversation");
                 }
 
-                console.log("found the conversation", conversation, conversationId);
-
                 return [
                     conversation,
                     beaver.models.mongoose.ConversationPage.findOneAndUpdate({
@@ -226,7 +224,7 @@
             .spread(function(conversation, conversationPage)
             {
                 //increase number of pages
-                if(conversationPage.count >= 100)
+                if(conversationPage.count >= (beaver.config.global.chatPageSize || 100))
                 {
                     return beaver.models.mongoose.Conversation
                         .findOneAndUpdate({
@@ -243,4 +241,84 @@
                 else return Q();
             });
     }
+
+    //load nMessage before current message
+    module.loadPreviousMessages = function(conversationId, currentMessage)
+    {
+        var deferred = Q.defer();
+
+        //NOTE: to reduce load, we always load the full page
+        //and remaining messages if any from the page of current message
+        Q.async(
+            function*(){
+                var page;
+
+                if(currentMessage)
+                {
+                    page = currentMessage.page;
+                }
+                else
+                {
+                    //otherwise; just loaded latest page
+                    var conversation = yield beaver.models.mongoose.Conversation
+                        .find()
+                        .where('_id', conversationId)
+                        .lean()
+                        .execQ();
+
+                    if(conversation && conversation.length)
+                    {
+                        page = conversation[0].numPages;
+                    }
+                    else
+                    {
+                        page = -1;
+                    }
+                }
+
+                //load that page
+                var loadedPages = yield beaver.models.mongoose.ConversationPage
+                    .find()
+                    .where('conversationId', conversationId)
+                    .where('page').gte(page-1)
+                    .where('page').lte(page)
+                    .lean()
+                    .execQ();
+
+                if(loadedPages && loadedPages.length)
+                {
+                    var outMsgs = [];
+                    if(loadedPages.length==2)
+                    {
+                        outMsgs = loadedPages[0].messages;
+                    }
+
+                    var lastPage = loadedPages[loadedPages.length-1];
+                    for(var i=0; i<lastPage.messages.length; ++i)
+                    {
+                        if(currentMessage && lastPage.messages[i]._id == currentMessage._id)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            outMsgs.push(lastPage.messages[i]);
+                        }
+                    }
+
+                    deferred.resolve(outMsgs);
+                }
+                else
+                {
+                    //return empty array
+                    deferred.resolve([]);
+                }
+            })()
+            .fail(function(error){
+                deferred.reject(error);
+            });
+
+        return deferred.promise;
+    }
+
 }(exports));
