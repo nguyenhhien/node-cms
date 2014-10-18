@@ -12,6 +12,7 @@ var conversationSchema = new Schema({
             leftDate: Date
         }
     ],
+    userIds: String, //concat all userIds together
     numPages: Number
 });
 

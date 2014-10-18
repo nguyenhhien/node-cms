@@ -8,34 +8,81 @@
     var _                   = require('lodash-node');
     var beaver              = require("../../Beaver.js");
 
+    //find existing conversation
+    module.findExistingConversation = function(users)
+    {
+        var userIds = _.chain(users)
+            .sortBy('id')
+            .map(function(elem){
+                return elem.id;
+            })
+            .value()
+            .join(",");
+
+
+        return beaver.models.mongoose.Conversation
+            .find()
+            .where('userIds', userIds)
+            .lean()
+            .execQ();
+    }
+
     //create new conversation and add existing user into list
     module.createNewConversation = function(users)
     {
         users.forEach(function(user){
             user.joinedDate = new Date();
-        })
+        });
+
+        var userIds = _.chain(users)
+            .sortBy('id')
+            .map(function(elem){
+                return elem.id;
+            })
+            .value()
+            .join(",");
 
         return beaver.models.mongoose.Conversation
             .createQ({
                 numPages: 1,
-                users: users
+                users: users,
+                userIds: userIds
             });
     }
 
     //add new user into conversation
     module.addUserIntoConversation = function(conversationId, user)
     {
-        return beaver.models.mongoose.Conversation
-            .find()
-            .where('_id', conversationId)
-            .where('users.id').in([user.id])
-            .lean()
-            .execQ()
-            .then(function(conversation){
+        var deferred = Q.defer();
+
+        Q.async(
+            function*(){
+                var conversation = yield beaver.models.mongoose.Conversation
+                    .find()
+                    .where('_id', conversationId)
+                    .where('users.id').in([user.id])
+                    .lean()
+                    .execQ();
+
+                var userIds = conversation.userIds;
+
+                if(userIds && _.isString(userIds))
+                {
+                    userIds = _.chain(_.uniq(userIds.split(',')))
+                        .map(function(elem){
+                            return _.parseInt(elem);
+                        })
+                        .filter(function(elem){
+                            return (!_.isNaN(elem)) && (elem != user.id);
+                        })
+                        .push(user.id)
+                        .sort().value().join(",");
+                }
+
                 if(!conversation.length)
                 {
                     //push user into existing array
-                    beaver.models.mongoose.Conversation
+                    yield beaver.models.mongoose.Conversation
                         .update({
                             _id: conversationId
                         },
@@ -43,34 +90,76 @@
                             $push:
                             {
                                 users: user
+                            },
+                            $set:
+                            {
+                                userIds: userIds || ""
                             }
                         })
                         .execQ();
                 }
-                else
-                {
-                    //do nothing
-                    return Q();
-                }
-            })
+
+                deferred.resolve();
+            })()
+            .fail(function(error){
+                deferred.reject(error);
+            });
+
+        return deferred.promise;
     }
 
     //remove user from conversation
     module.removeUserFromConversation = function(conversationId, userId)
     {
-        return beaver.models.mongoose.Conversation
-            .update({
-                _id: conversationId
-            },
-            {
-                $pull:
+        var deferred = Q.defer();
+
+        Q.async(
+            function*(){
+                var conversation = yield beaver.models.mongoose.Conversation
+                    .find()
+                    .where('_id', conversationId)
+                    .lean()
+                    .execQ();
+
+                var userIds = conversation.userIds;
+                if(userIds && _.isString(userIds))
                 {
-                    users: {
-                        id: userId
-                    }
+                    userIds = _.chain(_.uniq(userIds.split(',')))
+                        .map(function(elem){
+                            return _.parseInt(elem);
+                        })
+                        .filter(function(elem){
+                            return (!_.isNaN(elem)) && (elem != userId);
+                        })
+                        .sort().value().join(",");
                 }
-            })
-            .execQ();
+
+                //remove user from the list
+                yield beaver.models.mongoose.Conversation
+                    .update({
+                        _id: conversationId
+                    },
+                    {
+                        $pull:
+                        {
+                            users: {
+                                id: userId
+                            }
+                        },
+                        $set:
+                        {
+                            userIds: userIds || ""
+                        }
+                    })
+                    .execQ();
+
+                deferred.resolve();
+            })()
+            .fail(function(error){
+                deferred.reject(error);
+            });
+
+        return deferred.promise;
     }
 
     //delete a certain message inside the array
@@ -105,6 +194,8 @@
                 {
                     return Q.reject("Conversation not found or user doesn't involve in the conversation");
                 }
+
+                console.log("found the conversation", conversation, conversationId);
 
                 return [
                     conversation,

@@ -2,11 +2,11 @@
 module.exports.adapters = {
     MySQL:
     {
-        dbName:					"beaver",
+        dbName:					"auth",
         host:					"127.0.0.1",
         port:                   "3306",
         user:					"root",
-        password:				"beaver",
+        password:				null,
         maxConcurrentQueries:  100,
         poolSize:   100,
         idleTime: 30

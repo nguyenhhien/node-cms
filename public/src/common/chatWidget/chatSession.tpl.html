@@ -1,5 +1,11 @@
-<div class="chat-window-title" ng-class="{'online': chatSession.users[0].status == 'online'}">
-    <div class="close" ng-class="closeChat(chatSession)"></div>
+<div class="chat-window-title"
+     ng-init="hideWindow=false;"
+     ng-show="!hideWindow"
+     ng-class="{'online': chatSession.users[0].status == 'online'}">
+    <div class="close"
+         ng-click="hideWindow=true"
+         ng-class="closeChat(chatSession)"></div>
+
     <div class="text">
         {{getFirstUserNotMe(chatSession.users).name}}
     </div>
@@ -21,7 +27,6 @@
                         <span>.</span>
                         <span ng-bind="block.messages[block.messages.length-1].timestamp | filterTimeAgo"></span>
                     </p>
-                    <!--<time datetime="2009-11-13T20:00">Timothy • 51 min</time>-->
                 </div>
             </li>
         </ol>

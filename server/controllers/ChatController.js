@@ -52,6 +52,20 @@
             return res.error('[socket] empty user list');
         }
 
+        userIds = _.chain(userIds)
+            .map(function(elem){
+                return _.parseInt(elem);
+            })
+            .filter(function(elem){
+                return !_.isNaN(elem);
+            })
+            .value();
+
+        if(userIds.indexOf(req.session.user.id) == -1)
+        {
+            return res.error('[socket] logged in user in session does not belong to requested userIds params');
+        }
+
         Q.async(
             function*(){
                 //get all users in the chat session
@@ -59,8 +73,20 @@
                     return "user:" + uid;
                 }), ['id', 'name', 'email', 'avatar', 'status', 'lastonline']);
 
-                //create new chat session between those users
-                var newConversation = yield beaver.modules.Conversation.createNewConversation(users);
+                var conversation = yield beaver.modules.Conversation.findExistingConversation(users);
+
+                if(!conversation.length)
+                {
+                    //create new chat session between those users
+                    conversation = yield beaver.modules.Conversation.createNewConversation(users);
+                }
+                else
+                {
+                    //get the first matched
+                    conversation = conversation[0];
+                }
+
+                //TODO: also return list of message in history
 
                 //broadcast conversation event for the other users involved
                 if(req.io && req.socket)
@@ -69,10 +95,10 @@
 
                     //search for those user sockets
                     clients.forEach(function(client) {
-                        if(client.uid && userIds.indexOf(client.uid) === -1) {
+                        if(client.uid && userIds.indexOf(client.uid) !== -1) {
                             client.emit("chat:newChatSession", {
                                 users: users,
-                                chatSession: newConversation
+                                chatSession: conversation
                             });
                         }
                     });
@@ -97,10 +123,11 @@
                 //get list of users in the conversation
                 var clients = req.io.sockets.sockets;
 
+                //TODO: might want better way to get list of all users involved in a certain chat session
                 var key = "chatSession:" + conversationId;
-                var userIds = yield Q.denodeify(beaver.redis.getObject)(key);
+                var userIds = yield Q.denodeify(beaver.redis.getObjectField)(key, "userIds");
 
-                if(1 || !userIds)
+                if(!userIds)
                 {
                     //load from database and save to redis first
                     var conversation = yield beaver.models.mongoose.Conversation
@@ -114,17 +141,43 @@
                         return res.success({});
                     }
 
-                    userIds = (conversation[0].users || []).map(function(elem){
-                        return elem.id;
-                    });
+                    //convert 25,26 -> [25, 26]
+                    userIds = _.chain(conversation[0].users || [])
+                        .map(function(elem){
+                            return elem.id;
+                        })
+                        .map(function(elem){
+                            return _.parseInt(elem);
+                        })
+                        .filter(function(elem){
+                            return (!_.isNaN(elem));
+                        })
+                        .value();
 
-                    yield Q.denodeify(beaver.redis.setObject)(key, userIds);
+                    yield Q.denodeify(beaver.redis.setObjectField)(key, "userIds", userIds);
                     yield Q.denodeify(beaver.redis.expire)(key, 60*5);
                 }
+                else
+                {
+                    //convert 25,26 -> [25, 26]
+                    if(_.isString(userIds)){
+                        userIds = _.chain(_.uniq(userIds.split(',')))
+                            .map(function(elem){
+                                return _.parseInt(elem);
+                            })
+                            .filter(function(elem){
+                                return (!_.isNaN(elem));
+                            })
+                            .value();
+                    };
+                }
+
+                //add the existing message into database
+                yield beaver.modules.Conversation.addMessage(conversationId, req.session.user.id, message);
 
                 //search for those user sockets
                 clients.forEach(function(client) {
-                    if(client.uid && userIds.indexOf(client.uid) === -1) {
+                    if(client.uid && userIds.indexOf(client.uid) !== -1) {
                         client.emit("chat:newChatMessage", {
                             timestamp: new Date(),
                             from: req.session.user,
