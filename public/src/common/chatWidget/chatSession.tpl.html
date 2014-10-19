@@ -1,0 +1,44 @@
+<div class="chat-session-wrapper" ng-show="!chatSession.hideWindow">
+    <div class="chat-window-title"
+         ng-init="chatSession.hideWindow=false;"
+         ng-class="{'online': chatSession.users[0].status == 'online'}">
+        <div class="close"
+             ng-click="chatSession.hideWindow=true"
+             ng-class="closeChat(chatSession)"></div>
+
+        <div class="text">
+            {{getFirstUserNotMe(chatSession.users).name}}
+        </div>
+    </div>
+    <div class="chat-window-content">
+        <div class="chat-window-inner-content" id="chat-window-inner-content-{{idx}}">
+            <ol class="discussion">
+                <li ng-class="{'other': block.user.id != me.id, 'self': block.user.id == me.id}"
+                    ng-repeat="block in chatSession.chatBlocks">
+                    <div class="avatar">
+                        <img ng-src="{{block.user.avatar}}">
+                    </div>
+                    <div class="messages">
+                        <p ng-repeat="msgObj in block.messages">
+                            <span ng-bind="msgObj.message"></span>
+                        </p>
+                        <p class="time-stamp">
+                            <span ng-bind="block.user.name | filterFirstName"></span>
+                            <span>.</span>
+                            <span ng-bind="block.messages[block.messages.length-1].timestamp | filterTimeAgo"></span>
+                        </p>
+                    </div>
+                </li>
+            </ol>
+        </div>
+
+        <div class="chat-window-text-box-wrapper">
+            <!--chat input window-->
+            <textarea rows="1" class="chat-window-text-box" chat-textarea
+                      chat-session='chatSession'
+                      idx="idx"
+                      submit-message='submitMessage(chatSession, message, idx)'
+                      style="overflow: hidden; word-wrap: break-word; resize: none; height: 26px;"></textarea>
+        </div>
+    </div>
+</div>

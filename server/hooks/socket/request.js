@@ -32,6 +32,10 @@ function request(options) {
         header: function getHeader(headerName, defaultValue) {
             var headerValue = this.headers[headerName];
             return (typeof headerValue === 'undefined') ? defaultValue : headerValue;
+        },
+        param: function(paramName)
+        {
+            return this.params[paramName] || this.body[paramName];
         }
     }
 }

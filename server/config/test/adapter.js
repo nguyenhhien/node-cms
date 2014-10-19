@@ -1,8 +1,10 @@
+//connect to virtualbox mysql gallera cluster
 module.exports.adapters = {
     MySQL:
     {
-        dbName:					"auth-test",
+        dbName:					"auth",
         host:					"127.0.0.1",
+        port:                   "3306",
         user:					"root",
         password:				null,
         maxConcurrentQueries:  100,

@@ -1,14 +1,25 @@
-var app = angular.module( 'common.chatWidget', [    
-    'localytics.directives',
-    'ui.bootstrap',
-    'ngResource'    
-]);
+var app = angular.module( 'common.chatWidget', []);
+
+app.filter("filterFirstName", function(){
+    return function(input){
+        var tokens = input.split(/[ @]+/);
+        return tokens[0];
+    };
+});
+
+app.filter("filterTimeAgo", function(){
+    return function(timestamp) {
+        var fromNow = moment(timestamp).fromNow();
+        return fromNow;
+    };
+});
 
 app.directive('chatTextarea', ["$rootScope", function($rootScope){
     return {
         scope: {
             submitMessage: "&",
-            chatSession: "="
+            chatSession: "=",
+            idx: "="
         },
         link: function (scope, element, attr)
         {
@@ -18,7 +29,8 @@ app.directive('chatTextarea', ["$rootScope", function($rootScope){
                 if (keypressed == 13) {
                     scope.submitMessage({
                         message: element.val(),
-                        chatSession: scope.chatSession
+                        chatSession: scope.chatSession,
+                        idx: scope.idx
                     });
 
                     //empty textbox
@@ -30,11 +42,127 @@ app.directive('chatTextarea', ["$rootScope", function($rootScope){
     };
 }]);
 
+//a chat conversation widget; specific chat session
+app.directive('chatConversation', ["$rootScope", function($rootScope){
+    return {
+        scope: {
+            superSocket: "=",
+            chatSession: "=",
+            idx: "="
+        },
+        templateUrl: "chatWidget/chatSession.tpl.html",
+        link: function (scope, element, attr)
+        {
+            scope.me = $rootScope.user;
+
+            scope.submitMessage = function(chatSession, message, idx)
+            {
+                scope.superSocket.post('/api/chat/sendChatMessage', {message: message, conversationId: chatSession._id, idx:idx}, function(err, data) {
+                    if(err)
+                    {
+                        console.log("init chat session error", err.stack || err);
+                    }
+                    else
+                    {
+                        console.log("init chat session successfully", data);
+                    }
+                });
+            };
+
+            scope.getFirstUserNotMe = function(users)
+            {
+                var temp = _.filter(users, function(elem){
+                    return elem.id != $rootScope.user.id;
+                });
+
+                if(!temp.length){
+                    return {};
+                }
+                else
+                {
+                    return temp[0];
+                }
+            };
+
+
+            function scrollToBottom()
+            {
+                setTimeout(function(){
+                    //scroll the textbox to the bottom
+                    var elem = element.find("#chat-window-inner-content-"+ scope.idx);
+
+                    elem.scrollTop(elem[0].scrollHeight + 40);
+                }, 500);
+            }
+
+            //when receive a new message
+            scope.superSocket.on("chat:newChatMessage", function(data){
+                if(data.message)
+                {
+                    console.log("Receive new message", data);
+                }
+
+                if(scope.chatSession._id != data.conversationId)
+                {
+                    return;
+                }
+
+                safeApply(scope, function(){
+                    scope.chatSession.chatBlocks = scope.chatSession.chatBlocks || [];
+
+                    if(scope.chatSession.chatBlocks.length)
+                    {
+                        var lastMsgBlock = scope.chatSession.chatBlocks[scope.chatSession.chatBlocks.length-1];
+
+                        //if same user --> put to last msg block
+                        if(lastMsgBlock.user.id == data.from.id)
+                        {
+                            lastMsgBlock.messages = lastMsgBlock.messages || [];
+                            lastMsgBlock.messages.push(_.omit(data, 'from'));
+                        }
+                        else
+                        {
+                            //create new block
+                            scope.chatSession.chatBlocks.push({
+                                user: data.from,
+                                messages: [
+                                    _.omit(data, 'from')
+                                ]
+                            });
+                        }
+                    }
+                    else
+                    {
+                        //also create new block
+                        scope.chatSession.chatBlocks.push({
+                            user: data.from,
+                            messages: [
+                                _.omit(data, 'from')
+                            ]
+                        });
+                    }
+                });
+
+                scrollToBottom();
+            });
+
+            //scroll to bottom once init new chat session
+            scope.$watch('chatSession', function(elem){
+                if(!!elem)
+                {
+                    scrollToBottom();
+                }
+            });
+        }
+    };
+}]);
+
+//small widget contain list of online user
 app.directive('chatWidget', ["$rootScope", "$resource", function($rootScope, $resource)
 {
     return {
         scope: {
-            socketServer: "=",
+            superSocket: "=",
             user: "="
         },
         templateUrl: "chatWidget/chatWidget.tpl.html",
@@ -60,40 +188,104 @@ app.directive('chatWidget', ["$rootScope", "$resource", function($rootScope, $re
                     show: true
                 };
 
-                //TODO: change to a more suitable logic
-                var foundIdx = _.findIndex(scope.chatSessions, function(session){
-                    var differences = _.difference(
-                        _.map(chatSession.users, function(user){return user.id;}),
-                        _.map(session.users, function(user){return user.id;})
-                    );
+                safeApply(scope, function(){
+                    //TODO: create new chat session
+                    scope.superSocket.post('/api/chat/initChatSession', {userIds: [scope.me.id+"", chatSession.users[0].id]}, function(err, data) {
+                        if(err)
+                        {
+                            console.log("init chat session error", err.stack || err);
+                        }
+                        else
+                        {
+                            console.log("init chat session successfully", data);
+                        }
+                    });
+                });
+            };
 
-                    if(differences.length > 0) {
-                        return true;
+            //establish new chat session successfully
+            scope.superSocket.on("chat:newChatSession", function(data){
+                if(data.chatSession)
+                {
+                    var newChatSession = data.chatSession;
+                    var foundIdx = _.findIndex(scope.chatSessions, function(elem){
+                        return elem._id = newChatSession._id;
+                    });
+
+                    if(foundIdx != -1)
+                    {
+                        safeApply(scope, function(){
+                            scope.chatSessions[foundIdx].hideWindow = false;
+                        });
+
+                        return;
                     }
 
-                    return false;
-                });
+                    //now need to join conversation explicitly
+                    scope.superSocket.post('/api/chat/joinConversation', {conversationId: data.chatSession._id}, function(err, res) {
+                        if(err)
+                        {
+                            console.log("init chat session error", err.stack || err);
+                        }
+                        else
+                        {
+                            console.log("new chat session was established", res.oldMessages);
 
-                if(foundIdx == -1)
-                {
-                    safeApply(scope, function(){
-                        scope.chatSessions.push(chatSession);
+                            var userMap = {};
+                            _.forEach(res.users, function(user){
+                                userMap[user.id] = user;
+                            });
+
+                            //init the chat session
+                            newChatSession.chatBlocks = newChatSession.chatBlocks || [];
+
+                            _.forEach(res.oldMessages, function(data){
+                                var from = userMap[data.userId];
+                                data.timestamp = data.postedDate;
+                                data.message = data.content;
+
+                                if(newChatSession.chatBlocks.length)
+                                {
+                                    var lastMsgBlock = newChatSession.chatBlocks[newChatSession.chatBlocks.length-1];
+
+                                    //if same user --> put to last msg block
+                                    if(lastMsgBlock.user.id == from.id)
+                                    {
+                                        lastMsgBlock.messages = lastMsgBlock.messages || [];
+                                        lastMsgBlock.messages.push(data);
+                                    }
+                                    else
+                                    {
+                                        //create new block
+                                        newChatSession.chatBlocks.push({
+                                            user: from,
+                                            messages: [
+                                               data
+                                            ]
+                                        });
+                                    }
+                                }
+                                else
+                                {
+                                    //also create new block
+                                    newChatSession.chatBlocks.push({
+                                        user: from,
+                                        messages: [
+                                            data
+                                        ]
+                                    });
+                                }
+                            });
+
+                            console.log("chat block is", newChatSession.chatBlocks);
+
+                            safeApply(scope, function(){
+                                scope.chatSessions.push(newChatSession);
+                            });
+                        }
                     });
                 }
-            };
-
-            scope.submitMessage = function(chatSession, message)
-            {
-                var newMsg = {
-                    user: scope.user,
-                    content: message
-                };
-
-                safeApply(scope, function(){
-                    chatSession.messages.push(newMsg);
-                    element.animate({scrollTop: element.prop("scrollHeight")}, 500);
-                });
-            };
+            });
 
             //add user to online list
             function pushUser(user)
@@ -112,17 +304,18 @@ app.directive('chatWidget', ["$rootScope", "$resource", function($rootScope, $re
                 scope.users = _.filter(scope.users, function(elem){return elem.id != user.id;});
             }
 
+            //get all online users
             function loadOnlineUsers()
             {
                 scope.loadingMoreUser = true;
 
-                scope.socketServer.emit('user.loadMore', {set: "users:online", offset: scope.offset, limit: 20}, function(err, data) {
-                    if (data && data.results && data.results.length) {
+                scope.superSocket.post('/api/chat/getOnlineUser', {offset: scope.offset, limit: 20}, function(err, data) {
+                    if (data && data.rows && data.rows.length) {
                         scope.offset += 20;
 
                         //push into current list
                         safeApply(scope, function(){
-                            _.forEach(data.results, function(user){
+                            _.forEach(data.rows, function(user){
                                 pushUser(user);
                             });
                         });
@@ -133,19 +326,20 @@ app.directive('chatWidget', ["$rootScope", "$resource", function($rootScope, $re
             }
 
             //load online user list
-            if(scope.socketServer && scope.socketServer.connected)
+            if(scope.superSocket && scope.superSocket._isConnected())
             {
                 loadOnlineUsers();
             }
-            else
+            else if(scope.superSocket)
             {
-                scope.socketServer.on("event:connect", function(data){
+                scope.superSocket.on("event:connect", function(data){
+                    scope.me = data;
                     loadOnlineUsers();
                 });
             }
 
             //push or remove user from the chat list
-            scope.socketServer.on("user.isOnline", function(err, user){
+            scope.superSocket.on("user.changeStatus", function(err, user){
                 if(err)
                 {
                     return console.log("[socket.io] error when getting user online", err);
@@ -167,7 +361,13 @@ app.directive('chatWidget', ["$rootScope", "$resource", function($rootScope, $re
         }],
         link: function (scope, element, attr)
         {
-
+            element.find(".chat-window.main-window")
+                .resizable({
+                    handles: 'n'
+                })
+                .bind("resize", function(event, ui){
+                    $(this).css("top", "auto");
+                });
         }
     };
 }]);

@@ -1,4 +1,7 @@
 //manual custom class for sidebar bootstrap
+//@sidebar-text-color: #00aff0;
+@sidebar-text-color: @beaver-cms-theme;
+
 .sidebar {
   width: 240px;
   background-color: @sidebar-default-bg;
@@ -58,15 +61,14 @@
   }
 
   & > li {
-    border-top: 1px solid #444;
     position: relative;
     
     & > a {
-      color: rgba(255,255,255,0.8);
       padding: 13px 40px 14px 14px;
       display: block;
       border-left: 3px solid transparent;
       text-decoration: none;
+      color: @sidebar-text-color;
 
       & > i {
         font-size: 16px;
@@ -88,7 +90,6 @@
 
   & > li:hover {
     & > a {
-      color: @sidebar-default-bg;
       border-left: 3px solid @sidebar-active-link-border-color;
       background-color: @navbar-default-link-active-bg;
 
@@ -102,6 +103,7 @@
   {
     border: none;
     margin-top: 20px;
+    color: @sidebar-text-color;
 
     & > i
     {
@@ -109,7 +111,6 @@
       text-align: center;
       display: block;
       font-size: 20px;
-      color: #ccc;
       cursor: pointer;
       &:after{
         cursor: pointer;
@@ -126,7 +127,6 @@
 .navigation > li.active > a,
 .navigation > li.active:hover > a,
 .navigation > li.active:focus > a {
-  color: @sidebar-default-bg;
   background-color: @navbar-default-link-active-bg;
   border-color: @sidebar-active-link-border-color;
 }
@@ -245,6 +245,8 @@
 
 /*===== Top of the sidebar ====*/
 .sidebar-header {
+  color: @sidebar-text-color;
+
   & > span.header {
     padding: 18px 16px;
     display: block;
@@ -255,20 +257,18 @@
       font-size: 34px;
       float: left;
       margin-top: 10px;
-      color: @navbar-default-link-active-bg;
     }
   }
 
   .sidebar-info {
     margin-left: 12px;
     float: left;
-    color: #FFF;
     font-weight: 400;
-    margin-top: 8px;
+    margin-top: 17px;
+    text-transform: uppercase;
 
     span {
       font-size: 11px;
-      color: #999;
       display: block;
       margin: 2px 0 0 0;
     }

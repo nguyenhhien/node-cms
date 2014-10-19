@@ -98,7 +98,7 @@ function response(options) {
                     }
                 }
                 else {
-                    _data += a;
+                    _data = a;
                 }
             };
 
@@ -171,6 +171,16 @@ function response(options) {
             }
 
             this.send(self.statusCode, _data);
+        },
+        success: function(body)
+        {
+            var self = this;
+            self.json(200, body);
+        },
+        error: function(error)
+        {
+            var self = this;
+            self.json(400, error);
         },
         write: function (data, encoding) {
             _data += data;

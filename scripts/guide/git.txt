@@ -1,0 +1,30 @@
+*Git branching model
+http://nvie.com/posts/a-successful-git-branching-model/
+
+*public branch:
+origin/master
+origin/develop
+
+*Public branch shouldn't be modified directly. Instead setup your own local branch which track remove branch
+git branch --track develop origin/develop
+Master branch: only contain most stable commit
+Develop branch: contain every commits from whole team.
+
+In other words, cause develop, master local branch track origin/develop and origin/master branch; you shouldn't
+modified the branch directly because it might cause problem when other develop checkout from those public branch.
+Instead, branch out other local branch as in the below.
+
+*Branch out feature branch, whenever you are implementing something
+git checkout -b feat-socket
+
+Constantly rebase to prevent head divert too far.
+Once ready for commit to develop branch:
+1.Pull latest commit from origin/develop to make sure you get the latest commit from remote. It should always fast-forward
+cause you never modified the develop branch directly.
+2.Rebase feat-socket to your origin/develop branch and then merge feat-socket back to origin/develop.
+3.Then push your changes to origin/develop so that other developer can pull from.
+
+*Prepare for next release:
+Check out release1.2 from develop branch. Similarly, we need to set up a local branch release1.2 to track the remote branch
+origin/release1.2. Once it's ready, merge to master and tag master with specific release.
+That release branch can then be deleted eventually.

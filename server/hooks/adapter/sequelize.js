@@ -11,19 +11,47 @@
     module.init = function(beaver) {
         var deferred = Q.defer();
 
+        var sequelizeOption = {
+            logging: false,
+            host: beaver.config.adapters.MySQL.host,
+            port: beaver.config.adapters.MySQL.port,
+            maxConcurrentQueries: beaver.config.adapters.MySQL.maxConcurrentQueries,
+            pool: {
+                maxConnections: beaver.config.adapters.MySQL.poolSize,
+                maxIdleTime: beaver.config.adapters.MySQL.idleTime
+            }
+        };
+
+        //if replication was setup
+        if(beaver.config.adapters.MySQL.replication)
+        {
+            sequelizeOption.replication = {
+                read: [
+                    {
+                        port: beaver.config.adapters.MySQL.replication.read.port,
+                        maxConcurrentQueries: beaver.config.adapters.MySQL.maxConcurrentQueries,
+                        pool: {
+                            maxConnections: beaver.config.adapters.MySQL.replication.read.poolSize,
+                            maxIdleTime: beaver.config.adapters.MySQL.replication.read.idleTime
+                        }
+                    }
+                ],
+                write: {
+                    port: beaver.config.adapters.MySQL.replication.write.port,
+                    maxConcurrentQueries: beaver.config.adapters.MySQL.maxConcurrentQueries,
+                    pool: {
+                        maxConnections: beaver.config.adapters.MySQL.replication.write.poolSize,
+                        maxIdleTime: beaver.config.adapters.MySQL.replication.write.idleTime
+                    }
+                }
+            }
+        }
+
         var sequelizeClient = new Sequelize(
             beaver.config.adapters.MySQL.dbName,
             beaver.config.adapters.MySQL.user,
             beaver.config.adapters.MySQL.password,
-            {
-                logging: false,
-                host: beaver.config.adapters.MySQL.host,
-                maxConcurrentQueries: beaver.config.adapters.MySQL.maxConcurrentQueries,
-                pool: {
-                    maxConnections: beaver.config.adapters.MySQL.poolSize,
-                    maxIdleTime: beaver.config.adapters.MySQL.idleTime
-                }
-            }
+            sequelizeOption
         );
 
         //initialize the models & sequelize relation

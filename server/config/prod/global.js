@@ -1,13 +1,13 @@
 module.exports.global = {
     appName: "Beaver.js",
-    needAccountActivation: 1,
+    needAccountActivation: 0,
     sessionSecret: 'auth-secret',
-    uploadsFolder: "./public/uploads/",
+    uploadsFolder: "./uploads/",
     protocol: "http",
-    host: "auth.epouch.com",
-    origin: "http://auth.epouch.com:8888/",
-    resourcePrefix: "http://auth.epouch.com:8888/", //nginx prefix
-    port: 8888,
+    host: "cms.beaver.com",
+    origin: "http://cms.beaver.com:8080/",
+    resourcePrefix: "http://cms.beaver.com:9000/", //nginx prefix
+    port: 8080,
     log: {
         level: 'verbose'
     },
@@ -18,5 +18,6 @@ module.exports.global = {
     cache: {
         maxAge: 3600000
     },
-    adminEmail: "noreply@beaver.com"
+    adminEmail: "noreply@beaver.com",
+    chatPageSize: 100
 };

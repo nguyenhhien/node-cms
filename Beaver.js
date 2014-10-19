@@ -18,6 +18,40 @@ var Beaver = function(){
 
 util.inherits(Beaver, events.EventEmitter);
 
+//function which will be run after bootstrap
+Beaver.prototype.postInit = function()
+{
+    var beaver = this;
+
+    //NOTE: it might alter the original config; so we must use _.cloneDeep
+    Q.async(
+        function* () {
+            var configurations = yield beaver.models.mongoose.Configuration
+                .find()
+                .lean()
+                .execQ()
+
+            if(configurations && configurations.length)
+            {
+                yield beaver.models.mongoose.Configuration
+                    .update({_id: configurations[0]._id}, _.cloneDeep(beaver.config))
+                    .lean()
+                    .execQ();
+            }
+            else
+            {
+                //create new
+                yield beaver.models.mongoose.Configuration
+                    .createQ(_.cloneDeep(beaver.config));
+            }
+
+            beaver.winston.info("config has been saved sucessfully");
+        })()
+        .fail(function(error){
+            beaver.winston.error(error.stack || error);
+        });
+}
+
 //start bootstrap application
 Beaver.prototype.start = function()
 {
@@ -80,6 +114,9 @@ Beaver.prototype.start = function()
     //for example, try to change the below to err.stack -> e.stack -- then you will have hidden, undesired exception
     async.series(tasks, function(err, data){
         if(err) return that.winston.error("[ERROR]: " + err.stack || err);
+
+        //run post tasks
+        that.postInit();
 
         //send ready signal to restart listening
         that.emit('ready');

@@ -8,30 +8,30 @@
                 <i class="fa fa-cogs"></i>
                 <div class="sidebar-info">
                     Configuration
-                    <span>
-                        Update Configuration
-                    </span>
+                    <!--<span>-->
+                        <!--Update Configuration-->
+                    <!--</span>-->
                 </div>
             </span>
             </div>
 
             <ul class="navigation">
-                <li class="active">
-                    <a href="index.html">
-                        <span>System Settings</span>
+                <li ui-sref-active="active">
+                    <a ui-sref="configuration.overview">
+                        <span>System Overview</span>
                         <i class="glyphicon glyphicon-wrench"></i>
                     </a>
                 </li>
 
-                <li>
-                    <a href="#">
+                <li ui-sref-active="active">
+                    <a ui-sref="configuration.application">
                         <span>Application Settings</span>
                         <i class="glyphicon glyphicon-globe"></i>
                     </a>
                 </li>
 
-                <li>
-                    <a href="#">
+                <li ui-sref-active="active">
+                    <a>
                         <span>Account Settings</span>
                         <i class="glyphicon glyphicon-hdd"></i>
                     </a>
@@ -44,83 +44,7 @@
         </div>
     </div>
 
-    <!--settings-->
-    <div class="page-content">
-        <div class="content bootstrap">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="panel">
-                                <h3>
-                                    <i class="glyphicon glyphicon-info"></i>
-                                    Server information
-                                </h3>
-                                <p>
-                                    <strong>Server information</strong> Darwin Darwin Kernel Version 12.4.0: Wed May  1 17:57:12 PDT 2013; root:xnu-2050.24.15~1/RELEASE_X86_64 x86_64
-                                </p>
-                                <p>
-                                    <strong>Server software version</strong> Apache/2.2.26 (Unix) mod_fastcgi/2.4.6 mod_wsgi/3.4 Python/2.7.6 PHP/5.5.14 mod_ssl/2.2.26 OpenSSL/0.9.8x DAV/2 mod_perl/2.0.8 Perl/v5.18.2
-                                </p>
-                                <p>
-                                    <strong>PHP version</strong> 5.5.14
-                                </p>
-                                <p>
-                                    <strong>Memory limit</strong> 128M
-                                </p>
-                                <p>
-                                    <strong>Max execution time</strong> 30
-                                </p>
-                            </div>
-                            <div class="panel">
-                                <h3>
-                                    <i class="glyphicon glyphicon-info"></i>
-                                    Database information
-                                </h3>
-                                <p>
-                                    <strong>MySQL version</strong> 5.5.38
-                                </p>
-                                <p>
-                                    <strong>MySQL server:</strong> 127.0.0.1:8889
-                                </p>
-                                <p>
-                                    <strong>MySQL name:</strong> prestashop
-                                </p>
-                                <p>
-                                    <strong>MySQL user:</strong> root
-                                </p>
-                                <p>
-                                    <strong>Tables prefix</strong> ps_
-                                </p>
-                                <p>
-                                    <strong>MySQL engine</strong> InnoDB
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="panel">
-                                <h3>
-                                    <i class="glyphicon glyphicon-info"></i>
-                                    Mail configuration
-                                </h3>
-                                <p>
-                                    <strong>Mail method</strong>
+    <!-- nested view-->
+    <div ui-view></div>
 
-                                    You are using Mandrill to send email.</p>
-                            </div>
-                            <div class="panel">
-                                <h3>
-                                    <i class="glyphicon glyphicon-info"></i>
-                                    Your information
-                                </h3>
-                                <p>
-                                    <strong>Your web browser</strong> Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>

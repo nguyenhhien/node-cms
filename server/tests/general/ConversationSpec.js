@@ -52,102 +52,88 @@ describe('chat conversation module specs', function(){
     it('add new/remove user conversation', function(done){
         var newConversation = {};
 
-        beaver.modules.Conversation.createNewConversation([users[0]])
-            .then(function(conversation){
-                newConversation = conversation;
+        Q.async(
+            function*(){
+                newConversation = yield beaver.modules.Conversation.createNewConversation([users[0]])
+                yield beaver.modules.Conversation.addUserIntoConversation(newConversation._id, users[1]);
 
-                //add new user into conversation
-                return beaver.modules.Conversation.addUserIntoConversation(conversation._id, users[1]);
-            })
-            .then(function(){
-                //check if there are two users in the conversation
-                return beaver.models.mongoose.Conversation
+                var conversation = yield beaver.models.mongoose.Conversation
                     .findById(newConversation._id)
                     .lean()
-                    .execQ()
-                    .then(function(conversation){
-                        expect(conversation.users.length).toEqual(2);
-                        expect([17, 18].indexOf(parseInt(conversation.users[0].id))).not.toEqual(-1);
-                        expect([17, 18].indexOf(parseInt(conversation.users[1].id))).not.toEqual(-1);
-                    })
-            })
-            .then(function(){
-                return beaver.modules.Conversation.removeUserFromConversation(newConversation._id, users[0].id);
-            })
-            .then(function(){
-                return beaver.models.mongoose.Conversation
+                    .execQ();
+
+                expect(conversation.users.length).toEqual(2);
+                expect([17, 18].indexOf(parseInt(conversation.users[0].id))).not.toEqual(-1);
+                expect([17, 18].indexOf(parseInt(conversation.users[1].id))).not.toEqual(-1);
+
+                yield beaver.modules.Conversation.removeUserFromConversation(newConversation._id, users[0].id);
+
+                var conversation = yield beaver.models.mongoose.Conversation
                     .findById(newConversation._id)
                     .lean()
-                    .execQ()
-                    .then(function(conversation){
-                        expect(conversation.users.length).toEqual(1);
-                        expect(parseInt(conversation.users[0].id)).toEqual(users[1].id);
-                        done();
-                    })
-            })
+                    .execQ();
+
+                expect(conversation.users.length).toEqual(1);
+                expect(parseInt(conversation.users[0].id)).toEqual(users[1].id);
+                done();
+            })()
             .fail(function(err){
                 console.log("ERROR LOG", err);
                 expect(err).toBe(null);
                 done();
-            })
+            });
     });
 
     it('add/remove user message', function(done){
         var newConversation = {};
         var conversationPage;
 
-        beaver.modules.Conversation.createNewConversation(users)
-            .then(function(conversation){
-                newConversation = conversation;
-                return beaver.modules.Conversation.addMessage(newConversation._id, users[0].id, "message 1");
-            })
-            .then(function(conversation){
-                return beaver.models.mongoose.ConversationPage
+        Q.async(
+            function*(){
+                newConversation = yield beaver.modules.Conversation.createNewConversation(users)
+                yield beaver.modules.Conversation.addMessage(newConversation._id, users[0].id, "message 1");
+
+                var allConversationPage = yield beaver.models.mongoose.ConversationPage
                     .find()
                     .lean()
-                    .execQ()
-                    .then(function(allConversationPage){
-                        expect(allConversationPage.length).toEqual(1);
-                        expect(allConversationPage[0].messages[0].content).toEqual("message 1");
-                        conversationPage = allConversationPage[0];
-                        expect(conversationPage.page).toEqual(1);
-                        done();
-                    })
-            })
-            .then(function(){
-                return beaver.modules.Conversation.deleteMessage(conversationPage.conversationId, conversationPage.page, users[0].id, conversationPage.messages[0]._id);
-            })
-            .then(function(){
-                //check if message is soft-deleted
-                return beaver.models.mongoose.ConversationPage
+                    .execQ();
+
+                expect(allConversationPage.length).toEqual(1);
+                expect(allConversationPage[0].messages[0].content).toEqual("message 1");
+                conversationPage = allConversationPage[0];
+                expect(conversationPage.page).toEqual(1);
+
+                yield beaver.modules.Conversation.deleteMessage(conversationPage.conversationId, conversationPage.page, users[0].id, conversationPage.messages[0]._id);
+
+                var curPage = yield beaver.models.mongoose.ConversationPage
                     .findOne()
                     .where('_id', conversationPage._id)
                     .where('page', conversationPage.page)
                     .lean()
                     .execQ();
-            })
-            .then(function(curPage){
+
                 expect(curPage.messages[0].isDeleted).toEqual(1);
                 done();
-            })
+            })()
             .fail(function(err){
                 console.log("ERROR LOG", err);
                 expect(err).toBe(null);
                 done();
-            })
+            });
     });
 
     it('should create new conversation page', function(done){
         var newConversation = {};
         var conversationPage;
-        var pageSize = 100;
-        beaver.modules.Conversation.createNewConversation(users)
-            .then(function(conversation){
-                newConversation = conversation;
+        var pageSize = beaver.config.global.chatPageSize || 100;
+
+        Q.async(
+            function*(){
+                var newConversation = yield beaver.modules.Conversation.createNewConversation(users);
 
                 var finalPromise = Q();
 
-                for(var i=0; i<=pageSize; ++i)
+                for(var i=0; i<=pageSize+9; ++i)
                 {
                     (function(i){
                         finalPromise = finalPromise.then(function(){
@@ -156,35 +142,38 @@ describe('chat conversation module specs', function(){
                     }(i));
                 }
 
-                return finalPromise;
-            })
-            .then(function(){
-                //there is exactly two conversation pages
-                return beaver.models.mongoose.ConversationPage
-                    .countQ()
-                    .then(function(count){
-                        expect(count).toBe(2);
-                    })
-            })
-            .then(function(){
-                return beaver.models.mongoose.ConversationPage
+                yield finalPromise;
+
+                var count = yield beaver.models.mongoose.ConversationPage
+                    .countQ();
+
+                expect(count).toBe(2);
+
+                var conversationPage = yield beaver.models.mongoose.ConversationPage
                     .findOne()
                     .where('conversationId', newConversation._id)
                     .where('page', 2)
                     .lean()
                     .execQ();
-            })
-            .then(function(conversationPage){
-                //check if there is two conversation pages is created
-                expect(conversationPage.messages.length).toBe(1);
-                expect(conversationPage.count).toBe(1);
+
+                expect(conversationPage.messages.length).toBe(10);
+                expect(conversationPage.count).toBe(10);
+
+                //last message is
+                var lastMessage = conversationPage.messages[9];
+
+                var previousMsgs = yield beaver.modules.Conversation.loadPreviousMessages(newConversation._id);
+
+                expect(previousMsgs.length).toBe(110);
+
                 done();
-            })
+            })()
             .fail(function(err){
                 console.log("ERROR LOG", err);
                 expect(err).toBe(null);
                 done();
             });
     });
+
 })
 

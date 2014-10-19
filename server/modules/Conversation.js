@@ -8,34 +8,81 @@
     var _                   = require('lodash-node');
     var beaver              = require("../../Beaver.js");
 
+    //find existing conversation
+    module.findExistingConversation = function(users)
+    {
+        var userIds = _.chain(users)
+            .sortBy('id')
+            .map(function(elem){
+                return elem.id;
+            })
+            .value()
+            .join(",");
+
+
+        return beaver.models.mongoose.Conversation
+            .find()
+            .where('userIds', userIds)
+            .lean()
+            .execQ();
+    }
+
     //create new conversation and add existing user into list
     module.createNewConversation = function(users)
     {
         users.forEach(function(user){
             user.joinedDate = new Date();
-        })
+        });
+
+        var userIds = _.chain(users)
+            .sortBy('id')
+            .map(function(elem){
+                return elem.id;
+            })
+            .value()
+            .join(",");
 
         return beaver.models.mongoose.Conversation
             .createQ({
                 numPages: 1,
-                users: users
+                users: users,
+                userIds: userIds
             });
     }
 
     //add new user into conversation
     module.addUserIntoConversation = function(conversationId, user)
     {
-        return beaver.models.mongoose.Conversation
-            .find()
-            .where('_id', conversationId)
-            .where('users.id').in([user.id])
-            .lean()
-            .execQ()
-            .then(function(conversation){
+        var deferred = Q.defer();
+
+        Q.async(
+            function*(){
+                var conversation = yield beaver.models.mongoose.Conversation
+                    .find()
+                    .where('_id', conversationId)
+                    .where('users.id').in([user.id])
+                    .lean()
+                    .execQ();
+
+                var userIds = conversation.userIds;
+
+                if(userIds && _.isString(userIds))
+                {
+                    userIds = _.chain(_.uniq(userIds.split(',')))
+                        .map(function(elem){
+                            return _.parseInt(elem);
+                        })
+                        .filter(function(elem){
+                            return (!_.isNaN(elem)) && (elem != user.id);
+                        })
+                        .push(user.id)
+                        .sort().value().join(",");
+                }
+
                 if(!conversation.length)
                 {
                     //push user into existing array
-                    beaver.models.mongoose.Conversation
+                    yield beaver.models.mongoose.Conversation
                         .update({
                             _id: conversationId
                         },
@@ -43,34 +90,76 @@
                             $push:
                             {
                                 users: user
+                            },
+                            $set:
+                            {
+                                userIds: userIds || ""
                             }
                         })
                         .execQ();
                 }
-                else
-                {
-                    //do nothing
-                    return Q();
-                }
-            })
+
+                deferred.resolve();
+            })()
+            .fail(function(error){
+                deferred.reject(error);
+            });
+
+        return deferred.promise;
     }
 
     //remove user from conversation
     module.removeUserFromConversation = function(conversationId, userId)
     {
-        return beaver.models.mongoose.Conversation
-            .update({
-                _id: conversationId
-            },
-            {
-                $pull:
+        var deferred = Q.defer();
+
+        Q.async(
+            function*(){
+                var conversation = yield beaver.models.mongoose.Conversation
+                    .find()
+                    .where('_id', conversationId)
+                    .lean()
+                    .execQ();
+
+                var userIds = conversation.userIds;
+                if(userIds && _.isString(userIds))
                 {
-                    users: {
-                        id: userId
-                    }
+                    userIds = _.chain(_.uniq(userIds.split(',')))
+                        .map(function(elem){
+                            return _.parseInt(elem);
+                        })
+                        .filter(function(elem){
+                            return (!_.isNaN(elem)) && (elem != userId);
+                        })
+                        .sort().value().join(",");
                 }
-            })
-            .execQ();
+
+                //remove user from the list
+                yield beaver.models.mongoose.Conversation
+                    .update({
+                        _id: conversationId
+                    },
+                    {
+                        $pull:
+                        {
+                            users: {
+                                id: userId
+                            }
+                        },
+                        $set:
+                        {
+                            userIds: userIds || ""
+                        }
+                    })
+                    .execQ();
+
+                deferred.resolve();
+            })()
+            .fail(function(error){
+                deferred.reject(error);
+            });
+
+        return deferred.promise;
     }
 
     //delete a certain message inside the array
@@ -135,7 +224,7 @@
             .spread(function(conversation, conversationPage)
             {
                 //increase number of pages
-                if(conversationPage.count >= 100)
+                if(conversationPage.count >= (beaver.config.global.chatPageSize || 100))
                 {
                     return beaver.models.mongoose.Conversation
                         .findOneAndUpdate({
@@ -152,4 +241,87 @@
                 else return Q();
             });
     }
+
+    //load nMessage before current message
+    module.loadPreviousMessages = function(conversationId, currentMessage)
+    {
+        var deferred = Q.defer();
+
+        //NOTE: to reduce load, we always load the full page
+        //and remaining messages if any from the page of current message
+        Q.async(
+            function*(){
+                var page;
+
+                if(currentMessage)
+                {
+                    page = currentMessage.page;
+                }
+                else
+                {
+                    //otherwise; just loaded latest page
+                    var conversation = yield beaver.models.mongoose.Conversation
+                        .find()
+                        .where('_id', conversationId)
+                        .lean()
+                        .execQ();
+
+                    if(conversation && conversation.length)
+                    {
+                        page = conversation[0].numPages;
+                    }
+                    else
+                    {
+                        page = -1;
+                    }
+                }
+
+                //load that page
+                var loadedPages = yield beaver.models.mongoose.ConversationPage
+                    .find()
+                    .where('conversationId', conversationId)
+                    .where('page').gte(page-1)
+                    .where('page').lte(page)
+                    .lean()
+                    .execQ();
+
+                loadedPages = _.sortBy(loadedPages, 'page');
+
+                if(loadedPages && loadedPages.length)
+                {
+                    var outMsgs = [];
+                    if(loadedPages.length==2)
+                    {
+                        outMsgs = loadedPages[0].messages;
+                    }
+
+                    var lastPage = loadedPages[loadedPages.length-1];
+
+                    for(var i=0; i<lastPage.messages.length; ++i)
+                    {
+                        if(currentMessage && lastPage.messages[i]._id == currentMessage._id)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            outMsgs.push(lastPage.messages[i]);
+                        }
+                    }
+
+                    deferred.resolve(outMsgs);
+                }
+                else
+                {
+                    //return empty array
+                    deferred.resolve([]);
+                }
+            })()
+            .fail(function(error){
+                deferred.reject(error);
+            });
+
+        return deferred.promise;
+    }
+
 }(exports));

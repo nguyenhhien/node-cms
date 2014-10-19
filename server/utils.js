@@ -11,6 +11,52 @@
 
     module = module || {};
 
+    //convert 25,26 -> [25, 26]
+    //when provided addedId (eg. 27), it will push 27 into array
+    module.parseIdString = function(s, addedId)
+    {
+        var tokens = [];
+
+        if(s && _.isString(s))
+        {
+            tokens = _.chain(_.uniq(s.split(',')))
+                .map(function(elem){
+                    return _.parseInt(elem);
+                })
+                .filter(function(elem){
+                    if(!_.isNull(addedId))
+                    {
+                        return (!_.isNaN(elem)) && elem != addedId;
+                    }
+                    else
+                    {
+                        return (!_.isNaN(elem));
+                    }
+                })
+                .value();
+        }
+
+        if(!_.isNull(addedId))
+        {
+            tokens.push(addedId);
+        }
+
+        return tokens;
+    }
+
+    //parse id array & remove invalid one
+    module.parseId = function(idArray)
+    {
+        return _.chain(idArray)
+            .map(function(elem){
+                return _.parseInt(elem);
+            })
+            .filter(function(elem){
+                return !_.isNaN(elem);
+            })
+            .value();
+    }
+
     module.formatValidationError = function(errors)
     {
         errors = errors || [];

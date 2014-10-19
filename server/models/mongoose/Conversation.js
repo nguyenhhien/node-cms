@@ -6,10 +6,13 @@ var conversationSchema = new Schema({
         {
             id: String,
             avatar: String,
+            name: String,
+            email: String,
             joinedDate: Date,
             leftDate: Date
         }
     ],
+    userIds: String, //concat all userIds together
     numPages: Number
 });
 
