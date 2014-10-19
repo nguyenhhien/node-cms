@@ -39,7 +39,6 @@
     right: 0;
     bottom: -100%;
     opacity: 0.25;
-//    background: radial-gradient(white, black);
     animation: pulse 1s ease alternate infinite;
   }
 }
@@ -55,11 +54,10 @@
     display: flex;
   }
   .avatar {
-    width: 40px; // stronger than %
-    // could set height, but gonna bottom-align instead
-    position: relative; // for triangle
+    width: 40px;
+    position: relative;
     img {
-      display: block; // triangle position
+      display: block;
       width: 100%;
     }
   }
@@ -127,8 +125,8 @@
   to { opacity: 0.5; }
 }
 
-
-.chat-window {
+.right-sidebar-panel
+{
   background-color: #FFFFFF;
   border: 1px solid rgba(0, 0, 0, 0.3);
   bottom: 0;
@@ -138,140 +136,148 @@
   line-height: 14.4px;
   position: fixed;
   width: 280px;
-  z-index: 10000;
-}
+  z-index: 40;
+  right: 0px;
+  height: 100%;
 
-.chat-window .temp-message {
-  color: rgb(176, 176, 176);
-}
+  .chat-window {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    box-shadow: 0 0 10px #D5D5D5;
 
-.chat-window-title {
-//  background: none repeat scroll 0 0 #6D84B4;
-  background: none repeat scroll 0 0 #0077a3;
-  border-bottom: 1px solid #D7D7D7;
-  color: #FFFFFF;
-  cursor: pointer;
-  font-weight: bold;
-  overflow: hidden;
-  padding: 6px;
+    &.chat-conversation-window
+    {
+      width: 300px;
+    }
 
-  .text {
-    margin-top: 1px;
-  }
+    .chat-window-title {
+      background: none repeat scroll 0 0 #0077a3;
+      border-bottom: 1px solid #D7D7D7;
+      color: #FFFFFF;
+      cursor: pointer;
+      font-weight: bold;
+      overflow: hidden;
+      padding: 6px;
 
-  .close {
-    background-image: url("/assets/images/chat/clear.png");
-    float: right;
-    height: 16px;
-    width: 16px;
-    opacity: 0.7;
+      .text {
+        margin-top: 1px;
+      }
 
-    &:hover {
-      opacity: 0.5;
+      .close {
+        background-image: url("/assets/images/chat/clear.png");
+        float: right;
+        height: 16px;
+        width: 16px;
+        opacity: 0.7;
+
+        &:hover {
+          opacity: 0.5;
+        }
+      }
+
+      &.unread {
+        background: none repeat scroll 0 0 white;
+      }
+
+      &.online {
+        background-image: url("/assets/images/chat/chat-online.png");
+        background-position: 8px 10px;
+        background-repeat: no-repeat;
+        padding-left: 22px;
+      }
+
+      &.offline {
+        background-image: url("/assets/images/chat/chat-offline.png");
+        background-position: 8px 10px;
+        background-repeat: no-repeat;
+        padding-left: 22px;
+      }
+    }
+
+    .chat-window-inner-content {
+      margin-bottom: 2px;
+      max-height: 300px;
+      overflow-y: auto;
+      &.collapsed
+      {
+        min-height: 100px;
+      }
+
+      & > .loading-box {
+        padding: 30px;
+        background-image: url("../Images/ajax-loader.gif");
+        background-repeat: no-repeat;
+        background-position: center center;
+      }
+
+      .user-list-item {
+        background-position: 2px center;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        margin: 5px;
+        overflow: hidden;
+
+        & > .profile-picture {
+          display: block;
+          float: left;
+          height: 25px;
+          width: auto;
+        }
+
+        & > .profile-status {
+          display: block;
+          float: right;
+          height: 7px;
+          margin: 10px 6px 0;
+          width: 7px;
+
+          &.online {
+            background-image: url("/assets/images/chat/chat-online.png");
+            background-repeat: no-repeat;
+          }
+          &.offline {
+            background-image: url("/assets/images/chat/chat-offline.png");
+            background-repeat: no-repeat;
+          }
+        }
+
+        .content {
+          margin: 7px 22px 0 35px;
+        }
+
+        &.offline {
+          background-image: url("/assets/images/chat/chat-offline.png");
+        }
+
+        &.online {
+          background-image: url("/assets/images/chat/chat-online.png");
+        }
+      }
+
+      .user-list-empty {
+        background-position: 2px center;
+        background-repeat: no-repeat;
+        padding: 10px;
+      }
+    }
+
+    textarea.chat-window-text-box {
+      width: 100%;
+      overflow: hidden;
+      resize: none;
+      margin: 0;
+      border-radius: 0;
+      font-size: 12px;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      padding: 5px;
+      line-height: 1.2em;
     }
   }
-
-  &.unread {
-    background: none repeat scroll 0 0 white;
-  }
-
-  &.online {
-    background-image: url("/assets/images/chat/chat-online.png");
-    background-position: 8px 10px;
-    background-repeat: no-repeat;
-    padding-left: 22px;
-  }
-
-  &.offline {
-    background-image: url("/assets/images/chat/chat-offline.png");
-    background-position: 8px 10px;
-    background-repeat: no-repeat;
-    padding-left: 22px;
-  }
-
 }
 
-
-.chat-window-inner-content {
-  margin-bottom: 2px;
-  max-height: 300px;
-  overflow-y: auto;
-  &.collapsed
-  {
-    min-height: 100px;
-  }
-
-  & > .loading-box {
-    padding: 30px;
-    background-image: url("../Images/ajax-loader.gif");
-    background-repeat: no-repeat;
-    background-position: center center;
-  }
-}
-
-textarea.chat-window-text-box {
-  width: 100%;
-  overflow: hidden;
-  resize: none;
-  margin: 0;
-  border-radius: 0;
-  font-size: 12px;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  padding: 5px;
-  line-height: 1.2em;
-}
-
-.user-list-item {
-  background-position: 2px center;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  margin: 5px;
-  overflow: hidden;
-
-  & > .profile-picture {
-    display: block;
-    float: left;
-    height: 25px;
-    width: auto;
-  }
-
-  & > .profile-status {
-    display: block;
-    float: right;
-    height: 7px;
-    margin: 10px 6px 0;
-    width: 7px;
-
-    &.online {
-      background-image: url("/assets/images/chat/chat-online.png");
-      background-repeat: no-repeat;
-    }
-    &.offline {
-      background-image: url("/assets/images/chat/chat-offline.png");
-      background-repeat: no-repeat;
-    }
-  }
-
-  .content {
-    margin: 7px 22px 0 35px;
-  }
-
-  &.offline {
-    background-image: url("/assets/images/chat/chat-offline.png");
-  }
-
-  &.online {
-    background-image: url("/assets/images/chat/chat-online.png");
-  }
-}
-
-.user-list-empty {
-  background-position: 2px center;
-  background-repeat: no-repeat;
-  padding: 10px;
-}
 
 .chat-window-text-box-wrapper {
   padding: 2px;

@@ -8,6 +8,24 @@
     var beaver              = require("../../Beaver.js");
     var os                  = require("os");
 
+    //get public config
+    module.publicConfig = function(req, res)
+    {
+        Q.async(
+            function* () {
+                var configuration = yield beaver.models.mongoose.Configuration
+                    .findOne()
+                    .select('oath')
+                    .lean()
+                    .execQ()
+
+                res.success(configuration);
+            })()
+            .fail(function(error){
+                res.error(error.stack || error);
+            });
+    }
+
     module.find = function(req, res)
     {
         if(!req.session || !req.session.user)

@@ -214,6 +214,10 @@ app.directive('chatWidget', ["$rootScope", "$resource", function($rootScope, $re
 
                     if(foundIdx != -1)
                     {
+                        safeApply(scope, function(){
+                            scope.chatSessions[foundIdx].hideWindow = false;
+                        });
+
                         return;
                     }
 
@@ -357,7 +361,13 @@ app.directive('chatWidget', ["$rootScope", "$resource", function($rootScope, $re
         }],
         link: function (scope, element, attr)
         {
-
+            element.find(".chat-window.main-window")
+                .resizable({
+                    handles: 'n'
+                })
+                .bind("resize", function(event, ui){
+                    $(this).css("top", "auto");
+                });
         }
     };
 }]);

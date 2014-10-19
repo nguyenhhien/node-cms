@@ -50,7 +50,7 @@ module.exports = {
             'vendor/superagent/superagent.js',
             'vendor/growl/javascripts/jquery.growl.js',
             'vendor/fancybox/source/jquery.fancybox.js',
-            'vendor/jquery-ui/ui/jquery.ui.widget.js',
+            'vendor/jquery-ui/ui/jquery-ui.js',
             'vendor/blueimp-file-upload/js/jquery.fileupload.js',
             'vendor/bootstrap-sidebar/dist/js/sidebar.js',
             'vendor/moment/min/moment.min.js'
@@ -58,7 +58,8 @@ module.exports = {
         css: [
             'vendor/growl/stylesheets/jquery.growl.css',
             'vendor/fancybox/source/jquery.fancybox.css',
-            'vendor/bootstrap-sidebar/dist/css/sidebar.css'
+            'vendor/bootstrap-sidebar/dist/css/sidebar.css',
+            'vendor/jquery-ui/themes/base/jquery-ui.css'
         ],
         assets: [
 

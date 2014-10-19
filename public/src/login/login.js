@@ -1,3 +1,25 @@
+var Configuration;
+
+//get login user -- then bootstrap application
+$.post('/api/configuration/publicConfig')
+    .done(function(res){
+        Configuration = res;
+        try
+        {
+            $("body").show();
+            angular.bootstrap(document, ["loginApp"]);
+        }
+        catch(e)
+        {
+            console.log("Error", e.stack || e);
+        }
+    })
+    .fail(function(error){
+        if(error) {
+            return console.log("ERROR: ", error);
+        }
+    });
+
 var loginApp = angular.module('loginApp', [
         "utils",
         "ui.router",
@@ -20,39 +42,22 @@ var AUTH_EVENTS = {
 
 loginApp.constant('AUTH_EVENTS', AUTH_EVENTS);
 
-var Configuration;
-
 loginApp.config(['FacebookProvider', '$stateProvider', '$urlRouterProvider', '$locationProvider', 'GooglePlusProvider',
     function (FacebookProvider, $stateProvider, $urlRouterProvider, $locationProvider, GooglePlusProvider) {
     $locationProvider.hashPrefix('!');
 
-    $.post('/api/configuration/find')
-        .done(function(res){
-            Configuration = res;
-            try
-            {
-                if(Configuration)
-                {
-                    FacebookProvider.init(Configuration.oath.Facebook.clientId);
-                    GooglePlusProvider.init({
-                        clientId: Configuration.oath.Google.clientId,
-                        scopes: [
-                            'https://www.googleapis.com/auth/plus.login',
-                            'https://www.googleapis.com/auth/plus.profile.emails.read'
-                        ]
-                    });
-                }
-            }
-            catch(e)
-            {
-                console.log("Error", e.stack || e);
-            }
-        })
-        .fail(function(error){
-            if(error) {
-                showError(error.stack || error);
-            }
+    if(Configuration)
+    {
+        FacebookProvider.init(Configuration.oath.Facebook.clientId);
+        GooglePlusProvider.init({
+            clientId: Configuration.oath.Google.clientId,
+            scopes: [
+                'https://www.googleapis.com/auth/plus.login',
+                'https://www.googleapis.com/auth/plus.profile.emails.read'
+            ]
         });
+    }
+
 
     $stateProvider
         .state('login', {
