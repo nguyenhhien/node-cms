@@ -85,6 +85,16 @@ app.directive('chatConversation', ["$rootScope", function($rootScope){
             };
 
 
+            function scrollToBottom()
+            {
+                setTimeout(function(){
+                    //scroll the textbox to the bottom
+                    var elem = element.find("#chat-window-inner-content-"+ scope.idx);
+
+                    elem.scrollTop(elem[0].scrollHeight + 40);
+                }, 500);
+            }
+
             //when receive a new message
             scope.superSocket.on("chat:newChatMessage", function(data){
                 if(data.message)
@@ -133,12 +143,15 @@ app.directive('chatConversation', ["$rootScope", function($rootScope){
                     }
                 });
 
-                setTimeout(function(){
-                    //scroll the textbox to the bottom
-                    var elem = element.find("#chat-window-inner-content-"+ scope.idx);
+                scrollToBottom();
+            });
 
-                    elem.scrollTop(elem[0].scrollHeight + 40);
-                }, 500);
+            //scroll to bottom once init new chat session
+            scope.$watch('chatSession', function(elem){
+                if(!!elem)
+                {
+                    scrollToBottom();
+                }
             });
         }
     };
@@ -175,45 +188,97 @@ app.directive('chatWidget', ["$rootScope", "$resource", function($rootScope, $re
                     show: true
                 };
 
-                //TODO: change to a more suitable logic
-                var foundIdx = _.findIndex(scope.chatSessions, function(session){
-                    var differences = _.difference(
-                        _.map(chatSession.users, function(user){return user.id;}),
-                        _.map(session.users, function(user){return user.id;})
-                    );
-
-                    if(differences.length > 0) {
-                        return true;
-                    }
-
-                    return false;
-                });
-
-                if(foundIdx == -1)
-                {
-                    safeApply(scope, function(){
-                        //TODO: create new chat session
-                        scope.superSocket.post('/api/chat/initChatSession', {userIds: [scope.me.id+"", chatSession.users[0].id]}, function(err, data) {
-                            if(err)
-                            {
-                                console.log("init chat session error", err.stack || err);
-                            }
-                            else
-                            {
-                                console.log("init chat session successfully", data);
-                            }
-                        });
+                safeApply(scope, function(){
+                    //TODO: create new chat session
+                    scope.superSocket.post('/api/chat/initChatSession', {userIds: [scope.me.id+"", chatSession.users[0].id]}, function(err, data) {
+                        if(err)
+                        {
+                            console.log("init chat session error", err.stack || err);
+                        }
+                        else
+                        {
+                            console.log("init chat session successfully", data);
+                        }
                     });
-                }
+                });
             };
 
             //establish new chat session successfully
             scope.superSocket.on("chat:newChatSession", function(data){
                 if(data.chatSession)
                 {
-                    console.log("new chat session was established", data);
-                    safeApply(scope, function(){
-                        scope.chatSessions.push(data.chatSession);
+                    var newChatSession = data.chatSession;
+                    var foundIdx = _.findIndex(scope.chatSessions, function(elem){
+                        return elem._id = newChatSession._id;
+                    });
+
+                    if(foundIdx != -1)
+                    {
+                        return;
+                    }
+
+                    //now need to join conversation explicitly
+                    scope.superSocket.post('/api/chat/joinConversation', {conversationId: data.chatSession._id}, function(err, res) {
+                        if(err)
+                        {
+                            console.log("init chat session error", err.stack || err);
+                        }
+                        else
+                        {
+                            console.log("new chat session was established", res.oldMessages);
+
+                            var userMap = {};
+                            _.forEach(res.users, function(user){
+                                userMap[user.id] = user;
+                            });
+
+                            //init the chat session
+                            newChatSession.chatBlocks = newChatSession.chatBlocks || [];
+
+                            _.forEach(res.oldMessages, function(data){
+                                var from = userMap[data.userId];
+                                data.timestamp = data.postedDate;
+                                data.message = data.content;
+
+                                if(newChatSession.chatBlocks.length)
+                                {
+                                    var lastMsgBlock = newChatSession.chatBlocks[newChatSession.chatBlocks.length-1];
+
+                                    //if same user --> put to last msg block
+                                    if(lastMsgBlock.user.id == from.id)
+                                    {
+                                        lastMsgBlock.messages = lastMsgBlock.messages || [];
+                                        lastMsgBlock.messages.push(data);
+                                    }
+                                    else
+                                    {
+                                        //create new block
+                                        newChatSession.chatBlocks.push({
+                                            user: from,
+                                            messages: [
+                                               data
+                                            ]
+                                        });
+                                    }
+                                }
+                                else
+                                {
+                                    //also create new block
+                                    newChatSession.chatBlocks.push({
+                                        user: from,
+                                        messages: [
+                                            data
+                                        ]
+                                    });
+                                }
+                            });
+
+                            console.log("chat block is", newChatSession.chatBlocks);
+
+                            safeApply(scope, function(){
+                                scope.chatSessions.push(newChatSession);
+                            });
+                        }
                     });
                 }
             });

@@ -21,7 +21,34 @@ describe('jasmine-async-test', function(){
             done();
         })
     })
-})
+});
+
+describe('generator', function(){
+    it('should yield array of promise', function(done){
+        function dummyPromise(id)
+        {
+            return Q.resolve(id);
+        }
+
+        Q.async(
+            function*(){
+                var tasks = [];
+                var a = [1, 2, 3, 4, 5];
+                _.forEach(a, function(id){
+                    tasks.push(dummyPromise(id));
+                });
+
+                var out = yield Q.all(tasks);
+                expect(out.length).toBe(5);
+                done();
+            })()
+            .fail(function(err){
+                console.log("ERROR LOG", err);
+                expect(err).toBe(null);
+                done();
+            });
+    });
+});
 
 describe('async series promise', function(){
     function isValidArray(results)

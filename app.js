@@ -35,6 +35,7 @@ http.ServerResponse.prototype.error = function(statusCode, error)
     return this.status(400).send(error);
 }
 
+//Run using: cluster=true node app.js
 if(process.env.cluster)
 {
     //cluster support -- with cluster, app can handle 1000+ request / seconds (tested)

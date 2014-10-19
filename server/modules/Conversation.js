@@ -285,6 +285,8 @@
                     .lean()
                     .execQ();
 
+                loadedPages = _.sortBy(loadedPages, 'page');
+
                 if(loadedPages && loadedPages.length)
                 {
                     var outMsgs = [];
@@ -294,6 +296,7 @@
                     }
 
                     var lastPage = loadedPages[loadedPages.length-1];
+
                     for(var i=0; i<lastPage.messages.length; ++i)
                     {
                         if(currentMessage && lastPage.messages[i]._id == currentMessage._id)

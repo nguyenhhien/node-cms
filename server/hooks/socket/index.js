@@ -8,7 +8,7 @@
     var cookieParser        = require("cookie-parser");
     var fs                  = require('fs');
     var async               = require('async');
-
+    var _                   = require('lodash-node');
     var mockRequest         = require("./request.js");
     var mockResponse        = require("./response.js");
 
@@ -100,6 +100,13 @@
                 socket.uid = 0;
             }
 
+            var userInfo = {
+                status: 'online',
+                name: hs.session && hs.session.user.name,
+                avatar: hs.session && hs.session.user.avatar,
+                id: hs.session && hs.session.user.id
+            };
+
             //for now, we don't allow anonymous login
             if(socket.uid)
             {
@@ -108,25 +115,21 @@
 
                 Q.async(
                     function*(){
+                        //need to saved all socket.id in redis so that we can scale to multiple servers/processes
+                        var key = "socket:" + socket.uid;
+                        yield Q.denodeify(beaver.redis.setAdd)(key, socket.id);
+
+                        //also save user info; and list of online user in redis
                         yield Q.denodeify(beaver.redis.setObject)("user:" + socket.uid, sessionUser);
                         yield Q.denodeify(beaver.redis.sortedSetAdd)("users:online", Date.now(), socket.uid);
 
                         beaver.winston.info("[socket.io] client connected", socket.uid);
 
-                        socket.emit('event:connect', {
-                            status: 'online',
-                            name: hs.session && hs.session.user.name,
-                            avatar: hs.session && hs.session.user.avatar,
-                            id: hs.session && hs.session.user.id
-                        });
+                        //emit connect event to this socket
+                        socket.emit('event:connect', _.extend({status: 'online'}, userInfo));
 
-                        //broadcast event to other connected sockets?
-                        socket.broadcast.emit('user.changeStatus', null, {
-                            status: 'online',
-                            name: hs.session && hs.session.user.name,
-                            avatar: hs.session && hs.session.user.avatar,
-                            id: hs.session && hs.session.user.id
-                        });
+                        //broadcast event to all other connected sockets
+                        socket.broadcast.emit('user.changeStatus', null,  _.extend({status: 'online'}, userInfo));
                     })()
                     .fail(function(error){
                         beaver.winston.error(error.stack || error);
@@ -134,16 +137,29 @@
             }
 
             socket.on('disconnect', function() {
-                Q.denodeify(beaver.redis.sortedSetRemove)("users:online", socket.uid)
-                    .then(function(){
+                Q.async(
+                    function*(){
+                        yield Q.denodeify(beaver.redis.sortedSetRemove)("users:online", socket.uid);
+                        var key = "socket:" + socket.uid;
+                        yield Q.denodeify(beaver.redis.setRemove)(key, socket.id);
+
+                        //check if there is any connected client; if not; throw offline status
+                        var count = yield Q.denodeify(beaver.redis.setCount)(key);
+                        if(!count)
+                        {
+                            //broadcast event to all other connected sockets
+                            socket.broadcast.emit('user.changeStatus', null, _.extend({status: 'offline'}, userInfo));
+
+                            beaver.redis.delete("user:" + socket.uid);
+                        }
+
                         //need this -- because users can use multiple client to connect
                         beaver.winston.info("[socket.io] client disconnected");
-                    })
-                    .then(function(data){
+
                         socket.broadcast.emit('user.disconnect', null, {id: socket.uid});
-                    })
-                    .fail(function(err){
-                        beaver.winston.error(err.stack || err);
+                    })()
+                    .fail(function(error){
+                        beaver.winston.error(error.stack || error);
                     });
             });
 
