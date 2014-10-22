@@ -1,0 +1,27 @@
+<div class="task-card">
+    <div class="main-wrapper">
+        <!--task type small image-->
+        <span class="type" title="Bug">
+            <img src="https://issues.apache.org/jira/images/icons/issuetypes/bug.png">
+        </span>
+
+        <!--link to detail page src="/task/{{task.id}}"-->
+        <div class="key">
+            <a class="link" ng-bind="task.name"></a>
+        </div>
+
+        <!--description-->
+        <div class="summary">
+            <span class="inner" ng-bind="task.description"></span>
+        </div>
+    </div>
+
+    <!--user avatar-->
+    <div class="avatar-wrapper">
+        <img ng-src="{{task.assignee.avatar}}" alt=""/>
+    </div>
+
+    <span class="priority" title="Trivial">
+        <img src="https://issues.apache.org/jira/images/icons/priorities/trivial.png">
+    </span>
+</div>

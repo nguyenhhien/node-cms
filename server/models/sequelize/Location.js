@@ -13,12 +13,12 @@ module.exports = function(sequelize, DataTypes) {
             freezeTableName: true,
             classMethods: {
                 associate: function(models) {
-                    Location.hasOne(Location, {as: 'Parent', foreignKey: 'parentId'});
-                    Location.hasMany(Location, {as: 'Children', foreignKey: 'parentId', through: null });
-                    Location.hasOne(models.LocationType, {as: 'LocationType', foreignKey: 'locationId'});
+                    Location.hasOne(Location, {as: 'Parent', foreignKey: 'ParentId'});
+                    Location.hasMany(Location, {as: 'Children', foreignKey: 'ParentId', through: null });
+                    Location.hasOne(models.LocationType);
 
                     //many-many relationship with position
-                    Location.hasMany(models.Position, {through: 'PositionLocation', foreignKey: 'locationId'})
+                    Location.hasMany(models.Position);
                 },
                 addTreeNode: function(parentId, treeNode)
                 {
@@ -57,7 +57,7 @@ module.exports = function(sequelize, DataTypes) {
                                     lft: parentRight,
                                     rgt: parentRight+1,
                                     level: parentLevel+1,
-                                    parentId: parentId
+                                    ParentId: parentId
                                 }, {transaction:t}));
                             })
                             .then(function(newLocation){

@@ -46,7 +46,7 @@ module.exports = {
             'vendor/async/lib/async.js',
             'vendor/chosen/chosen.jquery.js',
             'vendor/angular-chosen-localytics/chosen.js',
-            'vendor/angular-data/dist/angular-data.min.js',
+            'vendor/restangular/dist/restangular.min.js',
             'vendor/superagent/superagent.js',
             'vendor/growl/javascripts/jquery.growl.js',
             'vendor/fancybox/source/jquery.fancybox.js',

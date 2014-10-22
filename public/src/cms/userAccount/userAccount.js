@@ -9,12 +9,11 @@ var app = angular.module( 'mainApp.userAccount', [])
         });
 }]);
 
-app.controller("UserAccountController", ['$rootScope', '$scope', '$http', '$resource', 'User', 'DS', function($rootScope, $scope, $http, $resource, User, DS){
+app.controller("UserAccountController", ['$rootScope', '$scope', '$http', '$resource', 'Restangular', function($rootScope, $scope, $http, $resource, Restangular){
     //load current user
-    //TODO: check to see if can set bypassCache: true by default; cause we never want to use cache/dirty version
     function loadCurrentUser()
     {
-        User.find($rootScope.user.id, {bypassCache: true})
+        Restangular.one('user', $rootScope.user.id).get()
             .then(function(res){
                 safeApply($scope, function(){
                     $scope.account = res;
@@ -67,9 +66,7 @@ app.controller("UserAccountController", ['$rootScope', '$scope', '$http', '$reso
     //save user account information
     $scope.saveUserAccount = function()
     {
-        //TODO: set default cacheResponse: false; otherwise, if response doesn't contain id; it will throw nasty error
-        //TODO: again, we are not interested in caching function
-        User.update($rootScope.user.id, $scope.account, {cacheResponse: false})
+        $scope.account.save()
             .then(function(){
                 showSuccess("Account has been updated successfully");
             }, function(error){

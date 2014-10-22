@@ -23,7 +23,7 @@
             })
             .fail(function(err){
                 res.error(err);
-            })
+            });
     }
 
     module.create = function(req, res)
@@ -45,7 +45,7 @@
             })
             .fail(function(err){
                 return res.error(err);
-            })
+            });
     }
 
     module.update = function(req, res)
@@ -62,12 +62,12 @@
         req.body.updated = new Date();
 
         beaver.modules.Comment.updateComment(commentId, req.session.user.id, req.body)
-            .success(function(newComment){
+            .then(function(newComment){
                 res.success(newComment);
             })
             .fail(function(err){
                 return res.error(err);
-            })
+            });
     }
 
     module.destroy = function(req, res)
@@ -86,7 +86,7 @@
             })
             .fail(function(err){
                 return res.error(err);
-            })
+            });
     }
 
     //setting for uri bind

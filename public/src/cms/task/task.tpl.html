@@ -1,0 +1,258 @@
+<div header-bread-crump title="Tasks: Overview" sub-title="Dashboard" icon-class="fa fa-users"></div>
+<div class="content bootstrap tasks">
+    <!--this is per project-->
+    <div class="col-lg-9">
+        <div ng-repeat="project in projects">
+            <div class="row project-tasks">
+                <div class="col-lg-12">
+                    <div class="project-info">
+                        <div class="heading">
+                            <span class="expander"
+                                  ng-init="project.showTaskList=true"
+                                  ng-click="project.showTaskList=!project.showTaskList">
+                                <i class="glyphicon glyphicon-chevron-right" ng-show="!project.showTaskList"></i>
+                                <i class="glyphicon glyphicon-chevron-down" ng-show="!!project.showTaskList"></i>
+                            </span>
+
+                            <span ng-bind="project.name" class="project-name"></span>
+
+                            <span class="info">
+                                <span class="nTask"> {{project.nTasks}} issues</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 project-task-list" ng-show="!!project.showTaskList">
+                    <div class="col-lg-4">
+                        <h3 class="task-type-title">TODO</h3>
+                        <div class="task-list">
+                            <div ng-repeat="task in project.todo">
+                                <div task-block task="task"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <h3 class="task-type-title">IN PROGRESS</h3>
+                        <div class="task-list">
+                            <div ng-repeat="task in project.inprogress">
+                                <div task-block task="task"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <h3 class="task-type-title">COMPLETE</h3>
+                        <div class="task-list">
+                            <div ng-repeat="task in project.complete">
+                                <div task-block task="task"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--this contain issue specific information-->
+    <div class="col-lg-3" style="margin-top: -20px;">
+        <div class="task-detail-view detail-contents">
+            <div class="detail-head js-issue-fields">
+                <div class="group">
+                    <span class="project-avatar">
+                        <img src="https://issues.apache.org/jira/secure/projectavatar?pid=12310865&amp;avatarId=12034" title="Cassandra">
+                    </span>
+
+                    <div class="key-group">
+                        <div class="project">Cassandra</div>
+
+                        <div class="key js-view-in-jira">
+                            <dl class="detail-list">
+                                <dt class="detail-term">Task Name:</dt>
+                                <dd class="detail-description" title="issue.key">
+                                    <a>MED:12</a>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="detail-summary">
+                        <dl class="detail-list">
+                            <dt class="detail-term fieldtype-textarea fieldname-summary" title="Summary">Summary:</dt>
+                            <dd class="detail-description fieldtype-textarea fieldname-summary" data-field-id="summary" title="Summary">
+                                Consistency issue with CL.TWO</dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="statistic-group"></div>
+            </div>
+
+            <div class="detail-nav">
+                <div class="detail-nav-content">
+                    <div class="detail-section">
+                        <div class="header">
+                            <h3>Details</h3>
+                        </div>
+
+                        <div class="section">
+                            <div class="form-group">
+                                <label class="control-label col-lg-5 ">
+                                    Status:
+                                </label>
+                                <div class="col-lg-7">
+                                    Open
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-lg-5 ">
+                                    Components:
+                                </label>
+                                <div class="col-lg-7">
+                                    Open
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-lg-5 ">
+                                    Label:
+                                </label>
+                                <div class="col-lg-7">
+                                    Open
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-lg-5 ">
+                                    Fix Version/s:
+                                </label>
+                                <div class="col-lg-7">
+                                    Open
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h4>People</h4>
+
+                            <div class="form-group">
+                                <label class="control-label col-lg-5 ">
+                                    Assignee:
+                                </label>
+                                <div class="col-lg-7">
+                                    Open
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-lg-5 ">
+                                    Reporter:
+                                </label>
+                                <div class="col-lg-7">
+                                    Open
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-lg-5 ">
+                                    Followers:
+                                </label>
+                                <div class="col-lg-7">
+                                    Open
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h4>Dates</h4>
+
+                            <div class="form-group">
+                                <label class="control-label col-lg-5 ">
+                                    Created:
+                                </label>
+                                <div class="col-lg-7">
+                                    Open
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-lg-5 ">
+                                    Updated:
+                                </label>
+                                <div class="col-lg-7">
+                                    Open
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h4>Issue Links</h4>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="header">
+                            <h3>Description</h3>
+                        </div>
+                        <div class="section">
+                            <p>We have a keyspace with RF=4.  We write at QUORUM and read at TWO.  This should provide consistency since writes are on 3 replicas and we read from 2, but in practice we don't have consistent reads.</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="header">
+                            <h3>Comments</h3>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="header">
+                            <h3>Attachments</h3>
+                        </div>
+                        <div class="container">
+                            <p class="fa">There are no attachments</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="header">
+                            <h3>Sub-Tasks</h3>
+                        </div>
+                        <div class="container">
+                            <p class="fa">There are no sub-tasks</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="header">
+                            <h3>Development</h3>
+                            <div class="try-labs-container"></div>
+                        </div>
+                        <div style="clear: both;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-nav-menu">
+                <ul>
+                    <li class="detail-nav-item selected">
+                        <a title="Details">
+                            <i class="glyphicon glyphicon-info-sign"></i>
+                        </a>
+                    </li>
+                    <li class="detail-nav-item selected">
+                        <a title="Details">
+                            <i class="glyphicon glyphicon-comment"></i>
+                        </a>
+                    </li>
+                    <li class="detail-nav-item selected">
+                        <a title="Details">
+                            <i class="glyphicon glyphicon-list-alt"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

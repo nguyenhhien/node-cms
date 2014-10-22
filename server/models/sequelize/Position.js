@@ -6,10 +6,10 @@ module.exports = function(sequelize, DataTypes) {
             freezeTableName: true,
             classMethods: {
                 associate: function(models) {
-                    Position.belongsTo(models.Role, {foreignKey: 'roleId'});
+                    Position.belongsTo(models.Role);
 
                     //many to many with location
-                    Position.hasMany(models.Location, {through: 'PositionLocation', foreignKey: 'positionId'})
+                    Position.hasMany(models.Location);
                 }
             },
             instanceMethods: {

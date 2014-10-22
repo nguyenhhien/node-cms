@@ -1,14 +1,15 @@
 module.exports = function(sequelize, DataTypes) {
-    var Role = sequelize.define("Role", {
+    var Project = sequelize.define("Project", {
             name: DataTypes.STRING,
-            code: DataTypes.STRING
+            status: DataTypes.INTEGER,
+            dueDate: DataTypes.DATE,
+            description: DataTypes.TEXT
         },
         {
             freezeTableName: true,
             classMethods: {
                 associate: function(models) {
-                    Role.hasMany(models.Position);
-                    Role.hasMany(models.RoleFunction);
+                    Project.hasMany(models.Task, {as: 'Task'})
                 }
             },
             instanceMethods: {
@@ -16,5 +17,5 @@ module.exports = function(sequelize, DataTypes) {
             }
         })
 
-    return Role;
+    return Project;
 }
