@@ -18,7 +18,9 @@ module.exports = function(sequelize, DataTypes) {
     {
         freezeTableName: true,
         classMethods: {
-
+            associate: function(models) {
+                User.hasMany(models.Task);
+            }
         },
         instanceMethods: {
 

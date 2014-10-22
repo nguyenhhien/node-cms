@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
             classMethods: {
                 //relationship with other tables
                 associate: function(models) {
-                    PasswordRecovery.belongsTo(models.User, {foreignKey: 'userId', foreignKeyConstraint: true})
+                    PasswordRecovery.belongsTo(models.User, {foreignKeyConstraint: true})
                 }
             },
             instanceMethods: {

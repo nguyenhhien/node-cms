@@ -6,9 +6,9 @@ module.exports = function(sequelize, DataTypes) {
             freezeTableName: true,
             classMethods: {
                 associate: function(models) {
-                    LocationType.hasOne(LocationType, {as: 'Parent', foreignKey: 'parentId'});
-                    LocationType.hasMany(LocationType, {as: 'Children', foreignKey: 'parentId', through: null })
-                    LocationType.hasMany(models.Location, {foreignKey: 'locationTypeId'});
+                    LocationType.hasOne(LocationType, {as: 'Parent', foreignKey: 'ParentId'});
+                    LocationType.hasMany(LocationType, {as: 'Children', foreignKey: 'ParentId', through: null })
+                    LocationType.hasMany(models.Location);
                 }
             },
             instanceMethods: {

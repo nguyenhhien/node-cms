@@ -15,34 +15,20 @@ var app = angular.module( 'mainApp.user', [])
             });
     }]);
 
-app.controller("UserSearchController", ['$rootScope', '$scope', '$http', '$resource', function($rootScope, $scope, $http, $resource){
+app.controller("UserSearchController", ['$rootScope', '$scope', '$http', '$resource', 'Restangular', function($rootScope, $scope, $http, $resource, Restangular){
     $scope.itemsPerPage = 10;
     $scope.currentPage = 1;
 
-    var UserResource = $resource('/api/user/:id', {id: '@_id'}, {
-        query:{
-            isArray: true, method: 'GET',
-            transformResponse: function (data, headers) {
-                if(JSON.parse(data) && JSON.parse(data).rows)
-                {
-                    $scope.totalItems = JSON.parse(data).count;
-                    return JSON.parse(data).rows;
-                }
-                else
-                {
-                    return data;
-                }
-            }
-        }
-    });
-
     $scope.getUsers = function(offset, limit)
     {
-        UserResource.query({
-            limit: limit, offset: offset
-        }).$promise.then(function(response){
-            $scope.users = response;
-        });
+        Restangular.all('user').getList({offset: offset, limit: limit})
+            .then(function(users){
+                $scope.users = users;
+                $scope.totalItems = users.count;
+
+            }, function(error){
+                showError(error.stack || error);
+            });
     };
 
     $scope.$watch('currentPage', function(currentPage)

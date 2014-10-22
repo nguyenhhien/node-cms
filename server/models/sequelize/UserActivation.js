@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
         freezeTableName: true,
         classMethods: {
             associate: function(models) {
-                UserActivation.belongsTo(models.User, {foreignKey: 'userId', foreignKeyConstraint: true})
+                UserActivation.belongsTo(models.User, {foreignKeyConstraint: true})
             }
         },
         instanceMethods: {

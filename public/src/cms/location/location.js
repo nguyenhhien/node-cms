@@ -1,13 +1,4 @@
-var app = angular.module( 'mainApp.location', [
-        'ui.router',
-        'localytics.directives',
-        'ui.bootstrap',
-        'common.commentThread',
-        'templates-cms_common',
-        'common.treeView',
-        'common.dropdownTreeView',
-        'ngResource'
-    ])
+var app = angular.module( 'mainApp.location', [])
     .config(['$stateProvider', function config( $stateProvider ) {
         $stateProvider
             .state('locations', {

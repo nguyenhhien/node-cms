@@ -15,24 +15,49 @@ $.post('/api/user/userInfo')
     });
 
 var app = angular.module( 'mainApp', [
+    'ui.router',
+    'restangular',
+    'localytics.directives',
+    'ui.bootstrap',
+    'ngResource',
     'templates-cms_common',
     'templates-cms_main',
-    'ui.router',
     'mainApp.userAccount',
     'mainApp.user',
     'mainApp.dashboard',
     'mainApp.location',
     'mainApp.configuration',
+    'mainApp.task',
     'common',
     'commonDirectives',
-    'angular-data.DS',
     'common.fileUpload',
-    'common.chatWidget'
+    'common.chatWidget',
+    'common.commentThread',
+    'common.treeView',
+    'common.dropdownTreeView',
+    'common.task'
 ]);
 
-app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', function myAppConfig ( $stateProvider, $urlRouterProvider, $locationProvider) {
+app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', function myAppConfig ( $stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider) {
     $urlRouterProvider.otherwise( '/' );
     $locationProvider.hashPrefix('!');
+    RestangularProvider.setBaseUrl('/api');
+
+    // add a response intereceptor
+    RestangularProvider.addResponseInterceptor(function(data, operation, what, url, response, deferred) {
+        var extractedData = data;
+
+        if(!_.isArray(data) && _.isObject(data))
+        {
+            if('rows' in data && 'count' in data)
+            {
+                extractedData = data.rows;
+                extractedData.count = data.count;
+            }
+        }
+
+        return extractedData;
+    });
 }]);
 
 app.run(['$http', '$rootScope', function run ($http, $rootScope) {
@@ -77,11 +102,4 @@ app.controller( 'mainCtrl', ['$scope', '$location', function AppCtrl ( $scope, $
 
 }]);
 
-//models
-app.factory('User', ['DS', function (DS) {
-    return DS.defineResource({
-        name: 'user',
-        baseUrl: 'api'
-    });
-}]);
 
