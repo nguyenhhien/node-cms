@@ -13,7 +13,7 @@
     var request 	        = require("request");
     var superagent          = require('superagent');
     var beaver              = require("../../Beaver.js");
-    var Email               = require("./email");
+    var Email               = require("./Email");
 
     //verify the username and password combination
     module.verifyUserPassword = Q.async(function*(email, password){

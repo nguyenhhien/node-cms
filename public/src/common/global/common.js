@@ -35,19 +35,22 @@ function safeApply (scope, expr)
 
 function showError($modal, errorMessage, options)
 {
-    $modal.open({
-        templateUrl : "modal/infoModal.tpl.html",
-        controller : ['$scope', '$modalInstance', function($scope, $modalInstance) {
-            $scope.type = 'error';
-            $scope.title ='ERROR';
-            $scope.description = errorMessage;
+    if(!!$modal && !!$modal.open)
+    {
+        $modal.open({
+            templateUrl : "modal/infoModal.tpl.html",
+            controller : ['$scope', '$modalInstance', function($scope, $modalInstance) {
+                $scope.type = 'error';
+                $scope.title ='ERROR';
+                $scope.description = errorMessage;
 
-            $scope.closeModal = function()
-            {
-                $modalInstance.dismiss('cancel');
-            };
-        }]
-    });
+                $scope.closeModal = function()
+                {
+                    $modalInstance.dismiss('cancel');
+                };
+            }]
+        });
+    }
 }
 
 //show info message

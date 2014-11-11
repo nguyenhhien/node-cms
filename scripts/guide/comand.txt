@@ -80,3 +80,37 @@ grant all privileges on *.* to 'root'@'%' IDENTIFIED BY 'beaver' with grant opti
 grant all privileges on *.* to 'root'@'localhost' IDENTIFIED BY 'beaver' with grant option;
 flush privileges;
 *
+For using node11, can create symbolic link:
+sudo ln -s /home/ubuntu/.nvm/v0.11.13/bin/node /usr/local/bin/node
+sudo ln -s /home/ubuntu/.nvm/v0.11.13/bin/npm /usr/local/bin/npm
+*
+Useful command:
+sudo sh -c 'echo $PATH' -> list paths seen by sudo
+/etc/profile for system wide variables -- sudo su + source /etc/profile to make change get effect (sudo invoke /etc/profile)
+sudo -i for interactive login shell
+*Connect to MyQL, Redis, Mongo in EC2
+-MySQL:
+mysql using public dns which will resolve as internal ip when using with EC2; so use it as server adapter config.
+mysql -h rds1.cyjzxce0sqyz.ap-southeast-1.rds.amazonaws.com -P 3306 -u root -p (For password connect)
+Download mysql-ssl-ca-cert.pem from amazon to connect using ssl.
+-Redis:
+redis: only local access redis-cli -h aws1.gzkvyj.0001.apse1.cache.amazonaws.com
+-Mongo:
+mongo by default only bind to port 27017, localhost (check its config file)
+SSH tunel will be needed if you need to connect from outside.
+When using with GUI, fill in ssh-host, ssh pem, username; and in local section; specify localhost, port 27017 as remote
+host ip and listening port.
+*Run with node forever
+NODE_ENV=prod forever start -c "node --harmony" app.js
+*SSL certificate:
+-using openssl to generate certificate as normal
+-for Elastic Load Balancing, however, we need to convert cert into PEM format.
+openssl rsa -in server.key -text > private.pem
+openssl x509 -inform PEM -in server.crt > public.pem
+wherease server.key, and server.crt are one you generate using openssl.
+(note heartbleed bug).
+http://www.nczonline.net/blog/2012/08/15/setting-up-ssl-on-an-amazon-elastic-load-balancer/
+
+
+
+

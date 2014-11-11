@@ -3,21 +3,21 @@ module.exports.adapters = {
     MySQL:
     {
         dbName:					"beaver",
-        host:					"127.0.0.1",
-        port:                   "33306",
+        host:					"rds1.cyjzxce0sqyz.ap-southeast-1.rds.amazonaws.com",
+        port:                   "3306",
         user:					"root",
-        password:				"beaver",
+        password:				"nodebeaver",
         maxConcurrentQueries:   100,
         poolSize:               100,
         idleTime:               30,
-        replication: {
+        replicationno: {
             write: {
-                port: "33307",
+                port: "3306",
                 poolSize:               30,
                 idleTime:               30
             },
             read: {
-                port: "33306",
+                port: "3306",
                 poolSize:               130,
                 idleTime:               30
             }
@@ -25,10 +25,10 @@ module.exports.adapters = {
     },
     Redis:
     {
-        host:					"localhost",
+        host:					"aws1.gzkvyj.0001.apse1.cache.amazonaws.com",
         port:					6379,
         pass:					null,
-        db:                     6
+        db:                     2
     },
     Mongo:
     {
