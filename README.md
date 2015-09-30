@@ -1,5 +1,5 @@
 # NodeCMS
- A hobby project was self-written quite sometimes ago. Code base is quite large though.
+ A hobby project was self-written quite sometimes ago. Code base is quite large though. (just change this from private -> public repo)
  
  It shows:
  
