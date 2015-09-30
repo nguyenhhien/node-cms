@@ -1,8 +1,11 @@
 # NodeCMS
  A hobby project was self-written quite sometimes ago. Code base is quite large though.
+ 
  It shows:
+ 
    -How to integrate and structure ExpressJS, SocketIO with Sequelize, Mongoose and other component.
-   -How to structure the AngularJS as frondend.
+   
+   -How to structure the AngularJS as frontend.
    
  It can be use as starting point to build your own NodeJS server.  
 
