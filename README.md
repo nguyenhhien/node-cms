@@ -1,8 +1,10 @@
-# BEAVER.JS
+#A hobby project was self-written quite sometimes ago. Code base is quite large though.
+ It shows:
+   -How to integrate and structure ExpressJS, SocketIO with Sequelize, Mongoose and other component.
+   -How to structure the AngularJS as frondend.
+   
+ It can be use as starting point to build your own NodeJS server.  
 
-*  Beaver.js is a web framework built upon express.js. It is designed to be scalable, fast and well-written.
-*  Beaver.js make writing API easily and enjoyable while maintains best performance offered by Node.
-*  It is suitable for startup application while an application can be done within weeks.
 
 ## Tech stack:
 ### Server side:
@@ -24,12 +26,3 @@
 * Less(for css)
 * Grunt (as asset compiler)
 ```
-
-## Coding Pattern:
-While callback is natively supported by node, it is buggy and should be replaced by promise as alternative.
-Most of the code are written using promise + generator. Both play very well with each other while making code much cleaner
-and easier to maintain.
-
-
-## Author
-Nguyen Xuan Tuong <nguy0066@ntu.edu.sg>
